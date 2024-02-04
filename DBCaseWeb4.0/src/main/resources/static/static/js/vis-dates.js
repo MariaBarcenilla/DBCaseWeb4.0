@@ -131,18 +131,24 @@ var network_super = new vis.Network(container_super, data_super, options);
 		  size_width = 45;
 	  var ctx = c.getContext("2d");
 	  var img_super = ctx.canvas.toDataURL('image/png', 1.0);//  2aba06 cambiado
+	  var textTheme = $("#textTheme").text();
+      var isDarkTheme = (textTheme === 'dark');
 	  nodes.add({id: 9999999, label: labelName, shape: 'image', image: img_super, size: size_width, borderWidth: 3,color: {
 			 border: '#000000', 
-			 background:'#fafafa',
+			 background:'#E0E0E0',
 			 highlight: {
 			        border: '#000000',
-			        background: '#FFFF00'
+			        background: '#A0A0A0'
 			      },
 			 hover: {
 				 border: '#000000',
-				 background: '#FFFF00'
-					 }
-	  }, shapeProperties: { useBorderWithImage:true} });  
+				 background: '#A0A0A0'
+					}
+
+	  }, shapeProperties: { useBorderWithImage:true}, font: {
+	         color: isDarkTheme ? '#000000' : '#ffffff'
+	         }
+	  });
   }
   
   async function simuleClickAsync() {
