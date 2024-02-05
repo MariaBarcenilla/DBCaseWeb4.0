@@ -135,14 +135,14 @@ var network_super = new vis.Network(container_super, data_super, options);
       var isDarkTheme = (textTheme === 'dark');
 	  nodes.add({id: 9999999, label: labelName, shape: 'image', image: img_super, size: size_width, borderWidth: 3,color: {
 			 border: '#000000', 
-			 background:'#E0E0E0',
+			 background: isDarkTheme ? '#E0E0E0' : '#A0A0A0',
 			 highlight: {
 			        border: '#000000',
-			        background: '#A0A0A0'
+			        background: isDarkTheme ? '#C0C0C0' : '#606060'
 			      },
 			 hover: {
 				 border: '#000000',
-				 background: '#A0A0A0'
+				 background: isDarkTheme ? '#C0C0C0' : '#606060'
 					}
 
 	  }, shapeProperties: { useBorderWithImage:true}, font: {
