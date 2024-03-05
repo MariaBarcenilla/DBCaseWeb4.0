@@ -47,7 +47,7 @@ var options = {
 				 background:'#ffcc45', 
 				 highlight: {
 				        border: '#000000',
-				        background: '#FFFF00'
+				        background: '#CEA023'
 				      },
 				 hover: {
 					 border: '#ffcc45',
@@ -325,15 +325,15 @@ var network_super = new vis.Network(container_super, data_super, options);
 	  if (nombre.length>5){
 		  tam = 30+(nombre.length-5);
 	  }
-	  var data_element = {size:tam,label: nombre, shape: 'diamond', super_entity:false,color:'#FF3F20', scale:20, physics:false};
-		/*  color: {
-				 border: '#575656', 
+	  var data_element = {size:tam,label: nombre, shape: 'diamond', super_entity:false,
+		  color: {
+				 border: '#FF3F20',
 				 background:'#FF3F20',
 				 highlight: {
 				        border: '#000000',
-				        background: '#FF2121'
+				        background: '#C93821'
 				      }}
-		  , scale:20, physics:false};//D5FF04  cambiado(ff554b)*/
+		  , scale:20, physics:false};//D5FF04  cambiado(ff554b)
 	  
 	  if(action == "edit"){
 		  data_element.id = parseInt(idSelected);
@@ -359,7 +359,16 @@ var network_super = new vis.Network(container_super, data_super, options);
   
   function addIsA(){
 	  var id_node = getIdElement();//FF952A   (ff554b) viejo cambiado
-	  var data_element = {id: id_node++, label: 'IsA', shape: 'triangleDown', super_entity:false, color:'#FF952A', scale:20, physics:false}
+	  var data_element = {id: id_node++, label: 'IsA', shape: 'triangleDown', super_entity:false,
+          color: {
+                 border: '#FF952A',
+                 background:'#FF952A',
+                 highlight: {
+                        border: '#000000',
+                        background: '#D37211'
+                      }}
+          , scale:20, physics:false};
+
 	  if(poscSelection != null){
 		  data_element.x = poscSelection.x;
 		  data_element.y = poscSelection.y;
@@ -382,14 +391,14 @@ var network_super = new vis.Network(container_super, data_super, options);
 	  var valueEntityWeak = nodes.get(parseInt(idEntity)).isWeak;
 	  
 	  var data_element = {width: 3,widthConstraint:{ minimum: 50, maximum: 160},labelBackend:name, super_entity:false, label: word_pk, dataAttribute:{entityWeak: valueEntityWeak, primaryKey: pk, composite: comp, notNull: notNll, unique: uniq, multivalued: multi, domain: dom, size: sz}, shape: 'ellipse',
-		  color :"#22bdb1"/*'#4de4fc' cambiado*/, scale:20, heightConstraint:23,physics:false};
-		  /*		  color: {
-					 border: '#000000', 
+		  /*color :"#22bdb1"/*'#4de4fc' cambiado*/
+		  		  color: {
+					 border: '#078980',
 					 background:'#22bdb1',
 					 highlight: {
 					        border: '#000000',
-					        background: '#4de4fc'
-					      }}
+					        background: '#1A958A'
+					      }}, scale:20, heightConstraint:23,physics:false};
 			 /*'#4de4fc' cambiado, scale:20, heightConstraint:23,physics:false};*/
 	  if(action == "edit"){
 		  data_element.id = parseInt(idSelected);
