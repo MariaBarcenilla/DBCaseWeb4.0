@@ -114,13 +114,33 @@ var network_super = new vis.Network(container_super, data_super, options);
 	  nodes_super.clear();
 	  edges_super.clear();
   }
+
+  function ctxRenderer({ ctx, x, y, state: { selected, hover }, style , label}) {
+      const r = style.size;
+      ctx.beginPath();
+      const sides = 6;
+      const a = (Math.PI * 2) / sides;
+      ctx.moveTo(x , y + r);
+      for (let i = 1; i < sides; i++) {
+          ctx.lineTo(x + r * Math.sin(a * i), y + r * Math.cos(a * i));
+      }
+      ctx.closePath();
+      ctx.save();
+      ctx.fillStyle = 'red';
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.font = "normal 12px sans-serif";
+      ctx.fillStyle = 'black';
+  }
   
-  function simuleClickSuper(){
+  function simuleClickSuper(){  //TODO: Eliminar funcion
 		var event = new PointerEvent('pointerdown');
 		return new Promise(resolve => document.getElementsByClassName("vis-zoomExtendsScreen")[0].dispatchEvent(event));
   }
   
-  function createSuperEntity(labelName){
+  function createSuperEntity(labelName){    //TODO: Eliminar funcion
 	  var size_width = 110;
 	  var c = document.getElementsByTagName("canvas")[0];
 	  var sizeWidth = c.style.width.slice(0, -2);
@@ -130,10 +150,10 @@ var network_super = new vis.Network(container_super, data_super, options);
 	  if(nodes_super.get().length<5)
 		  size_width = 45;
 	  var ctx = c.getContext("2d");
-	  var img_super = ctx.canvas.toDataURL('image/png', 1.0);//  2aba06 cambiado
+	  //var img_super = ctx.canvas.toDataURL('image/png', 1.0);//  2aba06 cambiado
 	  var textTheme = $("#textTheme").text();
       var isDarkTheme = (textTheme === 'dark');
-	  nodes.add({id: 9999999, label: labelName, shape: 'image', image: img_super, size: size_width, borderWidth: 3,color: {
+	  /*nodes.add({label: labelName, shape: 'image', size: size_width, borderWidth: 3,color: {
 			 border: '#000000', 
 			 background: isDarkTheme ? '#E0E0E0' : '#A0A0A0',
 			 highlight: {
@@ -148,10 +168,10 @@ var network_super = new vis.Network(container_super, data_super, options);
 	  }, shapeProperties: { useBorderWithImage:true}, font: {
 	         color: isDarkTheme ? '#000000' : '#ffffff'
 	         }
-	  });
+	  });*/
   }
   
-  async function simuleClickAsync() {
+  async function simuleClickAsync() {   //TODO: Eliminar funcion
 	  let promise = new Promise((resolve, reject) => {
 	    setTimeout(() => resolve("done!"), 200)
 	  });
@@ -159,7 +179,7 @@ var network_super = new vis.Network(container_super, data_super, options);
 	  await simuleClickSuper(); // "done!"
 	}
   
-  async function simuleClickAsync1() {
+  async function simuleClickAsync1() {      //TODO: Eliminar funcion
 	  let promise = new Promise((resolve, reject) => {
 	    setTimeout(() => resolve("done!"), 2000)
 	  });
@@ -167,7 +187,7 @@ var network_super = new vis.Network(container_super, data_super, options);
 	  await simuleClickSuper(); // "done!"
 	}
   
-  function simuleClickSuperNew(){
+  function simuleClickSuperNew(){       //TODO: Eliminar funcion
 	  var left = 0;
 	  var right = 0;
 	  var top = 0;
@@ -217,7 +237,7 @@ var network_super = new vis.Network(container_super, data_super, options);
 	  document.getElementsByTagName("canvas")[0].style.height = heightTotal+"px";
   }
   
-  async function simuleClickAsyncNew() {
+  async function simuleClickAsyncNew() {    //TODO: Eliminar funcion
 	  let promise = new Promise((resolve, reject) => {
 	    setTimeout(() => resolve("done!"), 1000)
 	  });
@@ -226,7 +246,7 @@ var network_super = new vis.Network(container_super, data_super, options);
 	  console.log("prueba12");
   }
   
-  async function simuleClickAsync12(labelName) {
+  async function simuleClickAsync12(labelName) {        //TODO: Eliminar funcion
 	  let promise = new Promise((resolve, reject) => {
 	    setTimeout(() => resolve("done!"), 2800)
 	  });
@@ -242,37 +262,96 @@ var network_super = new vis.Network(container_super, data_super, options);
 	  await updateTableElements();
 	}
   
-  function addElementsWithRelationsToSuperEntity(idElement, labelName){
-	  nodes.update({id: idElement, super_entity: true});
-	  getNodesElementsWithSuperEntity(network.getConnectedNodes(idElement));
-	  var nodes_super_select = [];
-	  nodes.forEach(function(nod) {
-		  if(nod.super_entity){
-			  nod.x = network.getPosition(nod.id).x;
-			  nod.y = network.getPosition(nod.id).y;
-			  nodes_super.add(nod);
-			  nodes_super_select.push(nod.id);
-		  }
-	  });
-	  edges.forEach(function(edg) {
-		  edges_super.add(edg);
-	  });
-	  simuleClickAsync();
-	  simuleClickAsyncNew();
-	  simuleClickAsync1();
-	  simuleClickAsync12(labelName);
-	  nodes_super_select.forEach(function(id_nd) {
-		  nodes.remove(id_nd);
-	  });
-	  
-	  updateTableElementsPromise();
-  }
+    function addElementsWithRelationsToSuperEntity(idElement, labelName){   //TODO: Mejorar implementacion + añadir comments
+
+        var left = 0;
+        var right = 0;
+        var top = 0;
+        var bottom = 0;
+        var size_super = 0;
+        var x_super = 0;
+        var y_super =0;
+        var width_super = 0;
+        var height_super = 0;
+
+        getNodesElementsWithSuperEntity(network.getConnectedNodes(idElement));    //get nodes connected to super entity
+        var nodes_super_select = [];
+
+        nodes.forEach(function(nod) {
+
+            if(nod.super_entity){
+                if (nodes_super.get().length < 1){
+                    left = nod.x;
+                    right = nod.x;
+                    top = nod.y;
+                    bottom = nod.y;
+                    //console.log("Primer nodo:"+ nod.label + " " +nod.x+" "+nod.y);
+                }
+                else{
+                    console.log("Nodos:"+nod.x+" "+nod.y);
+                    left = Math.min(left, nod.x);
+                    right = Math.max(right, nod.x);
+                    top = Math.min(top, nod.y);
+                    bottom = Math.max(bottom, nod.y);
+                    //console.log("nodo calculado:"+left+" "+right+" "+ top+" "+bottom);
+                }
+                nodes_super.add(nod);
+                nodes_super_select.push(nod.id);
+            }
+        });
+        edges.forEach(function(edg) {
+          edges_super.add(edg);
+        });
+
+      /*nodes_super_select.forEach(function(id_nd) {
+          //nodes.remove(id_nd);
+      });*/
+
+      //width_super =  (Math.abs(Math.abs(right) - Math.abs(left)))*3;
+      //height_super = (Math.abs(Math.abs(top) - Math.abs(bottom)))*3;
+      width_super = Math.abs(right - left) + 125;
+      height_super = Math.abs(bottom - top) + 75;
+
+      x_super = (right + left)/2;
+      y_super = (top + bottom)/2;
+
+      //width_super = x_super+ 50;
+      //height_super = y_super + 30;
+
+      var id_node = getIdElement();
+      var textTheme = $("#textTheme").text();
+      var isDarkTheme = (textTheme === 'dark');
+      var data_element = {id: -1, widthConstraint: { minimum: width_super}, heightConstraint: { minimum: height_super },is_super_entity:true, super_entity:false, label: labelName, shape: 'box',physics:false,
+          color:{
+              background: 'transparent',
+              highlight: {
+                  border: '#000000',
+                  background: 'transparent',
+                  borderWidth: 4
+              },
+          }, borderWidth: 2, font: {
+               color: isDarkTheme ? '#000000' : '#ffffff'
+          }
+      };
+
+      data_element.x = x_super;
+      data_element.y = y_super;
+      console.log("AGR:  x --> "+ data_element.x +" y --> " +data_element.y + " width --> " + width_super + " height --> " + height_super);
+      //data_element.id = id_node++;
+      nodes.add(data_element);
+
+
+      updateTableElementsSuperEntity();
+      //ctxRenderer(ctx, data_element.x, data_element.y, { hover, selected }, style, labelName);
+
+    }
   
   function getNodesElementsWithSuperEntity(nodesIds){
 	  nodesIds.forEach(function(nod) {
 		  if(!nodes.get(nod).super_entity){
+
 			  nodes.update({id: nod, super_entity: true});
-			  if(network.getConnectedNodes(nod).length!=1){
+			  if(network.getConnectedNodes(nod).length!=0){
 				  getNodesElementsWithSuperEntity(network.getConnectedNodes(nod));
 			  }
 		  }
@@ -281,7 +360,7 @@ var network_super = new vis.Network(container_super, data_super, options);
   
   function addEntity(nombre, weakEntity,action, idSelected, elementWithRelation, relationEntity){
 	  var id_node = getIdElement();
-	  var data_element = {widthConstraint:{ minimum: 100, maximum: 200}, super_entity:false, label: nombre, isWeak: weakEntity, shape: 'box', scale:10, heightConstraint:25,physics:false};//cambiado
+	  var data_element = {widthConstraint:{minimum: 100, maximum: 200}, super_entity:false, label: nombre, isWeak: weakEntity, shape: 'box', scale:10, heightConstraint:25,physics:true};//cambiado
 	  if(action == "edit"){
 		  data_element.id = parseInt(idSelected);
 		  nodes.update(data_element);
@@ -325,7 +404,7 @@ var network_super = new vis.Network(container_super, data_super, options);
 	  if (nombre.length>5){
 		  tam = 30+(nombre.length-5);
 	  }
-	  var data_element = {size:tam,label: nombre, shape: 'diamond', super_entity:false,
+	  var data_element = {size:tam,label: nombre, shape: 'diamond', is_super_entity:false, super_entity:false,
 		  color: {
 				 border: '#FF3F20',
 				 background:'#FF3F20',
@@ -359,7 +438,7 @@ var network_super = new vis.Network(container_super, data_super, options);
   
   function addIsA(){
 	  var id_node = getIdElement();//FF952A   (ff554b) viejo cambiado
-	  var data_element = {id: id_node++, label: 'IsA', shape: 'triangleDown', super_entity:false,
+	  var data_element = {id: id_node++, label: 'IsA', shape: 'triangleDown', is_super_entity:false, super_entity:false,
           color: {
                  border: '#FF952A',
                  background:'#FF952A',
@@ -390,7 +469,7 @@ var network_super = new vis.Network(container_super, data_super, options);
 	  }
 	  var valueEntityWeak = nodes.get(parseInt(idEntity)).isWeak;
 	  
-	  var data_element = {width: 3,widthConstraint:{ minimum: 50, maximum: 160},labelBackend:name, super_entity:false, label: word_pk, dataAttribute:{entityWeak: valueEntityWeak, primaryKey: pk, composite: comp, notNull: notNll, unique: uniq, multivalued: multi, domain: dom, size: sz}, shape: 'ellipse',
+	  var data_element = {width: 3,widthConstraint:{ minimum: 50, maximum: 160},labelBackend:name, is_super_entity:false, super_entity:false, label: word_pk, dataAttribute:{entityWeak: valueEntityWeak, primaryKey: pk, composite: comp, notNull: notNll, unique: uniq, multivalued: multi, domain: dom, size: sz}, shape: 'ellipse',
 		  /*color :"#22bdb1"/*'#4de4fc' cambiado*/
 		  		  color: {
 					 border: '#078980',
@@ -852,6 +931,7 @@ var network_super = new vis.Network(container_super, data_super, options);
 
 	    var allNodes = nodes.get();
 	    for (var i = 0; i < allNodes.length; i++) {
+	    console.log("movemos");
 	        var curNode = allNodes[i];
 	        var nodePosition = network.getPositions([curNode.id]);
 	        var nodeXY = network.canvasToDOM({x: nodePosition[curNode.id].x, y: nodePosition[curNode.id].y});
@@ -892,6 +972,7 @@ var network_super = new vis.Network(container_super, data_super, options);
 			      }
 			  });
 			  $("#diagram").on("mousedown", function(e) {
+
 			      if (e.button == 0) {
 			          selectedNodes = e.ctrlKey ? network.getSelectedNodes() : null;
 			          saveDrawingSurface();
