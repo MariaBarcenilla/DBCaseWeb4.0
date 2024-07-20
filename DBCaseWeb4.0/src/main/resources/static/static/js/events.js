@@ -235,6 +235,7 @@ function eventAddEntity(){
 		}else{
 			$("#tempWeakEntity").slideUp("slow");
 			$("#relation-entity").unbind("blur keyup");//terminar el select
+			console.log("add entity  -  events");
 		}
 	});
 }

@@ -41,6 +41,7 @@ $(document).ready(function () {
 			$('#modalAddItem').on('hide.bs.modal', function () {
 				switch($("#tipoAdd").val()){
 					case "addEntity":
+					break;
 					case "addRelation":
 					case "addDomain":
 					case "addAttribute":
@@ -66,7 +67,7 @@ $(document).ready(function () {
 			});
 
 			$('#executeScriptSQL').on('click', function () {
-
+                console.log("/executeQueries");
 				var myObj = {}; 
 				// tomamos la informacion de la conexión ingresada en el modal
 				myObj["data1"] = $("#serverInput").val();
@@ -104,7 +105,7 @@ $(document).ready(function () {
 			});
 
 			$('#testConnection').on('click', function () {
-
+                console.log("//checkConnection");
 				var myObj = {}; 
 				
 				// tomamos la informacion de la conexión ingresada en el modal
@@ -135,9 +136,9 @@ $(document).ready(function () {
 						 
 					},
 					error: function (xhr, ajaxOptions, thrownError) {
-						//console.log(xhr.status);
-						//console.log(xhr.responseText);
-						//console.log(thrownError);
+						console.log(xhr.status);
+						console.log(xhr.responseText);
+						console.log(thrownError);
 					}
 
 				});
@@ -149,7 +150,7 @@ $(document).ready(function () {
 
        	 	$('#btnTest').on('click', function () {
          		  //var url = "<c:url value="/generateData"/>";
-       	 		
+       	 		console.log("/generateData");
        		  	var f= 2;
 				var myObj = {}; 
 				 
@@ -157,13 +158,14 @@ $(document).ready(function () {
 				var resultNodes =[];
 				var agregation = "";
 				auxNodesTotal.forEach(function(item, index) {
+				console.log("item: " + item.is_super_entity);
 					var auxItem= item;
 
 					if(item.isWeak || item.isWeak == "active")
 						auxItem.isWeak = true;
 					else
 						auxItem.isWeak = false;
-					if(item.shape == "image"){
+					if(item.is_super_entity){
 						agregation = item.label;
 						auxItem = {
 							heightConstraint: 25,
@@ -291,6 +293,7 @@ $(document).ready(function () {
 			
 			$('#btnTestScriptSQL').on('click', function () {
 				//var url = "<c:url value="/generateData"/>";
+				console.log("/btnTestScriptSQL");
 				var f= 2;
 				var myObj = {}; 
 
@@ -303,7 +306,7 @@ $(document).ready(function () {
 						auxItem.isWeak = true;
 					else
 						auxItem.isWeak = false;
-					if(item.shape == "image"){
+					if(item.is_super_entity){
 						agregation = item.label;
 						auxItem = {
 							heightConstraint: 25,
@@ -390,7 +393,6 @@ $(document).ready(function () {
 				myObj["data6"] = $("#selectLenguage option:selected").index(); 
 
 			 	var json = JSON.stringify(myObj);
-			   
 				$.ajax({
 					type: 'POST',
 					url: '/generateDataScriptSQL',
@@ -459,7 +461,7 @@ $(document).ready(function () {
 	      	        	addSubAttribute($('#recipient-name').val(),$('#typeAction').val(),$('#idSelected').val(), $('#element').val(), $('#composite').prop('checked'), $('#notNull').prop('checked'), $('#unique').prop('checked'), $('#multivalued').prop('checked'), $('#domain').val(), $('#size').val());
 		            	break;
 	      	        case "addSuperEntity":
-	      	        	addElementsWithRelationsToSuperEntity(parseInt($('#idSelected').val()), $('#recipient-name').val());
+	      	        	addSuperEntity(parseInt($('#idSelected').val()), $('#recipient-name').val());
 	      	        	break;
       	          	case "addIsA":
       	            	break;

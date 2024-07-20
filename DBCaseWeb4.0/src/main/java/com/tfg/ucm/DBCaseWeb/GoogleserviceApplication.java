@@ -300,13 +300,13 @@ public class GoogleserviceApplication {
 		List<Node> nodes = new ArrayList<>();
 		List<Edge> edges = new ArrayList<>();
 
-		// OBTENEMOS LOS ELEMENTOS DEL ELEMENTO AGREGACION 
+		// OBTENEMOS LOS ELEMENTOS DEL ELEMENTO AGREGACION 					// TODO: Modificar el parseado de las agregaciones (se genera vacio pero sin errores)
 		List<Node> nodesAltoNivel = gson.fromJson(r.getData3(), tipoNode);
 		List<Edge> edgesAltoNivel = gson.fromJson(r.getData4(), tipoEdge);
 		
 
 		HashMap<Integer,DataAtributoEntidadOrigen> mapaAgregacion_nodosNombres = new HashMap<>();
-
+		System.out.println("/generateData JAVA");
 		Controlador c = null;
 		try {
 			c = new Controlador("debug");
@@ -314,10 +314,12 @@ public class GoogleserviceApplication {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		System.out.println("Controlador Debug");
 		//USAMOS ESTE METODO PARA PODER CONSERVAR LOS NOMBRES DE LAS ENTIDADES DENTRO DE LA AGREGACION
 		cargarHashDeNombres(mapaAgregacion_nodosNombres,nodes,nodesAltoNivel,edges,edgesAltoNivel);
-		
-		
+
+		System.out.println("cargarHashDeNombres");
+
 		if(!nodesAltoNivel.isEmpty() & !edgesAltoNivel.isEmpty()){
 			nodes = gson.fromJson(r.getData1(), tipoNode);
 			edges = gson.fromJson(r.getData2(), tipoEdge);
@@ -327,6 +329,7 @@ public class GoogleserviceApplication {
 				if(nodes.get(idxAgreg).getLabel().equals("agregacion"))
 					idAgregacion = nodes.get(idxAgreg).getId();
 
+			System.out.println("/BUSCAMOS LA IMAGEN...");
 			//BUSCAMOS LA IMAGEN DE ALTO NIVEL PARA ASIGNARLE UNA PRIMARY KEY COMPUESTA POR TODAS PRIMARY KEYS INTERNAS EN LA AGREGACION
 			String lblEntidadAltoNivel = "";
 			for(int nodeIdx = 0; nodeIdx < nodesAltoNivel.size(); nodeIdx++){
@@ -334,6 +337,7 @@ public class GoogleserviceApplication {
 					Node altoNivelPrimaryKey = new Node();
 					DataAttribute altoNivelDataAttribute = new DataAttribute();
 					//CREAMOS LA CLAVE PRIMARIA
+					System.out.println("CREAMOS LA CLAVE PRIMARIA");
 					altoNivelDataAttribute.setComposite(false);
 					altoNivelDataAttribute.setDomain("varchar");
 					altoNivelDataAttribute.setMultivalued(false);
@@ -352,6 +356,7 @@ public class GoogleserviceApplication {
 					
 					nodes.add(altoNivelPrimaryKey);
 
+					System.out.println("CREAMOS LA RELACIóN ENTRE LA CLAVE CREADA Y LA ENTIDAD");
 					//  CREAMOS LA RELACIóN ENTRE LA CLAVE CREADA Y LA ENTIDAD
 					Edge altoNivelPrimaryKeyEdge = new Edge();
 
@@ -373,9 +378,11 @@ public class GoogleserviceApplication {
 		}
 		else{
 			System.out.println(r.getData1().toString());
+			System.out.println("END ELSE");
 			nodes = gson.fromJson(r.getData1().toString(), tipoNode);
 			edges = gson.fromJson(r.getData2().toString(), tipoEdge);
-		} 
+
+		}
 		//LLAMAMOS 2 VECES AL GENERATEESQUEMA, LA PRIMERA DE ELLAS CON LA
 		//INFORMACION DE LA AGREAGACION YLA SEGUNDA DE ELLA CON LOS ELEMENTOS 
 		//EXTERNOS A ESTA AGREGACION, RECORDAR QUE SE MANEJA EL MISMO CONTROLADOR

@@ -8,6 +8,9 @@ var edges = new vis.DataSet([]);
 var edges_super = new vis.DataSet([]);
 var changeDrawView = true;
 var nodes_selected_event = false;
+
+var idCount =0;
+var idSuperEntityCount =0;
  
   // create a network
 var container = document.getElementById('diagram');
@@ -42,7 +45,7 @@ var options = {
 		  nodes: {
 			  borderWidthSelected:0,
 			  font: '12px arial #000000',//cambiado
-			 color: {
+			  color: {
 				 border: '#ffcc45',
 				 background:'#ffcc45', 
 				 highlight: {
@@ -53,8 +56,7 @@ var options = {
 					 border: '#ffcc45',
 					 background: '#ffcc45'
 						 }
-			 }
-		  },
+			 }},
 		  physics: {
 	          enabled: false
 	        },
@@ -89,7 +91,7 @@ var network_super = new vis.Network(container_super, data_super, options);
  * 
  * @returns Devuelve un id unico para asignar a un nuevo elemento que se cree
  */
-  function getIdElement(){
+  function getIdElement(){      //TODO: Eliminar, verificar antes su uso
 	  var dataIds = nodes.getIds();
 	  if(dataIds.length==0)
 		  var nextId = -1;
@@ -262,91 +264,110 @@ var network_super = new vis.Network(container_super, data_super, options);
 	  await updateTableElements();
 	}
   
-    function addElementsWithRelationsToSuperEntity(idElement, labelName){   //TODO: Mejorar implementacion + añadir comments
+    function addSuperEntity(idElement, labelName){   //TODO: Mejorar implementacion + añadir comments
 
-        var left = 0;
-        var right = 0;
-        var top = 0;
-        var bottom = 0;
-        var size_super = 0;
+        var left = null;
+        var right = null;
+        var top = null;
+        var bottom = null;
+
         var x_super = 0;
         var y_super =0;
         var width_super = 0;
         var height_super = 0;
 
         getNodesElementsWithSuperEntity(network.getConnectedNodes(idElement));    //get nodes connected to super entity
-        var nodes_super_select = [];
 
-        nodes.forEach(function(nod) {
+      console.log("[Super Entity] - idCount: " + idCount + ", label: " + labelName + ", idSuperEntityCount: " + idSuperEntityCount);
 
-            if(nod.super_entity){
-                if (nodes_super.get().length < 1){
-                    left = nod.x;
-                    right = nod.x;
-                    top = nod.y;
-                    bottom = nod.y;
-                    //console.log("Primer nodo:"+ nod.label + " " +nod.x+" "+nod.y);
-                }
-                else{
-                    console.log("Nodos:"+nod.x+" "+nod.y);
-                    left = Math.min(left, nod.x);
-                    right = Math.max(right, nod.x);
-                    top = Math.min(top, nod.y);
-                    bottom = Math.max(bottom, nod.y);
-                    //console.log("nodo calculado:"+left+" "+right+" "+ top+" "+bottom);
-                }
-                nodes_super.add(nod);
-                nodes_super_select.push(nod.id);
-            }
+      // Aumentamos el valor de los ids de los nodos de la red
+
+      var allNodes = nodes.get();
+      // Ordenamos los nodos de mayor a menor id
+      allNodes.sort((a, b) => b.id - a.id);
+      allNodes.forEach(function(nod){
+
+              // Guardamos las coordenadas que forman los extremos de los nodos de la agregación
+              if(nod.super_entity){
+                  if(left ===null || left > nod.x) left = nod.x;
+
+                  if(right ===null || right < nod.x) right = nod.x;
+
+                  if(top == null || top > nod.x) top = nod.y;
+
+                  if(bottom ===null || bottom > nod.x) bottom = nod.y;
+              }
+            // Actualizamos el id y la lista de nodos
+             nodes.remove(nod.id);
+             nod.id++;
+             nod.super_entity = true;
+             nodes.add(nod);
+         });
+            /*
+              console.log("[LEFT] - label: " + nod.label + ", min X: " + left);
+              console.log("[RIGHT] - label: " + nod.label + ", max X: " + right);
+              console.log("[TOP] - label: " + nod.label + ", min Y: " + top);
+              console.log("[BOTTOM] - label: " + nod.label + ", max Y: " + bottom);*/
+
+        // Modificamos el id de los edges que conectan con algunos de los nodos de la agregación
+        var allEdges = edges.get();
+        allEdges.forEach(function(edg){
+            //console.log("[EDGES] - From: " + edg.from + ", To: " + edg.to);
+            edg.from +=1;
+            edg.to +=1;
+            edges.update(edg);
+            //console.log("[EDGES] - From: " + aux.from + ", To: " + aux.to);
+
         });
-        edges.forEach(function(edg) {
-          edges_super.add(edg);
-        });
 
-      /*nodes_super_select.forEach(function(id_nd) {
-          //nodes.remove(id_nd);
-      });*/
 
-      //width_super =  (Math.abs(Math.abs(right) - Math.abs(left)))*3;
-      //height_super = (Math.abs(Math.abs(top) - Math.abs(bottom)))*3;
-      width_super = Math.abs(right - left) + 125;
-      height_super = Math.abs(bottom - top) + 75;
+        console.log("[Reorder Elements] - idCount: " + idCount + ", label: " + labelName + ", idSuperEntityCount: " + idSuperEntityCount);
 
-      x_super = (right + left)/2;
+      // Calculamos el tamaño y posición de la agregación en base al numero de elementos que la componen
+
+      width_super = (125*nodes.length) + 50;
+      height_super = (75*nodes.length) + 25;
+
+      x_super = (left + right)/2;
       y_super = (top + bottom)/2;
 
-      //width_super = x_super+ 50;
-      //height_super = y_super + 30;
 
-      var id_node = getIdElement();
       var textTheme = $("#textTheme").text();
       var isDarkTheme = (textTheme === 'dark');
-      var data_element = {id: -1, widthConstraint: { minimum: width_super}, heightConstraint: { minimum: height_super },is_super_entity:true, super_entity:false, label: labelName, shape: 'box',physics:false,
+      var data_element = {id: idSuperEntityCount, widthConstraint: { minimum: width_super}, heightConstraint: { minimum: height_super },is_super_entity:true, super_entity:false, label: labelName, shape: 'box',physics:false,
           color:{
+              //background: isDarkTheme ? '#F8F9FA' : '#343A40',
               background: 'transparent',
               highlight: {
                   border: '#000000',
                   background: 'transparent',
+                  //background: isDarkTheme ? '#F8F9FA' : '#343A40',
                   borderWidth: 4
               },
           }, borderWidth: 2, font: {
-               color: isDarkTheme ? '#000000' : '#ffffff'
+               color: isDarkTheme ? '#000000' : '#ffffff',
+               vadjust: (height_super/2) + 15  // Ajustar la posición vertical de la etiqueta
           }
       };
 
       data_element.x = x_super;
       data_element.y = y_super;
-      console.log("AGR:  x --> "+ data_element.x +" y --> " +data_element.y + " width --> " + width_super + " height --> " + height_super);
-      //data_element.id = id_node++;
-      nodes.add(data_element);
+      data_element.width = width_super;
+      data_element.height = height_super;
+      //console.log("AGR:  x --> "+ data_element.x +" y --> " +data_element.y + " width --> " + width_super + " height --> " + height_super);
 
+      nodes.add(data_element);
+      idSuperEntityCount++;
+      idCount++;
 
       updateTableElementsSuperEntity();
-      //ctxRenderer(ctx, data_element.x, data_element.y, { hover, selected }, style, labelName);
-
+        console.log("[Super Entity] - idCount: " + idCount + ", label: " + labelName + ", idSuperEntityCount: " + idSuperEntityCount);
     }
-  
-  function getNodesElementsWithSuperEntity(nodesIds){
+
+
+
+  // Marcamos los nodos que pertenecen a la agregación
+  function getNodesElementsWithSuperEntity(nodesIds){            // TODO: Introducir criterio para actualizar nodos agregaciones
 	  nodesIds.forEach(function(nod) {
 		  if(!nodes.get(nod).super_entity){
 
@@ -359,8 +380,9 @@ var network_super = new vis.Network(container_super, data_super, options);
   }
   
   function addEntity(nombre, weakEntity,action, idSelected, elementWithRelation, relationEntity){
-	  var id_node = getIdElement();
-	  var data_element = {widthConstraint:{minimum: 100, maximum: 200}, super_entity:false, label: nombre, isWeak: weakEntity, shape: 'box', scale:10, heightConstraint:25,physics:true};//cambiado
+
+	  console.log("[Entity] - idCount: " + idCount + ", label: " + nombre + ", idSuperEntityCount: " + idSuperEntityCount);
+	  var data_element = {id: idCount, widthConstraint:{minimum: 100, maximum: 200}, is_super_entity:false, super_entity:false, label: nombre, isWeak: weakEntity, shape: 'box', scale:10, heightConstraint:25,physics:true};//cambiado
 	  if(action == "edit"){
 		  data_element.id = parseInt(idSelected);
 		  nodes.update(data_element);
@@ -369,16 +391,20 @@ var network_super = new vis.Network(container_super, data_super, options);
 			  data_element.x = poscSelection.x;
 			  data_element.y = poscSelection.y;
 		  }
-		  data_element.id = id_node++;
+		  //console.log("add entity id: " + data_element.id);
 		  nodes.add(data_element);
 	  }
+      console.log("[Entity (x, y) - (w, h) ]: ( "+ data_element.x +", " +data_element.y + " ) - ( " + data_element.widthConstraint.minimum + ", " + data_element.heightConstraint + " )");
+
 	  
 	  if(weakEntity && elementWithRelation != null){
 		  idRelation = addRelation(relationEntity, "create", null, "back");
 		  addEntitytoRelation(data_element.id, "", "1to1", "", "1", "1", "create", idRelation, true, true);
 		  addEntitytoRelation(parseInt(elementWithRelation), "", "1toN", "", "1", "N", "create", idRelation, false);
 	  }
+	  idCount = idCount + 1;
 	  updateTableElements();
+	  //console.log("[Entity] - idCount: " + idCount + ", label: " + nombre + ", idSuperEntityCount: " + idSuperEntityCount);
   }
 
   function addConstrainst(values, idSelected, action){
@@ -399,20 +425,20 @@ var network_super = new vis.Network(container_super, data_super, options);
   }
   
   function addRelation(nombre, action, idSelected, origin = "front"){
-	  var id_node = getIdElement();
 	  var  tam = 30;
 	  if (nombre.length>5){
 		  tam = 30+(nombre.length-5);
 	  }
-	  var data_element = {size:tam,label: nombre, shape: 'diamond', is_super_entity:false, super_entity:false,
-		  color: {
+	  console.log("[Relation] - idCount: " + idCount + ", label: " + nombre + ", idSuperEntityCount: " + idSuperEntityCount);
+	  var data_element = {id: idCount, size:tam,label: nombre, shape: 'diamond', is_super_entity:false, super_entity:false,
+		  /*color: {
 				 border: '#FF3F20',
 				 background:'#FF3F20',
 				 highlight: {
 				        border: '#000000',
 				        background: '#C93821'
-				      }}
-		  , scale:20, physics:false};//D5FF04  cambiado(ff554b)
+				      }}*/
+		  color: '#FF3F20', scale:20, physics:false};//D5FF04  cambiado(ff554b)
 	  
 	  if(action == "edit"){
 		  data_element.id = parseInt(idSelected);
@@ -428,7 +454,9 @@ var network_super = new vis.Network(container_super, data_super, options);
 				  data_element.y = poscSelection.y;
 			  }
 		  }
-		  data_element.id = id_node++;
+		  idCount++;
+		  //console.log("[Relation] - idCount: " + idCount + ", label: " + nombre + ", idSuperEntityCount: " + idSuperEntityCount);
+		  console.log("[Relation (x, y) - (size) ]: ( "+ data_element.x +", " +data_element.y + " ) - ( " + data_element.size + " )");
 		  nodes.add(data_element);
 	  }
 	  if(origin != "front"){
@@ -437,8 +465,7 @@ var network_super = new vis.Network(container_super, data_super, options);
   }
   
   function addIsA(){
-	  var id_node = getIdElement();//FF952A   (ff554b) viejo cambiado
-	  var data_element = {id: id_node++, label: 'IsA', shape: 'triangleDown', is_super_entity:false, super_entity:false,
+	  var data_element = {id: idCount, label: 'IsA', shape: 'triangleDown', is_super_entity:false, super_entity:false,
           color: {
                  border: '#FF952A',
                  background:'#FF952A',
@@ -453,11 +480,11 @@ var network_super = new vis.Network(container_super, data_super, options);
 		  data_element.y = poscSelection.y;
 	  }
 	  nodes.add(data_element);
+	  idCount = idCount + 1;
 	  updateTableElements();
   }
   
   function addAttribute(name, action, idSelected, idEntity, pk, comp, notNll, uniq, multi, dom, sz){
-	  var id_node = getIdElement();
 	  var word_pk = name;
 	  if(pk){
 		  word_pk = name;
@@ -468,16 +495,17 @@ var network_super = new vis.Network(container_super, data_super, options);
 		  }
 	  }
 	  var valueEntityWeak = nodes.get(parseInt(idEntity)).isWeak;
-	  
-	  var data_element = {width: 3,widthConstraint:{ minimum: 50, maximum: 160},labelBackend:name, is_super_entity:false, super_entity:false, label: word_pk, dataAttribute:{entityWeak: valueEntityWeak, primaryKey: pk, composite: comp, notNull: notNll, unique: uniq, multivalued: multi, domain: dom, size: sz}, shape: 'ellipse',
-		  /*color :"#22bdb1"/*'#4de4fc' cambiado*/
-		  		  color: {
+	  console.log("[Attribute] - idCount: " + idCount + ", label: " + name + ", idSuperEntityCount: " + idSuperEntityCount);
+	  var data_element = {id: idCount, width: 3,widthConstraint:{ minimum: 50, maximum: 160},labelBackend:name, is_super_entity:false, super_entity:false, label: word_pk, dataAttribute:{entityWeak: valueEntityWeak, primaryKey: pk, composite: comp, notNull: notNll, unique: uniq, multivalued: multi, domain: dom, size: sz}, shape: 'ellipse',
+		  color :"#22bdb1",/*'#4de4fc' cambiado*/
+		  		  /*color: {
 					 border: '#078980',
 					 background:'#22bdb1',
 					 highlight: {
 					        border: '#000000',
 					        background: '#1A958A'
-					      }}, scale:20, heightConstraint:23,physics:false};
+					      }}, */
+					      scale:20, heightConstraint:23,physics:false};
 			 /*'#4de4fc' cambiado, scale:20, heightConstraint:23,physics:false};*/
 	  if(action == "edit"){
 		  data_element.id = parseInt(idSelected);
@@ -488,15 +516,19 @@ var network_super = new vis.Network(container_super, data_super, options);
 			  data_element.x = poscSelection.x-180;
 			  data_element.y = poscSelection.y+30;
 		  }
-		  data_element.id = id_node++;
 		  nodes.add(data_element);
-		  edges.add({from: parseInt(idEntity), to: parseInt(id_node)-1, color:{color:'#22bdb1'},width: 2});//cambiado
+		  edges.add({from: parseInt(idEntity), to: parseInt(idCount), color:{color:'#22bdb1'},width: 2});//cambiado
 	  }
+	  idCount++;
+	  //console.log("[Attribute] - idCount: " + idCount + ", label: " + name + ", idSuperEntityCount: " + idSuperEntityCount);
+      console.log("[Attribute (x, y) - (w, h) ]: ( "+ data_element.x +", " +data_element.y + " ) - ( " + data_element.widthConstraint.minimum + ", " + data_element.heightConstraint + " )");
+	  //console.log("[Attribute (x, y) - (w, h) ]: ( "+ data_element.x +", " +data_element.y + " ) - ( " + data_element.widthConstraint + ", " + data_element.heightConstraint + ", size: " + data_element.size" )");
 	  updateTableElements();
   }
   
   function addEntitytoRelation(idTo, element_role, cardinality, roleName, minCardinality, maxCardinality, action, idSelected, partActive){
 	 // console.log(idTo+" - "+element_role+" - "+cardinality+" - "+roleName+" - "+minCardinality+" - "+maxCardinality+" - "+action+" - "+idSelected+" - "+ partActive);
+	 console.log("< -- addEntitytoRelation -- >");
 	  var left;
 	  var center;
 	  var right;
@@ -571,6 +603,7 @@ var network_super = new vis.Network(container_super, data_super, options);
    * @returns
    */
   function addEntityParent(idTo, action, idSelected){
+    console.log("< -- addEntityParent -- >");
 	  var idParent = nodes.get(parseInt(idSelected)).parent;
 	  var data_element = {width: 3,from: parseInt(idSelected), to: parseInt(idTo),type:"parent", arrows: 
 	  						{from: { enabled: true }, middle: { enabled: false },to: { enabled: false }
@@ -845,7 +878,6 @@ var network_super = new vis.Network(container_super, data_super, options);
   }
   
   function addSubAttribute(name, action, idSelected, idAttribute = idEntity, comp, notNll, uniq, multi, dom, sz){
-  	  var id_node = getIdElement();
 	  var word_pk = name;
 	  var word_multi = 1;
 	  
@@ -856,7 +888,7 @@ var network_super = new vis.Network(container_super, data_super, options);
 		  word_multi = 3;
 	  } 
 	  
-	  var data_element = {labelBackend:name, type:"subAttribute", borderWidth:word_multi,label: word_pk, dataAttribute:{composite: comp, notNull: notNll, unique: uniq, multivalued: multi, domain: dom, size: sz}, shape: 'ellipse', color:'#4de4fc', scale:20, widthConstraint:80, heightConstraint:25,physics:false};
+	  var data_element = {id:idCount, labelBackend:name, type:"subAttribute", borderWidth:word_multi,label: word_pk, dataAttribute:{composite: comp, notNull: notNll, unique: uniq, multivalued: multi, domain: dom, size: sz}, shape: 'ellipse', color:'#4de4fc', scale:20, widthConstraint:80, heightConstraint:25,physics:false};
 	  if(action == "edit"){
 		  data_element.id = parseInt(idSelected);
 		  nodes.update(data_element);
@@ -865,9 +897,9 @@ var network_super = new vis.Network(container_super, data_super, options);
 			  data_element.x = poscSelection.x;
 			  data_element.y = poscSelection.y;
 		  }
-		  data_element.id = id_node++;
 		  nodes.add(data_element);
-		  edges.add({from: parseInt(idAttribute), to: parseInt(id_node)-1, color:{color:'blue'}});
+		  edges.add({from: parseInt(idAttribute), to: parseInt(idCount), color:{color:'blue'}});
+		  idCount++;
 	  }
 }
   
@@ -931,7 +963,7 @@ var network_super = new vis.Network(container_super, data_super, options);
 
 	    var allNodes = nodes.get();
 	    for (var i = 0; i < allNodes.length; i++) {
-	    console.log("movemos");
+
 	        var curNode = allNodes[i];
 	        var nodePosition = network.getPositions([curNode.id]);
 	        var nodeXY = network.canvasToDOM({x: nodePosition[curNode.id].x, y: nodePosition[curNode.id].y});
@@ -1242,9 +1274,17 @@ var network_super = new vis.Network(container_super, data_super, options);
 	dat.forEach(function(id) {
 		var attr = allAttributeOfEntity(id);
 		attr.forEach(function(elem) {
+            console.log("Eliminamos id: " + elem.id);
+		    if(elem.is_super_entity) idSuperEntityCount--;
+		    //else idCount--;
 			attrsId.push(elem.id);
 		});
-		attrsId.push(id);
+
+		console.log("Eliminamos id: " + id.id);
+		if(id.is_super_entity) idSuperEntityCount--;
+        //else idCount--;
+        attrsId.push(id);
+
 	});
 	
 	network.selectNodes(attrsId);
@@ -1255,4 +1295,56 @@ var network_super = new vis.Network(container_super, data_super, options);
   function printDomains(){
 	  typeDomain.print("#itemsDomains");
   }
-  
+
+  function getSuperEntityNode() {
+    var allNodes = nodes.get();
+
+    allNodes.forEach(function(nodeId){
+
+    var nod = nodes.get(nodeId);
+        if(nod.is_super_entity) return nod;
+    });
+
+    return null;
+  }
+
+
+  network.on('selectNode', function(event) {
+
+    var selectedNodes = network.getSelectedNodes();
+    var nodesToSelect= selectedNodes;
+    var superEntitySelected = false;
+
+    selectedNodes.forEach(function(nodeId) {
+        var nod = nodes.get(nodeId);
+        if(nod.is_super_entity) superEntitySelected = true;
+
+    });
+
+    if(superEntitySelected){
+        nodes.forEach(function(node) {
+          if (node.super_entity === true && !selectedNodes.includes(node.id))
+            nodesToSelect.push(node.id);
+        });
+    }
+
+    network.selectNodes(nodesToSelect);
+    console.log('Selected nodes:', network.getSelectedNodes());
+
+  });
+
+  network.on('dragEnd', function (nodeId) {
+
+        var movedNode = nodes.get(nodeId);
+        var selectedNodes = network.getSelectedNodes();
+        var superEntityNode = getSuperEntityNode();
+        // Comprobamos que el nodo en movimiento es una agregación y marcamos como seleccionamos los per
+        if (!movedNode.is_super_entity && movedNode.super_entity && (!selectedNodes.includes(superEntityNode.id))) {
+          // Obtenemos la posición de l nodo que se ha movido
+          var movedNodePos = network.getPosition(nodeId);
+          console.log("movedNode: " + movedNode.label);
+
+        }
+          // TODO: resize funct used here and upon super entity creation
+
+    });
