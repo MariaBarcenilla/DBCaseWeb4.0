@@ -9,7 +9,7 @@ var edges_super = new vis.DataSet([]);
 var changeDrawView = true;
 var nodes_selected_event = false;
 
-var idCount =0;
+var idCount =1000;
 var idSuperEntityCount =0;
  
   // create a network
@@ -306,10 +306,10 @@ var network_super = new vis.Network(container_super, data_super, options);
                   nodes_super.add(nod);
               }
             // Actualizamos el id y la lista de nodos
-             nodes.remove(nod.id);
+             /*nodes.remove(nod.id);
              nod.id++;
              //nod.super_entity = true;
-             nodes.add(nod);
+             nodes.add(nod);*/
          });
             /*
               console.log("[LEFT] - label: " + nod.label + ", min X: " + left);
@@ -318,7 +318,7 @@ var network_super = new vis.Network(container_super, data_super, options);
               console.log("[BOTTOM] - label: " + nod.label + ", max Y: " + bottom);*/
 
         // Modificamos el id de los edges que conectan con algunos de los nodos de la agregación
-        var allEdges = edges.get();
+       /* var allEdges = edges.get();
         allEdges.forEach(function(edg){
             //console.log("[EDGES] - From: " + edg.from + ", To: " + edg.to);
             edg.from +=1;
@@ -326,7 +326,7 @@ var network_super = new vis.Network(container_super, data_super, options);
             edges.update(edg);
             //console.log("[EDGES] - From: " + aux.from + ", To: " + aux.to);
 
-        });
+        });*/
 
 
         //console.log("[Reorder Elements] - idCount: " + idCount + ", label: " + labelName + ", idSuperEntityCount: " + idSuperEntityCount);
@@ -1318,12 +1318,12 @@ var network_super = new vis.Network(container_super, data_super, options);
 		console.log("delete node selected id: " + id);
 		attr.forEach(function(elem) {
             console.log("Eliminamos id: " + elem);
-		    if(elem.is_super_entity) idSuperEntityCount--;
+//		    if(elem.is_super_entity) idSuperEntityCount--;
 			attrsId.push(elem.id);
 		});
 
 		console.log("Eliminamos id: " + id.id);
-		if(id.is_super_entity) idSuperEntityCount--;
+		//if(id.is_super_entity) idSuperEntityCount--;
         //else idCount--;
         attrsId.push(id);
 
