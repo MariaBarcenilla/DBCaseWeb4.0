@@ -101,10 +101,12 @@ var network_super = new vis.Network(container_super, data_super, options);
   }
   
   function deleteSuperEntity(idNodo){
+    console.log("deleting superEntity");
 	  var idNode = parseInt(idNodo);
 	  nodes_super.forEach(function(nod) {
-		  nod.super_entity = false;
-		  nodes.add(nod);
+		  //nod.super_entity = false;
+		  console.log("nodes_super id: " + nod.id);
+		  nodes.update({id:nod.id, super_entity:false});
 	  });
 	  deleteSuperEntityAndEelements(idNodo);
 	  updateTableElements();
@@ -112,7 +114,9 @@ var network_super = new vis.Network(container_super, data_super, options);
   
   function deleteSuperEntityAndEelements(idNodo){
 	  var idNode = parseInt(idNodo);
+	  console.log("deleteSuperEntityAndEelements: "+ idNode);
 	  nodes.remove(idNode);
+	  nodes_super.remove(idNode);
 	  nodes_super.clear();
 	  edges_super.clear();
   }
@@ -276,8 +280,10 @@ var network_super = new vis.Network(container_super, data_super, options);
         var width_super = 0;
         var height_super = 0;
 
-        getNodesElementsWithSuperEntity(network.getConnectedNodes(idElement));    //get nodes connected to super entity
+        var num_elements_super_entity = 0;
 
+        getNodesElementsWithSuperEntity(network.getSelectedNodes());    //get nodes connected to super entity
+        console.log("super_node size:"+ nodes_super.length);
       console.log("[Super Entity] - idCount: " + idCount + ", label: " + labelName + ", idSuperEntityCount: " + idSuperEntityCount);
 
       // Aumentamos el valor de los ids de los nodos de la red
@@ -296,11 +302,13 @@ var network_super = new vis.Network(container_super, data_super, options);
                   if(top == null || top > nod.x) top = nod.y;
 
                   if(bottom ===null || bottom > nod.x) bottom = nod.y;
+
+                  nodes_super.add(nod);
               }
             // Actualizamos el id y la lista de nodos
              nodes.remove(nod.id);
              nod.id++;
-             nod.super_entity = true;
+             //nod.super_entity = true;
              nodes.add(nod);
          });
             /*
@@ -321,12 +329,12 @@ var network_super = new vis.Network(container_super, data_super, options);
         });
 
 
-        console.log("[Reorder Elements] - idCount: " + idCount + ", label: " + labelName + ", idSuperEntityCount: " + idSuperEntityCount);
+        //console.log("[Reorder Elements] - idCount: " + idCount + ", label: " + labelName + ", idSuperEntityCount: " + idSuperEntityCount);
 
       // Calculamos el tamaño y posición de la agregación en base al numero de elementos que la componen
 
-      width_super = (125*nodes.length) + 50;
-      height_super = (75*nodes.length) + 25;
+      width_super = (100*nodes_super.length) + 50;
+      height_super = (50*nodes_super.length) + 25;
 
       x_super = (left + right)/2;
       y_super = (top + bottom)/2;
@@ -361,19 +369,40 @@ var network_super = new vis.Network(container_super, data_super, options);
       idCount++;
 
       updateTableElementsSuperEntity();
-        console.log("[Super Entity] - idCount: " + idCount + ", label: " + labelName + ", idSuperEntityCount: " + idSuperEntityCount);
+        //console.log("[Super Entity] - idCount: " + idCount + ", label: " + labelName + ", idSuperEntityCount: " + idSuperEntityCount);
     }
 
 
 
   // Marcamos los nodos que pertenecen a la agregación
-  function getNodesElementsWithSuperEntity(nodesIds){            // TODO: Introducir criterio para actualizar nodos agregaciones
+  function getNodesElementsWithSuperEntity(nodesIds){
 	  nodesIds.forEach(function(nod) {
-		  if(!nodes.get(nod).super_entity){
-
+	  //Actualizamos el campo si el nodo no es la agregación
+		  if(!nod.is_super_entity){
+              var node = nodes.get(nod);
 			  nodes.update({id: nod, super_entity: true});
-			  if(network.getConnectedNodes(nod).length!=0){
-				  getNodesElementsWithSuperEntity(network.getConnectedNodes(nod));
+			  // Buscamos los atributos de las entidades y relaciones que forman parte de la agregación
+			  switch(node.shape){
+			  case 'box':
+                  var entityAttr = allAttributeOfEntity(node.id);
+                  entityAttr.forEach(function(attr){
+                    //Actualizamos el campo si el nodo no está seleccionado
+                    if(!nodesIds.includes(attr.id)){
+                        nodes.update({id: attr.id, super_entity: true});
+                    }
+                  });
+			  break;
+			  case 'diamond':
+                  var relationAttr = allAttributeOfEntity(node.id);
+                  relationAttr.forEach(function(attr){
+                    //Actualizamos el campo si el nodo no está seleccionado
+                    if(!nodesIds.includes(attr.id)){
+                        nodes.update({id: attr.id, super_entity: true});
+                    }
+                  });
+              break;
+              default:
+              break;
 			  }
 		  }
 	  });
@@ -394,7 +423,7 @@ var network_super = new vis.Network(container_super, data_super, options);
 		  //console.log("add entity id: " + data_element.id);
 		  nodes.add(data_element);
 	  }
-      console.log("[Entity (x, y) - (w, h) ]: ( "+ data_element.x +", " +data_element.y + " ) - ( " + data_element.widthConstraint.minimum + ", " + data_element.heightConstraint + " )");
+     // console.log("[Entity (x, y) - (w, h) ]: ( "+ data_element.x +", " +data_element.y + " ) - ( " + data_element.widthConstraint.minimum + ", " + data_element.heightConstraint + " )");
 
 	  
 	  if(weakEntity && elementWithRelation != null){
@@ -456,7 +485,7 @@ var network_super = new vis.Network(container_super, data_super, options);
 		  }
 		  idCount++;
 		  //console.log("[Relation] - idCount: " + idCount + ", label: " + nombre + ", idSuperEntityCount: " + idSuperEntityCount);
-		  console.log("[Relation (x, y) - (size) ]: ( "+ data_element.x +", " +data_element.y + " ) - ( " + data_element.size + " )");
+		  //console.log("[Relation (x, y) - (size) ]: ( "+ data_element.x +", " +data_element.y + " ) - ( " + data_element.size + " )");
 		  nodes.add(data_element);
 	  }
 	  if(origin != "front"){
@@ -504,7 +533,7 @@ var network_super = new vis.Network(container_super, data_super, options);
 					 highlight: {
 					        border: '#000000',
 					        background: '#1A958A'
-					      }}, */
+					      }},*/
 					      scale:20, heightConstraint:23,physics:false};
 			 /*'#4de4fc' cambiado, scale:20, heightConstraint:23,physics:false};*/
 	  if(action == "edit"){
@@ -521,7 +550,7 @@ var network_super = new vis.Network(container_super, data_super, options);
 	  }
 	  idCount++;
 	  //console.log("[Attribute] - idCount: " + idCount + ", label: " + name + ", idSuperEntityCount: " + idSuperEntityCount);
-      console.log("[Attribute (x, y) - (w, h) ]: ( "+ data_element.x +", " +data_element.y + " ) - ( " + data_element.widthConstraint.minimum + ", " + data_element.heightConstraint + " )");
+      //console.log("[Attribute (x, y) - (w, h) ]: ( "+ data_element.x +", " +data_element.y + " ) - ( " + data_element.widthConstraint.minimum + ", " + data_element.heightConstraint + " )");
 	  //console.log("[Attribute (x, y) - (w, h) ]: ( "+ data_element.x +", " +data_element.y + " ) - ( " + data_element.widthConstraint + ", " + data_element.heightConstraint + ", size: " + data_element.size" )");
 	  updateTableElements();
   }
@@ -682,7 +711,7 @@ var network_super = new vis.Network(container_super, data_super, options);
   function getAllNodesSuper(filter = null){
 	  var data = [];
 	  if(filter != null){
-		  nodes_super.forEach(function(nod) {
+		  nodes.forEach(function(nod) {
 			  if(filter.indexOf(nod.shape) != -1)
 				  data.push(nod);				  
 		  });
@@ -1209,13 +1238,19 @@ var network_super = new vis.Network(container_super, data_super, options);
 
   function allAttributeOfEntity(nodo_select){
 	  var data = [];
-	  nodos = network.getConnectedEdges(parseInt(nodo_select));
+	  var nodos = network.getConnectedEdges(parseInt(nodo_select));
 	  nodos.forEach(function(edg) {
+          var aux = nodes.get(nodo_select);
+          console.log("nodo_Select: "+nodo_select+" aux: "+ aux.label);
+
 		  	idNodo = edges.get(edg).to;
 		  	roleName = edges.get(edg).label;
-		  	if(nodes.get(idNodo).shape == "ellipse")
-		  		data.push({id:idNodo, label:nodes.get(idNodo).labelBackend, type:nodes.get(idNodo).dataAttribute.domain, size:nodes.get(idNodo).dataAttribute.size});				  
-	  });
+		  	if(nodes.get(idNodo).shape == "ellipse"){
+		  		console.log("entra en if");
+		  		data.push({id:idNodo, label:nodes.get(idNodo).labelBackend, type:nodes.get(idNodo).dataAttribute.domain, size:nodes.get(idNodo).dataAttribute.size});
+		  		console.log("idNodo: "+data[0].label);
+		  		console.log("data: "+data);
+	  }});
 	  return data;
   }
   
@@ -1263,6 +1298,7 @@ var network_super = new vis.Network(container_super, data_super, options);
   }
   
   function deleteNodeSelected(id = null){
+
 	if(id==null){
 		var dat = network.getSelectedNodes();
 	}else{
@@ -1271,12 +1307,18 @@ var network_super = new vis.Network(container_super, data_super, options);
 	
 	var attr = allAttributeOfEntity(getNodeSelected());
 	var attrsId = [];
+
+	if(nodes.get(id).is_super_entity){
+	    console.log("deleting super entity");
+	    deleteSuperEntity(id);
+	}
+	else{
 	dat.forEach(function(id) {
 		var attr = allAttributeOfEntity(id);
+		console.log("delete node selected id: " + id);
 		attr.forEach(function(elem) {
-            console.log("Eliminamos id: " + elem.id);
+            console.log("Eliminamos id: " + elem);
 		    if(elem.is_super_entity) idSuperEntityCount--;
-		    //else idCount--;
 			attrsId.push(elem.id);
 		});
 
@@ -1286,6 +1328,7 @@ var network_super = new vis.Network(container_super, data_super, options);
         attrsId.push(id);
 
 	});
+	}
 	
 	network.selectNodes(attrsId);
 	network.deleteSelected();
@@ -1308,9 +1351,21 @@ var network_super = new vis.Network(container_super, data_super, options);
     return null;
   }
 
+  function getAllSuperEntityNodes(){
+    var allNodes = nodes.get();
+    var super_entity_nodes
+        allNodes.forEach(function(nodeId){
 
-  network.on('selectNode', function(event) {
+        var nod = nodes.get(nodeId);
+            if(nod.super_entity) return nod;
+        });
 
+        return null;
+  }
+
+
+  network.on('selectNode', function(event, nodeId) {
+    //console.log(event + ", "+ nodeId);
     var selectedNodes = network.getSelectedNodes();
     var nodesToSelect= selectedNodes;
     var superEntitySelected = false;
@@ -1323,13 +1378,15 @@ var network_super = new vis.Network(container_super, data_super, options);
 
     if(superEntitySelected){
         nodes.forEach(function(node) {
-          if (node.super_entity === true && !selectedNodes.includes(node.id))
-            nodesToSelect.push(node.id);
+          if (node.super_entity === true && !selectedNodes.includes(node.id)){
+              nodesToSelect.push(node.id);
+              //console.log("nodes to select: " + node.label);
+          }
         });
     }
 
     network.selectNodes(nodesToSelect);
-    console.log('Selected nodes:', network.getSelectedNodes());
+    //console.log('Selected nodes:', network.getSelectedNodes());
 
   });
 
