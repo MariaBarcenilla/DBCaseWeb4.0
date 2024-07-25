@@ -106,27 +106,55 @@ var context = context || (function () {
 				typeNodoSelected = nodes.get(nodo_select);
 				switch(typeNodoSelected.shape){
 					case "box":
-						$( ".dropdown-context li:nth-child(5)" ).show();
-						$( ".dropdown-context li:nth-child(6)" ).show();
-						$( ".dropdown-context li:nth-child(7)" ).show();
-						$( ".dropdown-context li:nth-child(8)" ).show();
-						$( ".dropdown-context li:nth-child(9)" ).show();
-						$( ".dropdown-context li:nth-child(10)" ).hide();
-						$( ".dropdown-context li:nth-child(11)" ).hide();
-						$( ".dropdown-context li:nth-child(12)" ).hide();
-						$( ".dropdown-context li:nth-child(13)" ).hide();
-						$( ".dropdown-context li:nth-child(14)" ).hide();
-						$( ".dropdown-context li:nth-child(15)" ).hide();
-						$( ".dropdown-context li:nth-child(16)" ).hide();
-						$( ".dropdown-context li:nth-child(17)" ).hide();
-						$( ".dropdown-context li:nth-child(18)" ).hide();
-						$( ".dropdown-context li:nth-child(19)" ).hide();
-						$( ".dropdown-context li:nth-child(20)" ).hide();
-						$( ".dropdown-context li:nth-child(21)" ).hide();
-						$( ".dropdown-context li:nth-child(22)" ).hide();
-						$( ".dropdown-context li:nth-child(23)" ).hide();
-						$( ".dropdown-context li:nth-child(24)" ).show();
-						$( ".dropdown-context li:nth-child(25)" ).hide();
+					    if(!typeNodoSelected.is_super_entity){          //ENTITY
+						    $( ".dropdown-context li:nth-child(5)" ).show();
+                            $( ".dropdown-context li:nth-child(6)" ).show();
+                            $( ".dropdown-context li:nth-child(7)" ).show();
+                            $( ".dropdown-context li:nth-child(8)" ).show();
+                            $( ".dropdown-context li:nth-child(9)" ).show();
+                            $( ".dropdown-context li:nth-child(10)" ).hide();
+                            $( ".dropdown-context li:nth-child(11)" ).hide();
+                            $( ".dropdown-context li:nth-child(12)" ).hide();
+                            $( ".dropdown-context li:nth-child(13)" ).hide();
+                            $( ".dropdown-context li:nth-child(14)" ).hide();
+                            $( ".dropdown-context li:nth-child(15)" ).hide();
+                            $( ".dropdown-context li:nth-child(16)" ).hide();
+                            $( ".dropdown-context li:nth-child(17)" ).hide();
+                            $( ".dropdown-context li:nth-child(18)" ).hide();
+                            $( ".dropdown-context li:nth-child(19)" ).hide();
+                            $( ".dropdown-context li:nth-child(20)" ).hide();
+                            $( ".dropdown-context li:nth-child(21)" ).hide();
+                            $( ".dropdown-context li:nth-child(22)" ).hide();
+                            $( ".dropdown-context li:nth-child(23)" ).hide();
+                            $( ".dropdown-context li:nth-child(24)" ).show();
+                            $( ".dropdown-context li:nth-child(25)" ).hide();
+                            $( ".dropdown-context li:nth-child(26)" ).hide();
+                        }
+						else if(typeNodoSelected.is_super_entity){
+						    $( ".dropdown-context li:nth-child(5)" ).show();
+                            $( ".dropdown-context li:nth-child(6)" ).hide();
+                            $( ".dropdown-context li:nth-child(7)" ).hide();
+                            $( ".dropdown-context li:nth-child(8)" ).show();
+                            $( ".dropdown-context li:nth-child(9)" ).hide();
+                            $( ".dropdown-context li:nth-child(10)" ).hide();
+                            $( ".dropdown-context li:nth-child(11)" ).hide();
+                            $( ".dropdown-context li:nth-child(12)" ).hide();
+                            $( ".dropdown-context li:nth-child(13)" ).hide();
+                            $( ".dropdown-context li:nth-child(14)" ).hide();
+                            $( ".dropdown-context li:nth-child(15)" ).hide();
+                            $( ".dropdown-context li:nth-child(16)" ).hide();
+                            $( ".dropdown-context li:nth-child(17)" ).hide();
+                            $( ".dropdown-context li:nth-child(18)" ).hide();
+                            $( ".dropdown-context li:nth-child(19)" ).hide();
+                            $( ".dropdown-context li:nth-child(20)" ).hide();
+                            $( ".dropdown-context li:nth-child(21)" ).hide();
+                            $( ".dropdown-context li:nth-child(22)" ).hide();
+                            $( ".dropdown-context li:nth-child(23)" ).hide();
+						    $( ".dropdown-context li:nth-child(24)" ).hide();
+						    $( ".dropdown-context li:nth-child(25)" ).show();
+						    $( ".dropdown-context li:nth-child(26)" ).show();
+						}
+
 						break;
 					case "diamond":
 						$( ".dropdown-context li:nth-child(5)" ).hide();
@@ -150,6 +178,7 @@ var context = context || (function () {
 						$( ".dropdown-context li:nth-child(23)" ).hide();
 						$( ".dropdown-context li:nth-child(24)" ).show();
 						$( ".dropdown-context li:nth-child(25)" ).hide();
+						$( ".dropdown-context li:nth-child(26)" ).hide();
 						break;
 					case "ellipse":
 						var isComposed = getComposedEllipse(nodo_select);
@@ -201,29 +230,7 @@ var context = context || (function () {
 						$( ".dropdown-context li:nth-child(23)" ).show();
 						$( ".dropdown-context li:nth-child(24)" ).show();
 						$( ".dropdown-context li:nth-child(25)" ).hide();
-						break;
-					case "image":
-						$( ".dropdown-context li:nth-child(5)" ).hide();
-						$( ".dropdown-context li:nth-child(6)" ).hide();
-						$( ".dropdown-context li:nth-child(7)" ).hide();
-						$( ".dropdown-context li:nth-child(8)" ).hide();
-						$( ".dropdown-context li:nth-child(9)" ).hide();
-						$( ".dropdown-context li:nth-child(10)" ).hide();
-						$( ".dropdown-context li:nth-child(11)" ).hide();
-						$( ".dropdown-context li:nth-child(12)" ).hide();
-						$( ".dropdown-context li:nth-child(13)" ).hide();
-						$( ".dropdown-context li:nth-child(14)" ).hide();
-						$( ".dropdown-context li:nth-child(15)" ).hide();
-						$( ".dropdown-context li:nth-child(16)" ).hide();
-						$( ".dropdown-context li:nth-child(17)" ).hide();
-						$( ".dropdown-context li:nth-child(18)" ).hide();
-						$( ".dropdown-context li:nth-child(19)" ).hide();
-						$( ".dropdown-context li:nth-child(20)" ).hide();
-						$( ".dropdown-context li:nth-child(21)" ).hide();
-						$( ".dropdown-context li:nth-child(22)" ).hide();
-						$( ".dropdown-context li:nth-child(23)" ).hide();
-						$( ".dropdown-context li:nth-child(24)" ).hide();
-						$( ".dropdown-context li:nth-child(25)" ).show();
+						$( ".dropdown-context li:nth-child(26)" ).hide();
 						break;
 				}
 			}else{
@@ -253,6 +260,7 @@ var context = context || (function () {
 				$( ".dropdown-context li:nth-child(23)" ).hide();
 				$( ".dropdown-context li:nth-child(24)" ).hide();
 				$( ".dropdown-context li:nth-child(25)" ).hide();
+				$( ".dropdown-context li:nth-child(26)" ).hide();
 			}
 				$('.dropdown-context:not(.dropdown-context-sub)').hide();
 				

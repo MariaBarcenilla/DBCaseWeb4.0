@@ -378,7 +378,6 @@ public class GoogleserviceApplication {
 		}
 		else{
 			System.out.println(r.getData1().toString());
-			System.out.println("END ELSE");
 			nodes = gson.fromJson(r.getData1().toString(), tipoNode);
 			edges = gson.fromJson(r.getData2().toString(), tipoEdge);
 
@@ -388,8 +387,10 @@ public class GoogleserviceApplication {
 		//EXTERNOS A ESTA AGREGACION, RECORDAR QUE SE MANEJA EL MISMO CONTROLADOR
 		//POR TANTO LOS OBJETOS QUE SE CREAN EN AMBAS LLAMAS SE MANTIENEN PERSISTENTES EN 
 		//LA EJECUCIÓN.
-		generateEsquema(nodes,edges,c,false,mapaAgregacion_nodosNombres);
-		return generateEsquema(nodesAltoNivel,edgesAltoNivel,c,true,mapaAgregacion_nodosNombres) ; 
+
+		// TODO: Modificar generación esquemas con y sin agregación
+		//return generateEsquema(nodes,edges,c,false,mapaAgregacion_nodosNombres);	// Genera esquema sin agregación
+		return generateEsquema(nodesAltoNivel,edgesAltoNivel,c,true,mapaAgregacion_nodosNombres);	// Genera esq agregación
 	}
 
 	public String generateEsquema(List<Node>  nodes,List<Edge>  edges,Controlador c, Boolean execute,HashMap<Integer,DataAtributoEntidadOrigen> mapaEntidadesAgreagacionNombres){
@@ -505,6 +506,7 @@ public class GoogleserviceApplication {
 			edges.get(j).updateLabelFromName();
 			//RELACION ENTRE ENTIDAD Y ATRIBUTO
 			if((dataParseada.get(edges.get(j).getFrom()) instanceof TransferEntidad) && (dataParseada.get(edges.get(j).getTo()) instanceof TransferAtributo)) {
+
 				// Mandamos la entidad, el nuevo atributo y si hay tamano tambien
 				Vector<Object> v = new Vector<Object>();
 				String tamano = "";
@@ -569,7 +571,7 @@ public class GoogleserviceApplication {
 		String respuesta ="";
 		// ASIGNAR A ENTIDAD UNA RELACION ==//
 		if(execute){
-			//CUANDO TENEMOS LAS ENTIDAD CREADAS Y ENLAZADAS PROCEDEMOS A LLAMAR AL METODO GENERAMODELORELACIONAL, QUE PROCEDERÁ A EJECUTAR LA LOGICA 
+			//CUANDO TENEMOS LAS ENTIDAD CREADAS Y ENLAZADAS PROCEDEMOS A LLAMAR AL METODO GENERAMODELORELACIONAL, QUE PROCEDERÁ A EJECUTAR LA LOGICA
 			GeneradorEsquema testGen = new GeneradorEsquema(messageSource);
 			testGen.setControlador(c);
 			respuesta = testGen.generaModeloRelacional_v3("default",false);

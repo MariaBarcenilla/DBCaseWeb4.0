@@ -144,6 +144,14 @@ $(document).ready(function(){
 			deleteNodeSelected(getNodeSelected());
 		}},
 		//superEntity
+		// TODO: Añadir opciones
+		{text: $("#textEditSuperEntity").text(), href: '#', action: function(e){
+			$( "[functioninsert='addTextAgregation']").click();
+			$( "#typeAction").val("edit");
+			$("#insertModal").text($("#textAccept").text());
+			idSele = $("#idSelected").val();
+			fillEditSuperEntity(idSele);
+		}},
 		{text: $("#deleteSuperEntity").text(), href: '#', action: function(e){
 			$( "[functioninsert='deleteSuperEntity']").click();
 			$('#insertModal').hide();

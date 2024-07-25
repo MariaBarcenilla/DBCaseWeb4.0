@@ -268,7 +268,7 @@ var network_super = new vis.Network(container_super, data_super, options);
 	  await updateTableElements();
 	}
   
-    function addSuperEntity(idElement, labelName){   //TODO: Mejorar implementacion + añadir comments
+    function addSuperEntity(idElement, labelName, action){   //TODO: Mejorar implementacion + añadir comments
 
         var left = null;
         var right = null;
@@ -282,16 +282,23 @@ var network_super = new vis.Network(container_super, data_super, options);
 
         var num_elements_super_entity = 0;
 
-        getNodesElementsWithSuperEntity(network.getSelectedNodes());    //get nodes connected to super entity
-        console.log("super_node size:"+ nodes_super.length);
-      console.log("[Super Entity] - idCount: " + idCount + ", label: " + labelName + ", idSuperEntityCount: " + idSuperEntityCount);
+        console.log("[Super Entity] - idCount: " + idCount + ", label: " + labelName + ", idSuperEntityCount: " + idSuperEntityCount);
 
-      // Aumentamos el valor de los ids de los nodos de la red
+        if(action == "edit"){
+        console.log("idElement: "+idElement);
+            nodes.update({id:idElement, label:labelName});
+        }
+        else{
 
-      var allNodes = nodes.get();
-      // Ordenamos los nodos de mayor a menor id
-      allNodes.sort((a, b) => b.id - a.id);
-      allNodes.forEach(function(nod){
+            getNodesElementsWithSuperEntity(network.getSelectedNodes());    //get nodes connected to super entity
+            console.log("super_node size:"+ nodes_super.length);
+
+                  // Aumentamos el valor de los ids de los nodos de la red
+
+            var allNodes = nodes.get();
+            // Ordenamos los nodos de mayor a menor id
+            allNodes.sort((a, b) => b.id - a.id);
+            allNodes.forEach(function(nod){
 
               // Guardamos las coordenadas que forman los extremos de los nodos de la agregación
               if(nod.super_entity){
@@ -310,63 +317,65 @@ var network_super = new vis.Network(container_super, data_super, options);
              nod.id++;
              //nod.super_entity = true;
              nodes.add(nod);*/
-         });
-            /*
-              console.log("[LEFT] - label: " + nod.label + ", min X: " + left);
-              console.log("[RIGHT] - label: " + nod.label + ", max X: " + right);
-              console.log("[TOP] - label: " + nod.label + ", min Y: " + top);
-              console.log("[BOTTOM] - label: " + nod.label + ", max Y: " + bottom);*/
+             });
+                /*
+                  console.log("[LEFT] - label: " + nod.label + ", min X: " + left);
+                  console.log("[RIGHT] - label: " + nod.label + ", max X: " + right);
+                  console.log("[TOP] - label: " + nod.label + ", min Y: " + top);
+                  console.log("[BOTTOM] - label: " + nod.label + ", max Y: " + bottom);*/
 
-        // Modificamos el id de los edges que conectan con algunos de los nodos de la agregación
-       /* var allEdges = edges.get();
-        allEdges.forEach(function(edg){
-            //console.log("[EDGES] - From: " + edg.from + ", To: " + edg.to);
-            edg.from +=1;
-            edg.to +=1;
-            edges.update(edg);
-            //console.log("[EDGES] - From: " + aux.from + ", To: " + aux.to);
+            // Modificamos el id de los edges que conectan con algunos de los nodos de la agregación
+            /* var allEdges = edges.get();
+            allEdges.forEach(function(edg){
+                //console.log("[EDGES] - From: " + edg.from + ", To: " + edg.to);
+                edg.from +=1;
+                edg.to +=1;
+                edges.update(edg);
+                //console.log("[EDGES] - From: " + aux.from + ", To: " + aux.to);
 
-        });*/
-
-
-        //console.log("[Reorder Elements] - idCount: " + idCount + ", label: " + labelName + ", idSuperEntityCount: " + idSuperEntityCount);
-
-      // Calculamos el tamaño y posición de la agregación en base al numero de elementos que la componen
-
-      width_super = (100*nodes_super.length) + 50;
-      height_super = (50*nodes_super.length) + 25;
-
-      x_super = (left + right)/2;
-      y_super = (top + bottom)/2;
+            });*/
 
 
-      var textTheme = $("#textTheme").text();
-      var isDarkTheme = (textTheme === 'dark');
-      var data_element = {id: idSuperEntityCount, widthConstraint: { minimum: width_super}, heightConstraint: { minimum: height_super },is_super_entity:true, super_entity:false, label: labelName, shape: 'box',physics:false,
-          color:{
-              //background: isDarkTheme ? '#F8F9FA' : '#343A40',
-              background: 'transparent',
-              highlight: {
-                  border: '#000000',
-                  background: 'transparent',
+            //console.log("[Reorder Elements] - idCount: " + idCount + ", label: " + labelName + ", idSuperEntityCount: " + idSuperEntityCount);
+
+            // Calculamos el tamaño y posición de la agregación en base al numero de elementos que la componen
+
+            width_super = (100*nodes_super.length) + 50;
+            height_super = (50*nodes_super.length) + 25;
+
+            x_super = (left + right)/2;
+            y_super = (top + bottom)/2;
+
+
+            var textTheme = $("#textTheme").text();
+            var isDarkTheme = (textTheme === 'dark');
+            var data_element = {id: idSuperEntityCount, widthConstraint: { minimum: width_super}, heightConstraint: { minimum: height_super },is_super_entity:true, super_entity:false, label: labelName, shape: 'box',physics:false,
+              color:{
                   //background: isDarkTheme ? '#F8F9FA' : '#343A40',
-                  borderWidth: 4
-              },
-          }, borderWidth: 2, font: {
-               color: isDarkTheme ? '#000000' : '#ffffff',
-               vadjust: (height_super/2) + 15  // Ajustar la posición vertical de la etiqueta
-          }
-      };
+                  background: 'transparent',
+                  highlight: {
+                      border: '#000000',
+                      background: 'transparent',
+                      //background: isDarkTheme ? '#F8F9FA' : '#343A40',
+                      borderWidth: 4
+                  },
+              }, borderWidth: 2, font: {
+                   color: isDarkTheme ? '#000000' : '#ffffff',
+                   vadjust: (height_super/2) + 15  // Ajustar la posición vertical de la etiqueta
+              }
+            };
 
-      data_element.x = x_super;
-      data_element.y = y_super;
-      data_element.width = width_super;
-      data_element.height = height_super;
-      //console.log("AGR:  x --> "+ data_element.x +" y --> " +data_element.y + " width --> " + width_super + " height --> " + height_super);
+            data_element.x = x_super;
+            data_element.y = y_super;
+            data_element.width = width_super;
+            data_element.height = height_super;
+            //console.log("AGR:  x --> "+ data_element.x +" y --> " +data_element.y + " width --> " + width_super + " height --> " + height_super);
 
-      nodes.add(data_element);
-      idSuperEntityCount++;
-      idCount++;
+            nodes.add(data_element);
+            idSuperEntityCount++;
+            idCount++;
+
+        }
 
       updateTableElementsSuperEntity();
         //console.log("[Super Entity] - idCount: " + idCount + ", label: " + labelName + ", idSuperEntityCount: " + idSuperEntityCount);
@@ -415,6 +424,10 @@ var network_super = new vis.Network(container_super, data_super, options);
 	  if(action == "edit"){
 		  data_element.id = parseInt(idSelected);
 		  nodes.update(data_element);
+		  //console.log("parseamos id: "+idSelected + " data_element.id: "+data_element.id);
+		  //console.log("nombre de la entidad: "+nombre);
+		  //var data_element = {id: idCount, widthConstraint:{minimum: 100, maximum: 200}, is_super_entity:false, super_entity:false, label: nombre, isWeak: weakEntity, shape: 'box', scale:10, heightConstraint:25,physics:true};//cambiado
+		  //nodes.update({id:data_element.id, label:nombre});
 	  }else{
 		  if(poscSelection != null){
 			  data_element.x = poscSelection.x;
@@ -422,8 +435,9 @@ var network_super = new vis.Network(container_super, data_super, options);
 		  }
 		  //console.log("add entity id: " + data_element.id);
 		  nodes.add(data_element);
+		  idCount = idCount + 1;
 	  }
-     // console.log("[Entity (x, y) - (w, h) ]: ( "+ data_element.x +", " +data_element.y + " ) - ( " + data_element.widthConstraint.minimum + ", " + data_element.heightConstraint + " )");
+      console.log("[Entity (x, y) - (w, h) ]: ( "+ data_element.x +", " +data_element.y + " ) - ( " + data_element.widthConstraint.minimum + ", " + data_element.heightConstraint + " )");
 
 	  
 	  if(weakEntity && elementWithRelation != null){
@@ -431,7 +445,7 @@ var network_super = new vis.Network(container_super, data_super, options);
 		  addEntitytoRelation(data_element.id, "", "1to1", "", "1", "1", "create", idRelation, true, true);
 		  addEntitytoRelation(parseInt(elementWithRelation), "", "1toN", "", "1", "N", "create", idRelation, false);
 	  }
-	  idCount = idCount + 1;
+
 	  updateTableElements();
 	  //console.log("[Entity] - idCount: " + idCount + ", label: " + nombre + ", idSuperEntityCount: " + idSuperEntityCount);
   }
@@ -855,6 +869,17 @@ var network_super = new vis.Network(container_super, data_super, options);
 		  $('#insertModal').prop('disabled', false);
 	  });
   }
+
+  function fillEditSuperEntity(idNodo){
+  	  idNodo = parseInt(idNodo);
+  	  jQuery("#recipient-name").val(nodes.get(idNodo).label);
+  	  $('#titleModal').html($('#textEditSuperEntity').text());
+  	  $("#weak-entity").prop("checked",nodes.get(idNodo).isWeak);
+  	  $('#insertModal').prop('disabled', false);
+  	  $('#weak-entity').change(function(){
+  		  $('#insertModal').prop('disabled', false);
+  	  });
+    }
   
   function existParent(idNodo){
 	  var exist = false;
@@ -1360,12 +1385,12 @@ var network_super = new vis.Network(container_super, data_super, options);
             if(nod.super_entity) return nod;
         });
 
-        return null;
+    return null;
   }
 
 
   network.on('selectNode', function(event, nodeId) {
-    //console.log(event + ", "+ nodeId);
+
     var selectedNodes = network.getSelectedNodes();
     var nodesToSelect= selectedNodes;
     var superEntitySelected = false;
@@ -1373,7 +1398,6 @@ var network_super = new vis.Network(container_super, data_super, options);
     selectedNodes.forEach(function(nodeId) {
         var nod = nodes.get(nodeId);
         if(nod.is_super_entity) superEntitySelected = true;
-
     });
 
     if(superEntitySelected){
@@ -1384,24 +1408,26 @@ var network_super = new vis.Network(container_super, data_super, options);
           }
         });
     }
-
     network.selectNodes(nodesToSelect);
-    //console.log('Selected nodes:', network.getSelectedNodes());
-
   });
 
-  network.on('dragEnd', function (nodeId) {
 
-        var movedNode = nodes.get(nodeId);
-        var selectedNodes = network.getSelectedNodes();
-        var superEntityNode = getSuperEntityNode();
-        // Comprobamos que el nodo en movimiento es una agregación y marcamos como seleccionamos los per
-        if (!movedNode.is_super_entity && movedNode.super_entity && (!selectedNodes.includes(superEntityNode.id))) {
-          // Obtenemos la posición de l nodo que se ha movido
-          var movedNodePos = network.getPosition(nodeId);
-          console.log("movedNode: " + movedNode.label);
+  network.on('dragEnd', function (params) {
+
+        if (params.nodes.length > 0) {
+            // Obtenemos el nodo movido
+            var nodeId = params.nodes[0];
+            var movedNode = nodes.get(nodeId);
+
+            // Obtenemos la posición del nodo que se ha movido
+            var movedNodePos = network.getPosition(movedNode.id);
+            //console.log("nodeId: " + nodeId+" , x: " + movedNode.x + " , x: " + movedNode.y);
+
+            // Actualizamos el nodo con la nueva posición
+            nodes.update({id: movedNode.id, x: movedNodePos.x, y: movedNodePos.y});
 
         }
+
           // TODO: resize funct used here and upon super entity creation
 
     });

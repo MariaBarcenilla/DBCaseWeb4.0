@@ -23,6 +23,8 @@ var normalize = (function() {
 	})();
 
 $(document).ready(function () {
+
+			// Al pintar el modal
 			$('#modalAddItem').on('shown.bs.modal', function () {
 				switch($("#tipoAdd").val()){
 					case "addEntity":
@@ -37,10 +39,11 @@ $(document).ready(function () {
 					break;
 				}
 			});
-			
+
+			// Al esconder el modal
 			$('#modalAddItem').on('hide.bs.modal', function () {
 				switch($("#tipoAdd").val()){
-					case "addEntity":
+					case "addEntity": console.log("TIPO ADD");
 					break;
 					case "addRelation":
 					case "addDomain":
@@ -423,11 +426,13 @@ $(document).ready(function () {
 		   });
        	 	 
        	  $('#insertModal').on('click', function() {
+       	  //console.log("insertar modal");
            	switch($('#tipoAdd').val()) {
                	case "addConstrainst":
                		addConstrainst($('input[name=listText\\[\\]]').serializeArray(),$('#idSelected').val(), $('#typeAction').val());
       	          	    break;
       	          	case "addEntity":
+                        console.log("add entity modal");
       	          		addEntity($('#recipient-name').val(), $('#weak-entity').prop('checked'),$('#typeAction').val(),$('#idSelected').val(), $("#element").val(), $("#relationEntity").val());
       	          	    break;
       	          	case "addRelation":
@@ -461,7 +466,8 @@ $(document).ready(function () {
 	      	        	addSubAttribute($('#recipient-name').val(),$('#typeAction').val(),$('#idSelected').val(), $('#element').val(), $('#composite').prop('checked'), $('#notNull').prop('checked'), $('#unique').prop('checked'), $('#multivalued').prop('checked'), $('#domain').val(), $('#size').val());
 		            	break;
 	      	        case "addSuperEntity":
-	      	        	addSuperEntity(parseInt($('#idSelected').val()), $('#recipient-name').val());
+	      	            console.log("add super entity modal");
+	      	        	addSuperEntity(parseInt($('#idSelected').val()), $('#recipient-name').val(), $('#typeAction').val());
 	      	        	break;
       	          	case "addIsA":
       	            	break;
@@ -470,6 +476,7 @@ $(document).ready(function () {
            });
    
             $('.insertarDatos').on('click', function() {
+            	//console.log("insertar Datos modal");
             	var insert = ""
             	var nodo_select = getNodeSelected();
             	switch($(this).attr("functionInsert")) {
@@ -482,7 +489,9 @@ $(document).ready(function () {
             		  eventsAddConstrainst();
             	    break;
             	  case "addEntity":
+            	    console.log("addEntuty switch");
             		  nodo = getAllNodes(["box"]);
+            		  console.log("añadimos entidad");
             		  var dataType = {
             				temp_node_select: nodo_select,
             				temp_ent_length: nodo.length,
@@ -706,6 +715,7 @@ $(document).ready(function () {
           		  	  $('#formModal').html($('#templateAbout').tmpl(dataType));
       	    		break;
             	  	case "deleteSuperEntity":
+                        console.log("delete super entity modal");
             	  		var dataType = {
           					temp_node_select: nodo_select
           			  };
@@ -713,6 +723,7 @@ $(document).ready(function () {
           		  	  eventAddSuperEntity();
       	    		break;
             	  	case "addTextAgregation":
+            	  		console.log("add text aggr modal");
             	  		var dataType = {
           					temp_node_select: nodo_select
           			  };
