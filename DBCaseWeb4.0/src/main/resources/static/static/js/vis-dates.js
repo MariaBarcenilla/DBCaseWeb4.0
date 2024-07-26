@@ -104,19 +104,29 @@ var network_super = new vis.Network(container_super, data_super, options);
     console.log("deleting superEntity");
 	  var idNode = parseInt(idNodo);
 	  nodes_super.forEach(function(nod) {
-		  //nod.super_entity = false;
-		  console.log("nodes_super id: " + nod.id);
+		  //console.log("nodes_super id: " + nod.id);
+		  // Desmarcamos los elementos que forman parte de la entidad
 		  nodes.update({id:nod.id, super_entity:false});
+		  nodes_super.remove(nod.id);
 	  });
-	  deleteSuperEntityAndEelements(idNodo);
+	  //deleteSuperEntityAndEelements(idNodo);
+	  nodes.remove(idNode);
+      nodes_super.clear();
 	  updateTableElements();
   }
   
   function deleteSuperEntityAndEelements(idNodo){
 	  var idNode = parseInt(idNodo);
 	  console.log("deleteSuperEntityAndEelements: "+ idNode);
+	  nodes_super.forEach(function(nod) {
+          //nodes.update({id:nod.id, super_entity:false});
+          // Eliminamos los nodos que forman parte de la agregación
+          nodes.remove(nod.id);
+          nodes_super.remove(nod.id);
+      });
+      // Eliminamos la agregación
 	  nodes.remove(idNode);
-	  nodes_super.remove(idNode);
+	  //nodes_super.remove(idNode);
 	  nodes_super.clear();
 	  edges_super.clear();
   }
@@ -282,16 +292,16 @@ var network_super = new vis.Network(container_super, data_super, options);
 
         var num_elements_super_entity = 0;
 
-        console.log("[Super Entity] - idCount: " + idCount + ", label: " + labelName + ", idSuperEntityCount: " + idSuperEntityCount);
+        //console.log("[Super Entity] - idCount: " + idCount + ", label: " + labelName + ", idSuperEntityCount: " + idSuperEntityCount);
 
         if(action == "edit"){
-        console.log("idElement: "+idElement);
+        //console.log("idElement: "+idElement);
             nodes.update({id:idElement, label:labelName});
         }
         else{
 
             getNodesElementsWithSuperEntity(network.getSelectedNodes());    //get nodes connected to super entity
-            console.log("super_node size:"+ nodes_super.length);
+            //console.log("super_node size:"+ nodes_super.length);
 
                   // Aumentamos el valor de los ids de los nodos de la red
 
@@ -437,7 +447,7 @@ var network_super = new vis.Network(container_super, data_super, options);
 		  nodes.add(data_element);
 		  idCount = idCount + 1;
 	  }
-      console.log("[Entity (x, y) - (w, h) ]: ( "+ data_element.x +", " +data_element.y + " ) - ( " + data_element.widthConstraint.minimum + ", " + data_element.heightConstraint + " )");
+      //console.log("[Entity (x, y) - (w, h) ]: ( "+ data_element.x +", " +data_element.y + " ) - ( " + data_element.widthConstraint.minimum + ", " + data_element.heightConstraint + " )");
 
 	  
 	  if(weakEntity && elementWithRelation != null){
@@ -1266,15 +1276,15 @@ var network_super = new vis.Network(container_super, data_super, options);
 	  var nodos = network.getConnectedEdges(parseInt(nodo_select));
 	  nodos.forEach(function(edg) {
           var aux = nodes.get(nodo_select);
-          console.log("nodo_Select: "+nodo_select+" aux: "+ aux.label);
+          //console.log("nodo_Select: "+nodo_select+" aux: "+ aux.label);
 
 		  	idNodo = edges.get(edg).to;
 		  	roleName = edges.get(edg).label;
 		  	if(nodes.get(idNodo).shape == "ellipse"){
-		  		console.log("entra en if");
+		  		//console.log("entra en if");
 		  		data.push({id:idNodo, label:nodes.get(idNodo).labelBackend, type:nodes.get(idNodo).dataAttribute.domain, size:nodes.get(idNodo).dataAttribute.size});
-		  		console.log("idNodo: "+data[0].label);
-		  		console.log("data: "+data);
+		  		//console.log("idNodo: "+data[0].label);
+		  		//console.log("data: "+data);
 	  }});
 	  return data;
   }
@@ -1334,20 +1344,20 @@ var network_super = new vis.Network(container_super, data_super, options);
 	var attrsId = [];
 
 	if(nodes.get(id).is_super_entity){
-	    console.log("deleting super entity");
+	    //console.log("deleting super entity");
 	    deleteSuperEntity(id);
 	}
 	else{
 	dat.forEach(function(id) {
 		var attr = allAttributeOfEntity(id);
-		console.log("delete node selected id: " + id);
+		//console.log("delete node selected id: " + id);
 		attr.forEach(function(elem) {
-            console.log("Eliminamos id: " + elem);
+            //console.log("Eliminamos id: " + elem);
 //		    if(elem.is_super_entity) idSuperEntityCount--;
 			attrsId.push(elem.id);
 		});
 
-		console.log("Eliminamos id: " + id.id);
+		//console.log("Eliminamos id: " + id.id);
 		//if(id.is_super_entity) idSuperEntityCount--;
         //else idCount--;
         attrsId.push(id);
