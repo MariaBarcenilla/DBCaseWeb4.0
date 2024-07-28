@@ -389,7 +389,7 @@ public class GoogleserviceApplication {
 		//LA EJECUCIÓN.
 
 		// TODO: Modificar generación esquemas con y sin agregación
-		//return generateEsquema(nodes,edges,c,false,mapaAgregacion_nodosNombres);	// Genera esquema sin agregación
+		generateEsquema(nodes,edges,c,false,mapaAgregacion_nodosNombres);	// Genera esquema sin agregación
 		return generateEsquema(nodesAltoNivel,edgesAltoNivel,c,true,mapaAgregacion_nodosNombres);	// Genera esq agregación
 	}
 

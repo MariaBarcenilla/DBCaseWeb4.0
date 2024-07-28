@@ -161,7 +161,7 @@ $(document).ready(function () {
 				var resultNodes =[];
 				var agregation = "";
 				auxNodesTotal.forEach(function(item, index) {
-				console.log("item: " + item.is_super_entity);
+				//console.log("item: " + item.is_super_entity);
 					var auxItem= item;
 
 					if(item.isWeak || item.isWeak == "active")
@@ -235,6 +235,7 @@ $(document).ready(function () {
 				
 				var edgesSuperData = edges_super.get();
 				for(var i = 0;i<edgesSuperData.length;i++){
+				    console.log("edgesSuperData entra");
 					if(edgesSuperData[i].participation){
 						//cambiado
 					//	edgesSuperData[i].labelFrom = edgesSuperData[3].participationFrom;
@@ -466,7 +467,7 @@ $(document).ready(function () {
 	      	        	addSubAttribute($('#recipient-name').val(),$('#typeAction').val(),$('#idSelected').val(), $('#element').val(), $('#composite').prop('checked'), $('#notNull').prop('checked'), $('#unique').prop('checked'), $('#multivalued').prop('checked'), $('#domain').val(), $('#size').val());
 		            	break;
 	      	        case "addSuperEntity":
-	      	            console.log("add super entity modal");
+	      	            //console.log("add super entity modal");
 	      	        	addSuperEntity(parseInt($('#idSelected').val()), $('#recipient-name').val(), $('#typeAction').val());
 	      	        	break;
       	          	case "addIsA":
@@ -489,9 +490,9 @@ $(document).ready(function () {
             		  eventsAddConstrainst();
             	    break;
             	  case "addEntity":
-            	    console.log("addEntuty switch");
+            	    //console.log("addEntuty switch");
             		  nodo = getAllNodes(["box"]);
-            		  console.log("añadimos entidad");
+            		  //console.log("añadimos entidad");
             		  var dataType = {
             				temp_node_select: nodo_select,
             				temp_ent_length: nodo.length,
@@ -715,7 +716,7 @@ $(document).ready(function () {
           		  	  $('#formModal').html($('#templateAbout').tmpl(dataType));
       	    		break;
             	  	case "deleteSuperEntity":
-                        console.log("delete super entity modal");
+                        //console.log("delete super entity modal");
             	  		var dataType = {
           					temp_node_select: nodo_select
           			  };
@@ -723,7 +724,7 @@ $(document).ready(function () {
           		  	  eventAddSuperEntity();
       	    		break;
             	  	case "addTextAgregation":
-            	  		console.log("add text aggr modal");
+            	  		//console.log("add text aggr modal");
             	  		var dataType = {
           					temp_node_select: nodo_select
           			  };
