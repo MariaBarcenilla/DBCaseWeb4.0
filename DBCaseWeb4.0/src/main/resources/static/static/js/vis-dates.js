@@ -351,7 +351,7 @@ var network_super = new vis.Network(container_super, data_super, options);
     }
 
 function setSuperEntityCoordinates(modifySuperEntity, node){
-
+    console.log("Entra");
     var left = null;
     var right = null;
     var top = null;
@@ -1530,18 +1530,23 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 
 
   network.on('dragEnd', function (params) {
-
+        var i=0;
         if (params.nodes.length > 0) {
-            // Obtenemos el nodo movido
-            var nodeId = params.nodes[0];
-            var movedNode = nodes.get(nodeId);
-            console.log("Movemos nodo: "+movedNode.label);
-            // Obtenemos la posición del nodo que se ha movido
-            var movedNodePos = network.getPosition(movedNode.id);
-            console.log("nodeId: " + movedNode.label+" , x: " + movedNode.x + " , y: " + movedNode.y);
-            console.log("nodeId: " + movedNode.label+" , x: " + movedNodePos.x + " , y: " + movedNodePos.y);
-            // Actualizamos el nodo con la nueva posición
-            nodes.update({id: movedNode.id, x: movedNodePos.x, y: movedNodePos.y});
+            console.log("params.nodes.length: "+params.nodes.length);
+            while(i < params.nodes.length){
+                // Obtenemos el nodo movido
+                var nodeId = params.nodes[i];
+                var movedNode = nodes.get(nodeId);
+                console.log("Movemos nodo: "+movedNode.label);
+                // Obtenemos la posición del nodo que se ha movido
+                var movedNodePos = network.getPosition(movedNode.id);
+                console.log("nodeId: " + movedNode.label+" , x: " + movedNode.x + " , y: " + movedNode.y);
+                console.log("nodeId: " + movedNode.label+" , x: " + movedNodePos.x + " , y: " + movedNodePos.y);
+                // Actualizamos el nodo con la nueva posición
+                nodes.update({id: movedNode.id, x: movedNodePos.x, y: movedNodePos.y});
+                i++;
+            }
+
             var superNode = getSuperEntityNode();
             if(!movedNode.is_super_entity && superNode!=null) {
                 setSuperEntityCoordinates(true, superNode);
