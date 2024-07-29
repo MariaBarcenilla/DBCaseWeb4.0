@@ -158,6 +158,7 @@ $(document).ready(function () {
 				var myObj = {}; 
 				 
 				var auxNodesTotal = nodes.get();
+				var nodesSuper = nodes_super.getIds();
 				var resultNodes =[];
 				var agregation = "";
 				auxNodesTotal.forEach(function(item, index) {
@@ -186,8 +187,24 @@ $(document).ready(function () {
 							x: item.x,
 							y: item.y,
 						};
+						resultNodes.push(auxItem);
 					}
-					resultNodes.push(auxItem);
+					else if(!item.super_entity){
+					    resultNodes.push(auxItem);
+					}
+
+					switch(item.shape){
+                    case "diamond":
+                        item.color = '#FF3F20';
+                        break;
+                    case "triangleDown":
+                        item.color = '#FF952A';
+                        break;
+                    case "ellipse":
+                        item.color = '#22bdb1';
+                        break;
+					}
+					//resultNodes.push(auxItem);
 				});
 
 				// tomamos la informacion de las entidades externas a la agregación
@@ -234,6 +251,7 @@ $(document).ready(function () {
 				}
 				
 				var edgesSuperData = edges_super.get();
+				console.log("edgesSuperData: "+edgesSuperData);
 				for(var i = 0;i<edgesSuperData.length;i++){
 				    console.log("edgesSuperData entra");
 					if(edgesSuperData[i].participation){
@@ -328,8 +346,24 @@ $(document).ready(function () {
 							x: item.x,
 							y: item.y,
 						};
+
+						resultNodes.push(auxItem);
 					}
-					resultNodes.push(auxItem);
+                    else if(!item.super_entity){
+                        resultNodes.push(auxItem);
+                    }
+
+					switch(item.shape){
+                    case "diamond":
+                        item.color = '#FF3F20';
+                        break;
+                    case "triangleDown":
+                        item.color = '#FF952A';
+                        break;
+                    case "ellipse":
+                        item.color = '#22bdb1';
+                        break;
+                    }
 				});
 				
 				var traduct = {};

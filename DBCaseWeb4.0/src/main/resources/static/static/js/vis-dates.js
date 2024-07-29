@@ -307,7 +307,7 @@ var network_super = new vis.Network(container_super, data_super, options);
 
             // Calculamos el tamaño y posición de la agregación en base al numero de elementos que la componen
 
-            console.log("x_super: "+x_super+", y_super: "+y_super+", width_super: "+width_super+", height_super: "+height_super);
+            //console.log("x_super: "+x_super+", y_super: "+y_super+", width_super: "+width_super+", height_super: "+height_super);
             var coordinates =[];
             //coordinates= setSuperEntityCoordinates((action == "edit"), null);
             //console.log("x_super: "+coordinates[0]+", y_super: "+coordinates[1]+", width_super: "+coordinates[2]+", height_super: "+coordinates[3]);
@@ -318,14 +318,16 @@ var network_super = new vis.Network(container_super, data_super, options);
             var data_element = {id: idSuperEntityCount, widthConstraint: { minimum: 400}, heightConstraint: { minimum: 200 }, label: labelName, shape: 'box',physics:false, is_super_entity:true, super_entity:false,
               color:{
                   //background: isDarkTheme ? '#F8F9FA' : '#343A40',
+                  border: '#ffcc45',
                   background: 'transparent',
                   highlight: {
                       border: '#000000',
                       background: 'transparent',
                       //background: isDarkTheme ? '#F8F9FA' : '#343A40',
                       borderWidth: 4
-                  },
-              }, borderWidth: 2, font: {
+                  }
+              },
+               borderWidth: 2, font: {
                    color: isDarkTheme ? '#000000' : '#ffffff',
                    //vadjust: (coordinates[3]/2) + 15  // Ajustar la posición vertical de la etiqueta
               }
@@ -351,7 +353,7 @@ var network_super = new vis.Network(container_super, data_super, options);
     }
 
 function setSuperEntityCoordinates(modifySuperEntity, node){
-    console.log("Entra");
+
     var left = null;
     var right = null;
     var top = null;
@@ -362,84 +364,65 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
     var width_super = 0;
     var height_super = 0;
 
-    //if(!modifySuperEntity){
+    var allNodes = nodes.get();
 
-        var allNodes = nodes.get();
-        // Ordenamos los nodos de mayor a menor id
-        //allNodes.sort((a, b) => b.id - a.id);
-        allNodes.forEach(function(nod){
-            // Guardamos las coordenadas que forman los extremos de los nodos de la agregación
-            if(nod.super_entity){
-                if(left ===null || left > nod.x){
-                    left = nod.x;
-                }
-
-                if(right ===null || right < nod.x) {
-                    right = nod.x;
-                }
-
-                if(top == null || (top > nod.y)) {
-                    console.log("top es mayor de nod.y: " + top + " > "+ nod.y);
-                    top = nod.y;
-                }
-
-                if(bottom ===null || (bottom < nod.y)) {
-                    console.log("top es menor de nod.y: " + bottom + " < "+ nod.y);
-                    bottom = nod.y;
-                }
-
-                /*if(top != null || (top < 0)) console.log("valor top es menor de 0");
-                if(top != null || (nod.y < 0)) console.log("valor top es menor de 0");*/
-
-                console.log("[LEFT] - label: " + nod.label + ", min X: " + left);
-                console.log("[RIGHT] - label: " + nod.label + ", max X: " + right);
-                console.log("[TOP] - label: " + nod.label + ", min Y: " + bottom);
-                console.log("[BOTTOM] - label: " + nod.label + ", max Y: " + top);
-
+    allNodes.forEach(function(nod){
+        // Guardamos las coordenadas que forman los extremos de los nodos de la agregación
+        if(nod.super_entity){
+            if(left ===null || left > nod.x){
+                left = nod.x;
             }
 
-        });
+            if(right ===null || right < nod.x) {
+                right = nod.x;
+            }
 
-        /*width_super = Math.abs(right - left) + 200;
-        height_super = Math.abs(top - bottom) + 100;
+            if(top == null || (top > nod.y)) {
+                top = nod.y;
+            }
 
-        x_super = (left + right)/2;
-        y_super = (top + bottom)/2;*/
-        //var node = getSuperEntityNode();
+            if(bottom ===null || (bottom < nod.y)) {
+                bottom = nod.y;
+            }
 
-        node.x = (left + right)/2;
-        node.y = (top + bottom)/2;
 
-        node.widthConstraint.minimum = (Math.abs(right - left)) + 200;
-        node.heightConstraint.minimum = (Math.abs(top - bottom)) + 100;
+            /*console.log("[LEFT] - label: " + nod.label + ", min X: " + left);
+            console.log("[RIGHT] - label: " + nod.label + ", max X: " + right);
+            console.log("[TOP] - label: " + nod.label + ", min Y: " + bottom);
+            console.log("[BOTTOM] - label: " + nod.label + ", max Y: " + top);*/
 
-        node.font.vadjust = (node.heightConstraint.minimum/2) + 15;
+        }
 
-        console.log("[X] - label: " + node.label + ", valor: " + node.x);
+    });
+
+    node.x = (left + right)/2;
+    node.y = (top + bottom)/2;
+
+    node.widthConstraint.minimum = (Math.abs(right - left)) + 200;
+    node.heightConstraint.minimum = (Math.abs(top - bottom)) + 100;
+
+    node.font.vadjust = (node.heightConstraint.minimum/2) + 15;
+
+        /*console.log("[X] - label: " + node.label + ", valor: " + node.x);
         console.log("[Y] - label: " + node.label + ", valor: " + node.y);
         console.log("[width] - label: " + node.label + ", valor: " + (Math.abs(right - left)));
-        console.log("[height] - label: " + node.label + ", valor: " + (Math.abs(top - bottom)));
+        console.log("[height] - label: " + node.label + ", valor: " + (Math.abs(top - bottom)));*/
 
 
-        if(!modifySuperEntity && node.is_super_entity){  // Añadimos agregación u otro elemento nuevo
+    if(!modifySuperEntity && node.is_super_entity){  // Añadimos agregación u otro elemento nuevo
 
-            nodes.add(node);
-            nodes_super.add(node);
+        nodes.add(node);
+        //nodes_super.add(node);
+    }
+    else{       // Modificamos un nodo
+
+        nodes.update(node);
+
+        if(node.super_entity){
+            nodes_super.update(node);
         }
-        else{       // Modificamos un nodo
-            /*var node = getSuperEntityNode();
+    }
 
-            node.x = (left + right)/2;
-            node.y = (top + bottom)/2;
-
-            node.widthConstraint.minimum = Math.abs(right - left) + 200;
-            node.heightConstraint.minimum = Math.abs(top - bottom) + 100;*/
-            nodes.update(node);
-        }
-
-   // }
-
-    //return [x_super, y_super, width_super, height_super];
 }
 
   // Marcamos los nodos que pertenecen a la agregación
@@ -455,7 +438,7 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 			  case 'box':
                   var entityAttr = allAttributeOfEntity(node.id);
                   entityAttr.forEach(function(attr){
-                  console.log("attr: "+attr.id);
+                  //console.log("attr: "+attr.id);
                     //Actualizamos el campo si el nodo no está seleccionado
                     if(!nodesIds.includes(attr.id)){
                         nodes.update({id: attr.id, super_entity: true});
@@ -484,10 +467,12 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 
   function updateSuperEntityEdges(){
       var edge = edges.get();
-      var superNodes = nodes_super.get();
+      var superNodes = nodes_super.getIds();
+
   	  edge.forEach(function(edg) {
   	  // Añadimos los edges de los elementos que forman parte de la agregación
   		  if(superNodes.includes(edg.to) && superNodes.includes(edg.from)){
+              //console.log("edge To: "+edg.to + " - edge from: "+edg.from);
               edges_super.add(edg);
   		  }
   	  });
@@ -552,14 +537,15 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 	  }
 	  console.log("[Relation] - idCount: " + idCount + ", label: " + nombre + ", idSuperEntityCount: " + idSuperEntityCount);
 	  var data_element = {id: idCount, size:tam,label: nombre, shape: 'diamond', is_super_entity:false, super_entity:false,
-		  /*color: {
+		  color: {
 				 border: '#FF3F20',
 				 background:'#FF3F20',
 				 highlight: {
 				        border: '#000000',
 				        background: '#C93821'
-				      }}*/
-		  color: '#FF3F20', scale:20, physics:false, zIndex:0};//D5FF04  cambiado(ff554b)
+				      }}
+		  //color: '#FF3F20'
+		  , scale:20, physics:false, zIndex:0};//D5FF04  cambiado(ff554b)
 	  
 	  if(action == "edit"){
 		  data_element.id = parseInt(idSelected);
@@ -618,19 +604,21 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 	  var valueEntityWeak = nodes.get(parseInt(idEntity)).isWeak;
 	  console.log("[Attribute] - idCount: " + idCount + ", label: " + name + ", idSuperEntityCount: " + idSuperEntityCount);
 	  var data_element = {id: idCount, width: 3,widthConstraint:{ minimum: 50, maximum: 160},labelBackend:name, label: word_pk, dataAttribute:{entityWeak: valueEntityWeak, primaryKey: pk, composite: comp, notNull: notNll, unique: uniq, multivalued: multi, domain: dom, size: sz}, shape: 'ellipse', is_super_entity:false, super_entity:false,
-		  color :"#22bdb1",/*'#4de4fc' cambiado*/
-		  		  /*color: {
+		  //color :"#22bdb1",/*'#4de4fc' cambiado*/
+		  		  color: {
 					 border: '#078980',
 					 background:'#22bdb1',
 					 highlight: {
 					        border: '#000000',
 					        background: '#1A958A'
-					      }},*/
+					      }},
 					      scale:20, heightConstraint:23,physics:false};
 			 /*'#4de4fc' cambiado, scale:20, heightConstraint:23,physics:false};*/
 	  if(action == "edit"){
 		  data_element.id = parseInt(idSelected);
 		  data_element.dataAttribute.entityWeak = nodes.get(parseInt(idSelected)).dataAttribute.entityWeak;
+		  data_element.super_entity=nodes.get(data_element.id).super_entity;
+		  console.log("editamos attr: "+nodes.get(data_element.id).super_entity);
 		  nodes.update(data_element);
 	  }else{
 		  if(poscSelection != null){
@@ -638,28 +626,29 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 			  data_element.y = poscSelection.y+30;
 		  }
 
-          //var n = nodes.get(parseInt(idEntity));
-		  //if(n.super_entity && n.id == idEntity){
-		  if(inSuperEntity(parseInt(idEntity))){  //Añadimos atributo a agregación
-              console.log("Añadimos atributo a agregación: "+ data_element.id);
+          //Añadimos atributo a agregación
+		  if(inSuperEntity(parseInt(idEntity))){
               data_element.super_entity = true;
+              //Añadimos el nodo
               nodes.add(data_element);
-              console.log("Añadimos atributo a agregación 2: "+ idCount);
               nodes_super.add(data_element);
+
+              // Añadimos los edges
               edges.add({from: parseInt(idEntity), to: parseInt(idCount), color:{color:'#22bdb1'},width: 2});//cambiado
               updateSuperEntityEdges();
               setSuperEntityCoordinates(true, getSuperEntityNode());
 		  }
-		  else{     // Añadimos atributo fuera de la agregación
-		      console.log("Añadimos atributo fuera de la agregación: ");
+		  // Añadimos atributo fuera de la agregación
+		  else{
+		      //console.log("Añadimos atributo fuera de la agregación: ");
               nodes.add(data_element);
               edges.add({from: parseInt(idEntity), to: parseInt(idCount), color:{color:'#22bdb1'},width: 2});//cambiado
 		  }
 
 	  }
 	  idCount++;
-	              var aux = getSuperEntityNode();
-                  if(aux !=null)console.log("AGR:  x --> "+ aux.x +" y --> " +aux.y + " width --> " + aux.widthConstraint.minimum + " height --> " + aux.heightConstraint.minimum);
+      /*var aux = getSuperEntityNode();
+      if(aux !=null)console.log("AGR:  x --> "+ aux.x +" y --> " +aux.y + " width --> " + aux.widthConstraint.minimum + " height --> " + aux.heightConstraint.minimum);*/
 	  //console.log("[Attribute] - idCount: " + idCount + ", label: " + name + ", idSuperEntityCount: " + idSuperEntityCount);
       //console.log("[Attribute (x, y) - (w, h) ]: ( "+ data_element.x +", " +data_element.y + " ) - ( " + data_element.widthConstraint.minimum + ", " + data_element.heightConstraint + " )");
 	  //console.log("[Attribute (x, y) - (w, h) ]: ( "+ data_element.x +", " +data_element.y + " ) - ( " + data_element.widthConstraint + ", " + data_element.heightConstraint + ", size: " + data_element.size" )");
@@ -1485,7 +1474,7 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
     var allNodes = nodes.get();
 
     allNodes.forEach(function(nodeId){
-        console.log("nodeId: "+nodeId.id+", isSuperEntity: "+nodeId.is_super_entity);
+        //console.log("nodeId: "+nodeId.id+", isSuperEntity: "+nodeId.is_super_entity);
         if(nodeId.is_super_entity) r = nodeId;
 
     });
@@ -1532,18 +1521,21 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
   network.on('dragEnd', function (params) {
         var i=0;
         if (params.nodes.length > 0) {
-            console.log("params.nodes.length: "+params.nodes.length);
+            //console.log("params.nodes.length: "+params.nodes.length);
             while(i < params.nodes.length){
                 // Obtenemos el nodo movido
                 var nodeId = params.nodes[i];
                 var movedNode = nodes.get(nodeId);
-                console.log("Movemos nodo: "+movedNode.label);
+                //console.log("Movemos nodo: "+movedNode.label);
                 // Obtenemos la posición del nodo que se ha movido
                 var movedNodePos = network.getPosition(movedNode.id);
-                console.log("nodeId: " + movedNode.label+" , x: " + movedNode.x + " , y: " + movedNode.y);
-                console.log("nodeId: " + movedNode.label+" , x: " + movedNodePos.x + " , y: " + movedNodePos.y);
+                /*console.log("nodeId: " + movedNode.label+" , x: " + movedNode.x + " , y: " + movedNode.y);
+                console.log("nodeId: " + movedNode.label+" , x: " + movedNodePos.x + " , y: " + movedNodePos.y);*/
                 // Actualizamos el nodo con la nueva posición
                 nodes.update({id: movedNode.id, x: movedNodePos.x, y: movedNodePos.y});
+                if(movedNode.super_entity){
+                    nodes_super.update({id: movedNode.id, x: movedNodePos.x, y: movedNodePos.y});
+                }
                 i++;
             }
 
@@ -1553,7 +1545,5 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
             }
 
         }
-
-          // TODO: resize funct used here and upon super entity creation
 
     });
