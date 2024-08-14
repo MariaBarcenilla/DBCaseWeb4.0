@@ -11,6 +11,7 @@ var nodes_selected_event = false;
 
 var idCount =1000;
 var idSuperEntityCount =0;
+
  
   // create a network
 var container = document.getElementById('diagram');
@@ -427,24 +428,35 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 
   // Marcamos los nodos que pertenecen a la agregación
   function getNodesElementsWithSuperEntity(nodesIds){
+
 	  nodesIds.forEach(function(nod) {
 	  //Actualizamos el campo si el nodo no es la agregación
 		  if(!nod.is_super_entity){
               var node = nodes.get(nod);
 			  nodes.update({id: nod, super_entity: true});
 			  nodes_super.add(node);
+			  console.log("nod shape: "+node.shape);
 			  // Buscamos los atributos de las entidades y relaciones que forman parte de la agregación
 			  switch(node.shape){
 			  case 'box':
                   var entityAttr = allAttributeOfEntity(node.id);
                   entityAttr.forEach(function(attr){
-                  //console.log("attr: "+attr.id);
                     //Actualizamos el campo si el nodo no está seleccionado
                     if(!nodesIds.includes(attr.id)){
                         nodes.update({id: attr.id, super_entity: true});
                         var aux = nodes.get(attr.id);
                         nodes_super.add(aux);
                     }
+                    //Recorremos y actualizamos los subatributos si los hay
+                    var subAttr = allSubAttribute(attr.id);
+                    subAttr.forEach(function(sAttr){
+                         //Actualizamos el campo si el nodo no está seleccionado
+                         if(!nodesIds.includes(sAttr.id)){
+                            nodes.update({id: sAttr.id, super_entity: true});
+                            var auxS = nodes.get(sAttr.id);
+                            nodes_super.add(auxS);
+                         }
+                     });
                   });
 			  break;
 			  case 'diamond':
@@ -456,6 +468,18 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
                         var aux = nodes.get(attr.id);
                         nodes_super.add(aux);
                     }
+
+                    //Recorremos y actualizamos los subatributos si los hay
+                    var subAttr = allSubAttribute(attr.id);
+                    subAttr.forEach(function(sAttr){
+                         //Actualizamos el campo si el nodo no está seleccionado
+                         if(!nodesIds.includes(sAttr.id)){
+                            nodes.update({id: sAttr.id, super_entity: true});
+                            var auxS = nodes.get(sAttr.id);
+                            nodes_super.add(auxS);
+                         }
+                     });
+
                   });
               break;
               default:
@@ -473,7 +497,7 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
   	  // Añadimos los edges de los elementos que forman parte de la agregación
   		  if(superNodes.includes(edg.to) && superNodes.includes(edg.from)){
               //console.log("edge To: "+edg.to + " - edge from: "+edg.from);
-              edges_super.add(edg);
+              //edges_super.add(edg);
   		  }
   	  });
     }
@@ -484,7 +508,7 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 	  var data_element = {id: idCount, widthConstraint:{minimum: 100, maximum: 200}, label: nombre, isWeak: weakEntity, shape: 'box', scale:10, heightConstraint:25,physics:true, is_super_entity:false, super_entity:false};//cambiado
 	  if(action == "edit"){
 		  data_element.id = parseInt(idSelected);
-
+          data_element.super_entity=nodes.get(data_element.id).super_entity;
 		  nodes.update(data_element);
 		  //console.log("parseamos id: "+idSelected + " data_element.id: "+data_element.id);
 		  //console.log("nombre de la entidad: "+nombre);
@@ -549,6 +573,7 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 	  
 	  if(action == "edit"){
 		  data_element.id = parseInt(idSelected);
+		  data_element.super_entity=nodes.get(data_element.id).super_entity;
 		  nodes.update(data_element);
 	  }else{
 		  if(poscSelection != null){
@@ -618,7 +643,6 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 		  data_element.id = parseInt(idSelected);
 		  data_element.dataAttribute.entityWeak = nodes.get(parseInt(idSelected)).dataAttribute.entityWeak;
 		  data_element.super_entity=nodes.get(data_element.id).super_entity;
-		  console.log("editamos attr: "+nodes.get(data_element.id).super_entity);
 		  nodes.update(data_element);
 	  }else{
 		  if(poscSelection != null){
@@ -1047,19 +1071,42 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 		  word_multi = 3;
 	  } 
 	  
-	  var data_element = {id:idCount, labelBackend:name, type:"subAttribute", borderWidth:word_multi,label: word_pk, dataAttribute:{composite: comp, notNull: notNll, unique: uniq, multivalued: multi, domain: dom, size: sz}, shape: 'ellipse', color:'#4de4fc', scale:20, widthConstraint:80, heightConstraint:25,physics:false};
+	  var data_element = {id:idCount, labelBackend:name, type: 'subAttribute', borderWidth:word_multi,label: word_pk, dataAttribute:{composite: comp, notNull: notNll, unique: uniq, multivalued: multi, domain: dom, size: sz}, shape: 'ellipse', is_super_entity:false, super_entity:false, color:'#4de4fc', scale:20, widthConstraint:80, heightConstraint:25,physics:false};
 	  if(action == "edit"){
 		  data_element.id = parseInt(idSelected);
+		  data_element.super_entity=nodes.get(data_element.id).super_entity;
 		  nodes.update(data_element);
 	  }else{
-		  if(poscSelection != null){
-			  data_element.x = poscSelection.x;
-			  data_element.y = poscSelection.y;
-		  }
-		  nodes.add(data_element);
+           if(poscSelection != null){
+      			  data_element.x = poscSelection.x-180;
+      			  data_element.y = poscSelection.y+30;
+      	   }
+
+            //Añadimos atributo a agregación
+           if(inSuperEntity(parseInt(idAttribute))){
+                data_element.super_entity = true;
+                //Añadimos el nodo
+                nodes.add(data_element);
+                nodes_super.add(data_element);
+                // Añadimos los edges
+                edges.add({from: parseInt(idAttribute), to: parseInt(idCount), color:{color:'#22bdb1'},width: 2});//cambiado
+                updateSuperEntityEdges();
+                setSuperEntityCoordinates(true, getSuperEntityNode());
+           }
+           // Añadimos atributo fuera de la agregación
+           else{
+              //console.log("Añadimos atributo fuera de la agregación: ");
+
+                nodes.add(data_element);
+                edges.add({from: parseInt(idAttribute), to: parseInt(idCount), color:{color:'#22bdb1'},width: 2});//cambiado
+           }
+
+		/*  nodes.add(data_element);
 		  edges.add({from: parseInt(idAttribute), to: parseInt(idCount), color:{color:'blue'}});
-		  idCount++;
+*/
 	  }
+
+      	  idCount++;
 }
   
   function fillEditAtributte(idNodo){
@@ -1234,6 +1281,7 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
   
   function getIsSubAttribute(idSelected){
 	  idSelected = parseInt(idSelected);
+	  console.log("Entra "+ nodes.get(idSelected).label + " type "+ nodes.get(idSelected).type);
 	  return (nodes.get(idSelected).type == "subAttribute")
   }
   
@@ -1383,6 +1431,24 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 	  }});
 	  return data;
   }
+
+    function allSubAttribute(nodo_select){
+      var data = [];
+      var nodos = network.getConnectedEdges(parseInt(nodo_select));
+      nodos.forEach(function(edg) {
+            var aux = nodes.get(nodo_select);
+            //console.log("nodo_Select: "+nodo_select+" aux: "+ aux.label);
+
+            idNodo = edges.get(edg).to;
+            roleName = edges.get(edg).label;
+            if(nodes.get(idNodo).type == "subAttribute"){
+                //console.log("entra en if");
+                data.push({id:idNodo, label:nodes.get(idNodo).labelBackend, type:"subAttribute", size:nodes.get(idNodo).dataAttribute.size});
+                //console.log("idNodo: "+data[0].label);
+                //console.log("data: "+data);
+      }});
+      return data;
+    }
   
   function allAttributeOfEntitySuper(nodo_select){
 	  var data = [];
@@ -1495,7 +1561,7 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
   }
 
 
-  network.on('selectNode', function(event, nodeId) {
+  /*network.on('selectNode', function(event, nodeId) {
 
     var selectedNodes = network.getSelectedNodes();
     var nodesToSelect= selectedNodes;
@@ -1515,8 +1581,94 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
         });
     }
     network.selectNodes(nodesToSelect);
-  });
+  });*/
 
+  function updateEdges(){
+    // Get the edge data
+
+
+
+  }
+
+  /*network.on('dragging', function (params) {
+      var auxEdges = [];
+      if(params.nodes.length) {
+          var draggedNodeId = params.nodes[0];
+          var superEntityNode = getSuperEntityNode();
+
+          if(superEntityNode!=null){
+             var allEdges = network.getConnectedEdges(parseInt(draggedNodeId));
+             allEdges.forEach(function(edg) {
+
+                var edge = edges.get(edg);
+                var edgeTo = nodes.get(edge.to);
+                var edgeFrom = nodes.get(edge.from);
+
+                if(edgeTo.id == superEntityNode.id || edgeFrom.id == superEntityNode.id){   // Uno de los nodos esta conectado a la agregacion
+
+                    var x_super = superEntityNode.x;
+                    var y_super = superEntityNode.y;
+
+                    var x_width = superEntityNode.widthConstraint.minimum;
+                    var y_height = superEntityNode.heightConstraint.minimum;
+
+                    var dx = toNode.x - fromNode.x;
+                    var dy = toNode.y - fromNode.y;
+                    var angle = Math.atan2(dy, dx);
+
+                    var borderX = toNode.x - Math.cos(angle) * toNode.size;
+                    var borderY = toNode.y - Math.sin(angle) * toNode.size;
+
+                    if(edgeFrom.id == superEntityNode.id){
+                        console.log("edgeFrom - super entity");
+                        edgeFrom.x = edgeFrom.x;
+                        edgeFrom.y = edgeFrom.y;
+                        edgeTo.x = borderX;
+                        edgeTo.y = borderY;
+                    }
+                    else if(edgeTo.id == superEntityNode.id){
+                        console.log("edgeTo - super entity");
+                        edgeFrom.x = borderX;
+                        edgeFrom.y = borderY;
+                        edgeTo.x = edgeTo.x;
+                        edgeTo.y = edgeTo.y;
+                    }
+
+                    console.log("before drawing to : "+edge.id);//nodes.get(nod).label);
+                    console.log("Edges length antes: "+ edge.length);
+                    var aux = edge.length - 1;
+                    //edges.update({id: edges.get(edg).id, length: aux});
+                    console.log("Edges length despues: "+ aux);
+
+                }
+
+             });
+          }
+      }
+
+    });*/
+
+ network.on('dragStart', function (params) {
+
+    var selectedNodes = network.getSelectedNodes();
+    var nodesToSelect= selectedNodes;
+    var superEntitySelected = false;
+
+    selectedNodes.forEach(function(nodeId) {
+        var nod = nodes.get(nodeId);
+        if(nod.is_super_entity) superEntitySelected = true;
+    });
+
+    if(superEntitySelected){
+        nodes.forEach(function(node) {
+          if (node.super_entity === true && !selectedNodes.includes(node.id)){
+              nodesToSelect.push(node.id);
+              //console.log("nodes to select: " + node.label);
+          }
+        });
+    }
+    network.selectNodes(nodesToSelect);
+});
 
   network.on('dragEnd', function (params) {
         var i=0;

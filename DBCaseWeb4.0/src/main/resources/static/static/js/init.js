@@ -158,7 +158,7 @@ $(document).ready(function () {
 				var myObj = {}; 
 				 
 				var auxNodesTotal = nodes.get();
-				var nodesSuper = nodes_super.getIds();
+				var nodesSuper = nodes_super.get();
 				var resultNodes =[];
 				var agregation = "";
 				auxNodesTotal.forEach(function(item, index) {
@@ -204,6 +204,8 @@ $(document).ready(function () {
                         item.color = '#22bdb1';
                         break;
 					}
+
+
 					//resultNodes.push(auxItem);
 				});
 
@@ -248,6 +250,17 @@ $(document).ready(function () {
 					nodesSuper[i].label = normalize(nodesSuper[i].label);
 					var nameLabel = nodesSuper[i].label;
 					traduct[nameLabel] = tempLabel;
+                    switch(nodesSuper[i].shape){
+                    case "diamond":
+                        nodesSuper[i].color = '#FF3F20';
+                        break;
+                    case "triangleDown":
+                        nodesSuper[i].color = '#FF952A';
+                        break;
+                    case "ellipse":
+                        nodesSuper[i].color = '#22bdb1';
+                        break;
+                    }
 				}
 				
 				var edgesSuperData = edges_super.get();
@@ -400,6 +413,17 @@ $(document).ready(function () {
 					nodesSuper[i].label = normalize(nodesSuper[i].label);
 					var nameLabel = nodesSuper[i].label;
 					traduct[nameLabel] = tempLabel;
+                    switch(nodesSuper[i].shape){
+                    case "diamond":
+                        nodesSuper[i].color = '#FF3F20';
+                        break;
+                    case "triangleDown":
+                        nodesSuper[i].color = '#FF952A';
+                        break;
+                    case "ellipse":
+                        nodesSuper[i].color = '#22bdb1';
+                        break;
+                    }
 				}
 				
 				var edgesSuperData = edges_super.get();
