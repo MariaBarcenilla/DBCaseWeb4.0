@@ -2776,8 +2776,8 @@ public class Controlador {
 			v.get(0);
 			v.get(1);
 			
-			this.getTheGUIPrincipal().mensajesDesde_Controlador(TC.Controlador_AnadirAtributoARelacion, v);
-			this.getTheGUIAnadirAtributoRelacion().setInactiva();
+			/*this.getTheGUIPrincipal().mensajesDesde_Controlador(TC.Controlador_AnadirAtributoARelacion, v);
+			this.getTheGUIAnadirAtributoRelacion().setInactiva();*/
 			break;
 		}
 

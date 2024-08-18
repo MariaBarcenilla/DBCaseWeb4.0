@@ -64,6 +64,7 @@ public class DAOEntidades {
 		// ListaAtributos
 		Element raizListaAtributos = doc.createElement("AttribList");
 		raiz.appendChild(raizListaAtributos);
+
 		//estamos en la lista de Atributos.
 		for (int cont = 0; cont <tc.getListaAtributos().size(); cont++) {
 			Element Atributo = doc.createElement("Attrib");
@@ -143,10 +144,11 @@ public class DAOEntidades {
 			Node listaC=dameNodoPedidoDeEntidad(EntidadBuscado,"AttribList");
 			int i=0;
 			Node n;
+			System.out.println("child nodes length" + listaC.getChildNodes().getLength());
 			while (i<listaC.getChildNodes().getLength()){
 				n=this.dameNodoPedidoDeEntidad(listaC,"Attrib");
 				if (n!=null)listaC.removeChild(n);
-				i++;
+				else i++;
 			}
 			
 			for (int cont = 0; cont <tc.getListaAtributos().size(); cont++) {
@@ -304,6 +306,7 @@ public class DAOEntidades {
 		Vector<String> lista = new Vector<String>();
 		// Sacamos la lista de hijos
 		NodeList LD = nodo.getChildNodes();
+
 		// Buscamos en la lista los nodos del tipo que queremos (tipolista)
 		int cont = 0;
 		while(cont<LD.getLength()){

@@ -136,10 +136,16 @@ public class Tabla {
 			foreigns.add(trio);
 		}
 	}
-	private void rectificaForeigns(){
+	private void rectificaForeigns(){	// TODO: RECTIFICAR ESTA COMPROBACION
 		for(int i =0; i < foreigns.size(); i++){
-			if(!foreigns.elementAt(i)[0].equalsIgnoreCase(atributos.elementAt(i)[0])){
-				foreigns.elementAt(i)[0] = atributos.elementAt(i)[0];
+			String[] fng = foreigns.elementAt(i);
+			for(int j =0; j < atributos.size(); j++) {
+				String[] attr = atributos.elementAt(j);
+
+				if (!fng[0].equalsIgnoreCase(attr[0]) && !attr[2].equals(this.nombreTabla)) {
+					//foreigns.elementAt(i)[0] = atributos.elementAt(j)[0];
+					j = atributos.size();
+				}
 			}
 		}
 	}

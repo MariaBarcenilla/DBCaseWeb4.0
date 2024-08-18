@@ -388,8 +388,7 @@ public class GoogleserviceApplication {
 		//POR TANTO LOS OBJETOS QUE SE CREAN EN AMBAS LLAMAS SE MANTIENEN PERSISTENTES EN 
 		//LA EJECUCIÓN.
 
-		// TODO: Modificar generación esquemas con y sin agregación
-		generateEsquema(nodes,edges,c,false,mapaAgregacion_nodosNombres);	// Genera esquema sin agregación
+		generateEsquema(nodes,edges,c,false, mapaAgregacion_nodosNombres);	// Genera esquema sin agregación
 		return generateEsquema(nodesAltoNivel,edgesAltoNivel,c,true,mapaAgregacion_nodosNombres);	// Genera esq agregación
 	}
 
@@ -526,9 +525,24 @@ public class GoogleserviceApplication {
 					c.mensajeDesde_PanelDiseno(TC.PanelDiseno_Click_EditarClavePrimariaAtributo,v1); 
 
 			}
-			//RELACION ENTRE RELACION Y ATRIBUTO (NO IMPLMENETADO), NO SE ESPERA ESTE ESCENARIO EN LA VERSION
+			//RELACION ENTRE RELACION Y ATRIBUTO
 			else if((dataParseada.get(edges.get(j).getFrom()) instanceof TransferRelacion) && (dataParseada.get(edges.get(j).getTo()) instanceof TransferAtributo)) {
-				//System.out.println("no implementado");
+				Vector<Object> v = new Vector<Object>();
+				String tamano = "";
+				TransferAtributo ta = (TransferAtributo)dataParseada.get(edges.get(j).getTo());
+				TransferRelacion tRelation = (TransferRelacion)dataParseada.get(edges.get(j).getFrom());
+				v.add(tRelation);
+				v.add(ta);
+				if (!tamano.isEmpty()) v.add(tamano);
+				c.mensajeDesde_GUI(TC.GUIAnadirAtributoRelacion_Click_BotonAnadir, v);
+				Vector<Object> v1= new Vector<Object>();
+				TransferAtributo clon_atributo2 = ta.clonar();
+				clon_atributo2.setClavePrimaria(false);
+				v1.add(clon_atributo2);
+				v1.add(tRelation);
+
+				if (ta.isClavePrimaria())
+					c.mensajeDesde_PanelDiseno(TC.PanelDiseno_Click_EditarClavePrimariaAtributo,v1);
 			}
 			//RELACION ENTRE RELACION Y ENTIDAD
 			else if(edges.get(j).getType() == null &&  (dataParseada.get(edges.get(j).getFrom()) instanceof TransferRelacion) && (dataParseada.get(edges.get(j).getTo()) instanceof TransferEntidad)) {
@@ -707,9 +721,26 @@ public class GoogleserviceApplication {
 				c.mensajeDesde_PanelDiseno(TC.PanelDiseno_Click_EditarClavePrimariaAtributo,v1);
 
 		}
-		//RELACION ENTRE RELACION Y ATRIBUTO NO ESTA CONTEMPLADO
+		//RELACION ENTRE RELACION Y ATRIBUTO
 		else if((dataParseada.get(edges.get(j).getFrom()) instanceof TransferRelacion) && (dataParseada.get(edges.get(j).getTo()) instanceof TransferAtributo)) {
-			System.out.println("no implementado");
+
+			Vector<Object> v = new Vector<Object>();
+			String tamano = "";
+			TransferAtributo ta = (TransferAtributo)dataParseada.get(edges.get(j).getTo());
+			TransferRelacion tRelation = (TransferRelacion)dataParseada.get(edges.get(j).getFrom());
+			v.add(tRelation);
+			v.add(ta);
+			if (!tamano.isEmpty()) v.add(tamano);
+			c.mensajeDesde_GUI(TC.GUIAnadirAtributoRelacion_Click_BotonAnadir, v);
+			Vector<Object> v1= new Vector<Object>();
+			TransferAtributo clon_atributo2 = ta.clonar();
+			clon_atributo2.setClavePrimaria(false);
+			v1.add(clon_atributo2);
+			v1.add(tRelation);
+
+			if (ta.isClavePrimaria())
+				c.mensajeDesde_PanelDiseno(TC.PanelDiseno_Click_EditarClavePrimariaAtributo,v1);
+
 		}
 		//RELACION ENTRE RELACION Y ENTIDAD
 		else if(edges.get(j).getType() == null &&  (dataParseada.get(edges.get(j).getFrom()) instanceof TransferRelacion) && (dataParseada.get(edges.get(j).getTo()) instanceof TransferEntidad)) {

@@ -148,7 +148,7 @@ public class DAORelaciones{
 			while (i<listaC.getChildNodes().getLength()){
 				n=this.dameNodoPedidoDeRelacion(listaC,"EntityAndArity");
 				if (n!=null)listaC.removeChild(n);
-				i++;
+				else i++;;
 			}
 			
 			for (int cont = 0; cont <tc.getListaEntidadesYAridades().size(); cont++) {
