@@ -222,7 +222,6 @@ $(document).ready(function () {
 			
 				for(var i = 0;i<edgesData.length;i++){
 					if(edgesData[i].participation){
-						//cambiado no entiendo el porque de copiar del edge 3 
 					//	console.log(edgesData[3]);
 					//	edgesData[i].labelFrom = edgesData[3].participationFrom;
 					//	edgesData[i].labelTo = edgesData[3].participationTo;
@@ -264,7 +263,7 @@ $(document).ready(function () {
 				}
 				
 				var edgesSuperData = edges_super.get();
-				console.log("edgesSuperData: "+edgesSuperData);
+				console.log("edgesSuperData: "+edgesSuperData.length);
 				for(var i = 0;i<edgesSuperData.length;i++){
 				    console.log("edgesSuperData entra");
 					if(edgesSuperData[i].participation){
@@ -273,14 +272,14 @@ $(document).ready(function () {
 					//	edgesSuperData[i].labelTo = edgesSuperData[3].participationTo;
 					}
 					var tempLabel = edgesSuperData[i].label;
-					if(edgesData[i].label){
+					if(edgesSuperData[i].label){
 						edgesSuperData[i].label = normalize(edgesSuperData[i].label);
 					}
 					var nameLabel = edgesSuperData[i].label;
 					traduct[nameLabel] = tempLabel;
 					
 					var tempName = edgesSuperData[i].name;
-					if(edgesData[i].name){
+					if(edgesSuperData[i].name){
 						edgesSuperData[i].name = normalize(edgesSuperData[i].name);
 					}
 					var nameName = edgesSuperData[i].name;

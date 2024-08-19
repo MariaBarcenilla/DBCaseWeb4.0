@@ -97,11 +97,14 @@ public class ValidadorBD extends GeneradorEsquema{
 		boolean valido=true;
 		int i=0;
 		TransferEntidad t = new TransferEntidad();
-		while (i<entidades.size()){
+		while (i<entidades.size() && valido){
 			t=entidades.elementAt(i);
-			//por ahora validamos las claves y avisamos de si es padre de varias isA
-			valido &= validaKey(t); //&& this.validaNombresAtributosEntidad(t);
-			validaFidelidadEntidadEnIsA(t);
+			// No validamos las claves si se trata de una agregacion
+			if(!t.getNombre().equals("agregacion")) {
+				//por ahora validamos las claves y avisamos de si es padre de varias isA
+				valido &= validaKey(t); //&& this.validaNombresAtributosEntidad(t);
+				validaFidelidadEntidadEnIsA(t);
+			}
 			i++;
 		}
 		return valido;

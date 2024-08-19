@@ -303,7 +303,7 @@ var network_super = new vis.Network(container_super, data_super, options);
         else{
 
             getNodesElementsWithSuperEntity(network.getSelectedNodes());    //get nodes connected to super entity
-            //console.log("super_node size:"+ nodes_super.length);
+            console.log("Añadimos AGRE");
             updateSuperEntityEdges();
 
             // Calculamos el tamaño y posición de la agregación en base al numero de elementos que la componen
@@ -490,14 +490,16 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
   }
 
   function updateSuperEntityEdges(){
+      console.log("updateSuperEntityEdges");
       var edge = edges.get();
       var superNodes = nodes_super.getIds();
-
   	  edge.forEach(function(edg) {
   	  // Añadimos los edges de los elementos que forman parte de la agregación
   		  if(superNodes.includes(edg.to) && superNodes.includes(edg.from)){
-              //console.log("edge To: "+edg.to + " - edge from: "+edg.from);
-              //edges_super.add(edg);
+              console.log("edge To: "+edg.to + " - edge from: "+edg.from);
+              edges_super.add(edg);
+              console.log("edges_super: "+edges_super.length);
+
   		  }
   	  });
     }
