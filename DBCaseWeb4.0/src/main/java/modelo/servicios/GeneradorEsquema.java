@@ -205,9 +205,9 @@ public class GeneradorEsquema {
 						clave[2] = previasPrimarias.get(q)[2];
 						primarias.add(clave);
 						
-						if(previasPrimarias.get(q)[2].equals("agregacion"))
+						/*if(previasPrimarias.get(q)[2].equals("agregacion"))
 							primariasEntidades.add(previasPrimarias.get(q)[3]);
-						else
+						else*/
 							primariasEntidades.add(previasPrimarias.get(q)[2]);
 
 						referenciadas[q] = previasPrimarias.get(q)[0];

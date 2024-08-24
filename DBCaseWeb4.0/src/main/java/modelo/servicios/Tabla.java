@@ -162,11 +162,11 @@ public class Tabla {
 			//if(par[3].contains("no_encont") || !tieneRol || !esRecur){
 			if(par[3].contains("no_encont") || !tieneRol){
 				if(tieneRol) trio[4] = trio[0];//guardo el rol
-
+/*
 				if(trio[0].contains("_"))
 				trio[0]	=trio[2].replace(".", "_");
 				else
-				trio[0] = listadoEntidades.elementAt(i)+"_"+trio[0] ;
+				trio[0] = listadoEntidades.elementAt(i)+"_"+trio[0] ;*/
 			}
 			foreigns.add(trio);
 
