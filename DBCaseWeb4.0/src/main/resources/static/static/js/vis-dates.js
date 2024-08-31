@@ -1745,3 +1745,37 @@ $(document).ready(function() {
     });
 });
 
+
+// Añadir el listener para la red de Vis.js
+network.on('click', function(params) {
+
+    var selectedNodes = network.getSelectedNodes();
+    var superNode = getSuperEntityNode();
+    var param = null;
+
+    if(superNode != null){
+        selectedNodes.forEach(function(nodeId) {
+            if(nodeId === superNode.id){
+                param = superNode.id;
+            }
+        });
+    }
+
+    if(param !=null){
+        document.addEventListener('keydown',function(event) {
+            eliminarNodoSeleccionado(event, param);  // Llama a la función con parámetros adicionales
+        });
+    }
+
+});
+
+// Definir la función de eliminación
+function eliminarNodoSeleccionado(event, param) {
+    if (event.key === 'Delete' || event.key === 'Del') {
+
+        if(param !==null) deleteSuperEntity(param);
+        // Remover el listener de teclado cuando se termine de usar
+    }
+    document.removeEventListener('keydown', eliminarNodoSeleccionado);
+
+}
