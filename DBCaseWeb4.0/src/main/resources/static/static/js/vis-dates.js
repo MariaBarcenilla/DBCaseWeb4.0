@@ -460,9 +460,10 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 
 	  nodesIds.forEach(function(nod) {
 	  //Actualizamos el campo si el nodo no es la agregación
-		  if(!nod.is_super_entity){
-              var node = nodes.get(nod);
-			  actionHistory.push({ type: 'addToSuperEntity', node: JSON.parse(JSON.stringify(nod)) });
+		  var node = nodes.get(nod)
+		  if(!node.is_super_entity){
+
+			  actionHistory.push({ type: 'addToSuperEntity', node: JSON.parse(JSON.stringify(node)) });
 			  console.log("[actionHistory] - addToSuperEntity: " + node.label);
 			  node.super_entity = true;
 			  nodes.update(node);
@@ -578,7 +579,7 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 	  
 	  if(weakEntity && elementWithRelation != null){
 		  idRelation = addRelation(relationEntity, "create", null, "back");
-		  addEntitytoRelation(data_element.id, "", "1to1", "", "1", "1", "create", idRelation, true, true);
+		  addEntitytoRelation(data_element.id, "", "1to1", "", "1", "1", "create", idRelation, true);
 		  addEntitytoRelation(parseInt(elementWithRelation), "", "1toN", "", "1", "N", "create", idRelation, false);
 	  }
 
@@ -795,17 +796,17 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 	  	break;
 	  	default:
 	  }
-	  
+
 	  if(roleName == "")
 		  center = "";
-	  else
+	  else{
 		  center = roleName;
-	  
+	  }
 	  if(partActive){
 		  labelText = "( "+minCardinality+" , "+maxCardinality+" ) "+ center;
 	  }else{
 		  labelText = center;
-	  } 	
+	  }
 
 	  var idEdge = existEdge(idSelected, idTo);
 
@@ -815,9 +816,13 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 
 	  if(action == "edit"){
 		  //console.log("edit relation edge");
+          actionHistory.push({ type: 'modifyEntityToRelation', edge: JSON.parse(JSON.stringify(edges.get(idEdge))) });
+          console.log("[actionHistory] - modifyEntityToRelation: " + edges.get(idEdge).from + " - " + edges.get(idEdge).to + " - "+edges.get(idEdge).label);
+
 		  var data_element3 = {width: 3,label: labelText, labelFrom:right, labelTo:left, name:center, participation:partActive ,participationFrom: minCardinality, participationTo: maxCardinality, smooth:false, arrows:{to: { enabled: direct1 }}};
 		  data_element3.id = element_role;
 		  edges.update(data_element3);
+
 		  if(inSuperEntity(idTo)){
 		    edges_super.update(data_element3);
 		  }
@@ -825,11 +830,15 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 	  }else{
 		  if(idEdge != null){
 		      //console.log("new relation edge exists");
+              actionHistory.push({ type: 'addEntityToRelation', edge: JSON.parse(JSON.stringify(edges.get(idEdge))) });
+              console.log("[actionHistory] - addEntityToRelation: " + edges.get(idEdge).from + " - " + edges.get(idEdge).to);
 			  data_element_update.id = idEdge;
 			  data_element_update.state = "left";
 			  data_element1.state = "right";
 			  edges.update(data_element_update);
 			  edges.add(data_element1);
+              actionHistory.push({ type: 'addNewEntityToRelation', edge: JSON.parse(JSON.stringify(edges.get(data_element1.id))) });
+              console.log("[actionHistory] - addNewEntityToRelation: " + data_element1.from + " - " + data_element1.to);
 			  if(inSuperEntity(idTo)){
                 edges_super.update(data_element_update);
                 edges_super.add(data_element1);
@@ -838,6 +847,8 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 		  }else{
 		      //console.log("new relation edge");
 			  edges.add(data_element);
+              actionHistory.push({ type: 'addNewEntityToRelation', edge: JSON.parse(JSON.stringify(edges.get(data_element.id))) });
+              console.log("[actionHistory] - addNewEntityToRelation: " + data_element.from + " - " + data_element.to);
 			  if(inSuperEntity(idTo)){
                 edges_super.add(data_element);
               }
@@ -891,8 +902,13 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
   }
   
   function removeEntitytoRelation(idEdge, action, idSelected){
+
 	  var idFrom = edges.get(idEdge).from;
 	  var idTo = edges.get(idEdge).to;
+
+      actionHistory.push({ type: 'deleteEntityToRelation', edge: JSON.parse(JSON.stringify(edges.get(idEdge))) });
+      console.log("[actionHistory] - deleteEntityToRelation: " + idFrom + " - " + idTo);
+
 	  edges.remove(idEdge);
 	  var idExist = existEdge(idFrom, idTo);
 	  if(idExist != null){
@@ -1767,12 +1783,16 @@ function eliminarNodoSeleccionado(event, param) {
 function undoLastAction() {
     if (actionHistory.length === 0) {
         console.log("No hay acciones para deshacer.");
+        console.log(nodes.length);
         return;
     }
 
     var lastAction = actionHistory.pop();
     console.log("Deshaciendo acción:", lastAction);
     console.log(actionHistory);
+
+    //  NODES ACTIONS
+
     if (lastAction.type === 'deleteNode') {
         // Restaurar el nodo al estado anterior
         nodes.update(lastAction.node);
@@ -1803,6 +1823,9 @@ function undoLastAction() {
         }
 
     }
+
+    //  SUPER ENTITY ACTIONS
+
     else if (lastAction.type === 'deleteSuperEntity') {
         // Restaurar el nodo al estado anterior
         console.log(" deleteSuperEntity " + lastAction.node.label);
@@ -1829,8 +1852,9 @@ function undoLastAction() {
         var cont = actionHistory.length-1;
         while(cont>=0 && actionHistory[cont].type === 'addToSuperEntity'){
             var nextAction = actionHistory.pop();
+            console.log(" nextAction: " + nextAction.node.label);
             nodes.update(nextAction.node);
-            //nodes_super.update(nextAction.node);
+            nodes_super.update(nextAction.node);
             cont--;
         }
         console.log(actionHistory);
@@ -1859,6 +1883,53 @@ function undoLastAction() {
             setSuperEntityCoordinates(true, getSuperEntityNode());
         }
 
+    }
+
+    //  RELATION ACTIONS
+
+    else if (lastAction.type === 'deleteEntityToRelation') {
+        // Restaurar el nodo al estado anterior
+        console.log(" deleteEntityToRelation " + lastAction.edge.from + " - " + lastAction.edge.to);
+        edges.update(lastAction.edge);
+        if(getSuperEntityNode !=null && inSuperEntity(lastAction.edge.to) && inSuperEntity(lastAction.edge.from)){
+            edges_super.update(lastAction.edge);
+        }
+    }
+
+    else if (lastAction.type === 'addNewEntityToRelation') {
+        // Restaurar el nodo al estado anterior
+        console.log(" addNewEntitytoRelation " + lastAction.edge.from + " - " + lastAction.edge.to);
+        edges.remove(lastAction.edge);
+
+        while(actionHistory[actionHistory.length-1].type === 'addEntitytoRelation'){
+            var nextAction = actionHistory.pop();
+            console.log(" nextAction: " + nextAction.edge.from + " - " + nextAction.edge.to);
+            edges.update(nextAction.edge);
+            if(getSuperEntityNode !=null && inSuperEntity(nextAction.edge.to) && inSuperEntity(nextAction.edge.from)){
+                edges_super.remove(nextAction.edge);
+            }
+        }
+        if(getSuperEntityNode !=null && inSuperEntity(lastAction.edge.to) && inSuperEntity(lastAction.edge.from)){
+            edges_super.remove(lastAction.edge);
+        }
+    }
+
+    else if (lastAction.type === 'addEntityToRelation') {
+        // Restaurar el nodo al estado anterior
+        console.log(" addEntityToRelation " + lastAction.edge.from + " - " + lastAction.edge.to);
+        edges.remove(lastAction.edge);
+        if(getSuperEntityNode !=null && inSuperEntity(lastAction.edge.to) && inSuperEntity(lastAction.edge.from)){
+            edges_super.remove(lastAction.edge);
+        }
+    }
+
+    else if (lastAction.type === 'modifyEntityToRelation') {
+        // Restaurar el nodo al estado anterior
+        console.log(" modifyEntitytoRelation " + lastAction.edge.from + " - " + lastAction.edge.to);
+        edges.update(lastAction.edge);
+        if(getSuperEntityNode !=null && inSuperEntity(lastAction.edge.to) && inSuperEntity(lastAction.edge.from)){
+            edges_super.update(lastAction.edge);
+        }
     }
 
     updateTableElements();
