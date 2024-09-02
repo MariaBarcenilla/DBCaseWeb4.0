@@ -110,15 +110,16 @@ var network_super = new vis.Network(container_super, data_super, options);
 	  nodes_super.forEach(function(nod) {
 		  //console.log("nodes_super id: " + nod.id);
 		  // Desmarcamos los elementos que forman parte de la entidad
-		  nodes.update({id:nod.id, super_entity:false});
-		  nodes_super.remove(nod.id);
 		  actionHistory.push({ type: 'deleteFromSuperEntity', node: JSON.parse(JSON.stringify(nod)) });
 		  console.log("[actionHistory] - deleteFromSuperEntity: " + nod.label);
+		  nodes.update({id:nod.id, super_entity:false});
+		  nodes_super.remove(nod.id);
+
 
 	  });
 	  //deleteSuperEntityAndEelements(idNodo);
 	  actionHistory.push({ type: 'deleteSuperEntity', node: JSON.parse(JSON.stringify(superNode)) });
-	  console.log("[actionHistory] - deleteSuperEntity: " + SuperNode.label);
+	  console.log("[actionHistory] - deleteSuperEntity: " + superNode.label);
 
 	  nodes.remove(idNode);
       nodes_super.clear();
@@ -140,7 +141,7 @@ var network_super = new vis.Network(container_super, data_super, options);
       });
       // Eliminamos la agregación
       actionHistory.push({ type: 'deleteSuperEntity', node: JSON.parse(JSON.stringify(superNode)) });
-      console.log("[actionHistory] - deleteSuperEntity: " + nod.label);
+      console.log("[actionHistory] - deleteSuperEntity: " + superNode.label);
 	  nodes.remove(idNode);
 	  //nodes_super.remove(idNode);
 	  nodes_super.clear();
@@ -461,9 +462,10 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 	  //Actualizamos el campo si el nodo no es la agregación
 		  if(!nod.is_super_entity){
               var node = nodes.get(nod);
-			  nodes.update({id: nod, super_entity: true});
-			  actionHistory.push({ type: 'addToSuperEntity', node: JSON.parse(JSON.stringify(node)) });
+			  actionHistory.push({ type: 'addToSuperEntity', node: JSON.parse(JSON.stringify(nod)) });
 			  console.log("[actionHistory] - addToSuperEntity: " + node.label);
+			  node.super_entity = true;
+			  nodes.update(node);
 			  nodes_super.add(node);
 
 			  // Buscamos los atributos de las entidades y relaciones que forman parte de la agregación
@@ -473,9 +475,9 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
                   entityAttr.forEach(function(attr){
                     //Actualizamos el campo si el nodo no está seleccionado
                     if(!nodesIds.includes(attr.id)){
-                        nodes.update({id: attr.id, super_entity: true});
                         actionHistory.push({ type: 'addToSuperEntity', node: JSON.parse(JSON.stringify(attr)) });
                         console.log("[actionHistory] - addToSuperEntity: " + attr.label);
+                        nodes.update({id: attr.id, super_entity: true});
                         var aux = nodes.get(attr.id);
                         nodes_super.add(aux);
                     }
@@ -484,9 +486,9 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
                     subAttr.forEach(function(sAttr){
                          //Actualizamos el campo si el nodo no está seleccionado
                          if(!nodesIds.includes(sAttr.id)){
-                            nodes.update({id: sAttr.id, super_entity: true});
                             actionHistory.push({ type: 'addToSuperEntity', node: JSON.parse(JSON.stringify(sAttr)) });
                             console.log("[actionHistory] - addToSuperEntity: " + sAttr.label);
+                            nodes.update({id: sAttr.id, super_entity: true});
                             var auxS = nodes.get(sAttr.id);
                             nodes_super.add(auxS);
                          }
@@ -498,9 +500,9 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
                   relationAttr.forEach(function(attr){
                     //Actualizamos el campo si el nodo no está seleccionado
                     if(!nodesIds.includes(attr.id)){
-                        nodes.update({id: attr.id, super_entity: true});
                         actionHistory.push({ type: 'addToSuperEntity', node: JSON.parse(JSON.stringify(attr)) });
                         console.log("[actionHistory] - addToSuperEntity: " + attr.label);
+                        nodes.update({id: attr.id, super_entity: true});
                         var aux = nodes.get(attr.id);
                         nodes_super.add(aux);
                     }
@@ -510,9 +512,9 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
                     subAttr.forEach(function(sAttr){
                          //Actualizamos el campo si el nodo no está seleccionado
                          if(!nodesIds.includes(sAttr.id)){
-                            nodes.update({id: sAttr.id, super_entity: true});
                             actionHistory.push({ type: 'addToSuperEntity', node: JSON.parse(JSON.stringify(attr)) });
                             console.log("[actionHistory] - addToSuperEntity: " + attr.label);
+                            nodes.update({id: sAttr.id, super_entity: true});
                             var auxS = nodes.get(sAttr.id);
                             nodes_super.add(auxS);
                          }
