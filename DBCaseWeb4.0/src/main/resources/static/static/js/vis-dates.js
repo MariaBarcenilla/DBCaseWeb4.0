@@ -118,7 +118,7 @@ var network_super = new vis.Network(container_super, data_super, options);
 	  });
 	  //deleteSuperEntityAndEelements(idNodo);
 	  actionHistory.push({ type: 'deleteSuperEntity', node: JSON.parse(JSON.stringify(superNode)) });
-	  console.log("[actionHistory] - deleteSuperEntity: " + nod.label);
+	  console.log("[actionHistory] - deleteSuperEntity: " + SuperNode.label);
 
 	  nodes.remove(idNode);
       nodes_super.clear();
@@ -640,14 +640,15 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 		  }
 		  //console.log("[Relation] - idCount: " + idCount + ", label: " + nombre + ", idSuperEntityCount: " + idSuperEntityCount);
 		  //console.log("[Relation (x, y) - (size) ]: ( "+ data_element.x +", " +data_element.y + " ) - ( " + data_element.size + " )");
+		  nodes.add(data_element);
 		  actionHistory.push({ type: 'addNode', node: JSON.parse(JSON.stringify(nodes.get(data_element.id))) });
 		  console.log("[actionHistory] - addNode: " + data_element.label);
-		  nodes.add(data_element);
 		  idCount++;
 	  }
 	  if(origin != "front"){
 		  return data_element.id;
 	  }
+	  updateTableElements();
   }
   
   function addIsA(){    //TODO: Añadir opcion de editar en todas las opciones del elemento
@@ -675,9 +676,10 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
               data_element.x = poscSelection.x;
               data_element.y = poscSelection.y;
           }
+
+          nodes.add(data_element);
           actionHistory.push({ type: 'addNode', node: JSON.parse(JSON.stringify(nodes.get(data_element.id))) });
           console.log("[actionHistory] - addNode: " + data_element.label);
-          nodes.add(data_element);
 	  //}
 	  idCount = idCount + 1;
 	  updateTableElements();
@@ -1167,9 +1169,11 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
             //Añadimos atributo a agregación
            if(inSuperEntity(parseInt(idAttribute))){
                 data_element.super_entity = true;
-                //Añadimos el nodo
+                //Añadimos el nodoV
                 nodes.add(data_element);
                 nodes_super.add(data_element);
+                actionHistory.push({ type: 'addToSuperEntity', node: JSON.parse(JSON.stringify(nodes.get(data_element.id))) });
+                console.log("[actionHistory] - addToSuperEntity: " + data_element.label);
                 // Añadimos los edges
                 edges.add({from: parseInt(idAttribute), to: parseInt(idCount), color:{color:'#22bdb1'},width: 2});//cambiado
                 updateSuperEntityEdges();
@@ -1189,7 +1193,7 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 		  edges.add({from: parseInt(idAttribute), to: parseInt(idCount), color:{color:'blue'}});
 */
 	  }
-
+    updateTableElements();
 }
   
   function fillEditAtributte(idNodo){
