@@ -216,7 +216,7 @@ function eventEventPrimaryKeyAttribute(){
 }
 
 function eventAddEntity(){
-    console.log("EVENT ADD ENTITY");
+    //console.log("EVENT ADD ENTITY");
 	$("#weak-entity").change(function() {
 		if( $('#weak-entity').prop('checked') ){
 			if($('#ent_length').val() == 0 || ($('#ent_length').val() == 1 && $('#typeAction').val() == "edit")){

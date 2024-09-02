@@ -43,7 +43,7 @@ $(document).ready(function () {
 			// Al esconder el modal
 			$('#modalAddItem').on('hide.bs.modal', function () {
 				switch($("#tipoAdd").val()){
-					case "addEntity": console.log("TIPO ADD");
+					case "addEntity": //console.log("TIPO ADD");
 					break;
 					case "addRelation":
 					case "addDomain":
@@ -490,7 +490,7 @@ $(document).ready(function () {
                		addConstrainst($('input[name=listText\\[\\]]').serializeArray(),$('#idSelected').val(), $('#typeAction').val());
       	          	    break;
       	          	case "addEntity":
-                        console.log("add entity modal");
+                        //console.log("add entity modal");
       	          		addEntity($('#recipient-name').val(), $('#weak-entity').prop('checked'),$('#typeAction').val(),$('#idSelected').val(), $("#element").val(), $("#relationEntity").val());
       	          	    break;
       	          	case "addRelation":
