@@ -877,6 +877,8 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 		  edges.update(data_element);
 	  }else{
 		  edges.add(data_element);
+          actionHistory.push({ type: 'addEntityToRelation', edge: JSON.parse(JSON.stringify(edges.get(data_element.id))) });
+          console.log("[actionHistory] - addEntityToRelation: " + edges.get(data_element.id).from + " - " + edges.get(data_element.id).to);
 	  }
 	  
 	  nodes.update({id: parseInt(idSelected), parent: parseInt(idTo)});
@@ -889,13 +891,19 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
    * @returns
    */
   function removeParentIsA(idNodo){
-	  var idParent = nodes.get(parseInt(idNodo)).parent;
+	  var isA = nodes.get(parseInt(idNodo));
+	  var idParent = isA.parent;
+      actionHistory.push({ type: 'modifyNode', node: JSON.parse(JSON.stringify(isA)) });
+      console.log("[actionHistory] - modifyNode: " + isA.label);
 	  nodes.get(parseInt(idNodo)).parent = undefined;
 	  var allData = allEntitysToRelation(idNodo);
 	  
 	  allData.forEach(function (key){
-		  if(nodes.get(idParent).label == key.label)
+		  if(nodes.get(idParent).label == key.label){
+              actionHistory.push({ type: 'deleteIsARelation', edge: JSON.parse(JSON.stringify(edges.get(key.id))) });
+              console.log("[actionHistory] - deleteIsARelation: " + key.label);
 			  edges.remove(key.id);
+          }
 	  });
 	  nodes.update({id: parseInt(idNodo), parent: undefined});
 	  updateTableElements();
@@ -915,6 +923,8 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 		  var data_element_update = {};
 		  data_element_update.id = idExist;
 		  data_element_update.state = "false";
+          actionHistory.push({ type: 'modifyOtherEntityToRelation', edge: JSON.parse(JSON.stringify(edges.get(idExist))) });
+          console.log("[actionHistory] - modifyOtherEntityToRelation: " + edges.get(idExist).from + " - " + edges.get(idExist).to);
 		  edges.update(data_element_update);
 	  }
 	  updateTableElements();
@@ -1149,12 +1159,16 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
   }
   
   function addEntityChild(idTo, action, idSelected){
-	  var data_element = {from: parseInt(idSelected),type:"child", to: parseInt(idTo),arrows: 
+	  console.log(" <-- addEntityChild -->");
+	  var data_element = {from: parseInt(idSelected),type:"child", to: parseInt(idTo),arrows:
 	  						{from: { enabled: false },middle: { enabled: false },to: { enabled: true }
 	  						}
 	  					};
 	  if(existEdge(idSelected, idTo) == null){
+	    console.log("wwww");
 		  edges.add(data_element);
+          actionHistory.push({ type: 'addEntityToRelation', edge: JSON.parse(JSON.stringify(edges.get(data_element.id))) });
+          console.log("[actionHistory] - addEntityToRelation: " + edges.get(data_element.id).from + " - " + edges.get(data_element.id).to);
 	  }
 	  updateTableElements();
   }
@@ -1520,20 +1534,23 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
   }
 
   function allAttributeOfEntity(nodo_select){
-	  var data = [];
-	  var nodos = network.getConnectedEdges(parseInt(nodo_select));
-	  nodos.forEach(function(edg) {
-          var aux = nodes.get(nodo_select);
-          //console.log("nodo_Select: "+nodo_select+" aux: "+ aux.label);
 
-		  	idNodo = edges.get(edg).to;
-		  	roleName = edges.get(edg).label;
-		  	if(nodes.get(idNodo).shape == "ellipse"){
-		  		//console.log("entra en if");
-		  		data.push({id:idNodo, label:nodes.get(idNodo).labelBackend, type:nodes.get(idNodo).dataAttribute.domain, size:nodes.get(idNodo).dataAttribute.size});
-		  		//console.log("idNodo: "+data[0].label);
-		  		//console.log("data: "+data);
-	  }});
+	  var data = [];
+	  if(nodes.get(nodo_select).shape !== 'ellipse'){
+          var nodos = network.getConnectedEdges(parseInt(nodo_select));
+          nodos.forEach(function(edg) {
+              var aux = nodes.get(nodo_select);
+              //console.log("nodo_Select: "+nodo_select+" aux: "+ aux.label);
+
+                idNodo = edges.get(edg).to;
+                roleName = edges.get(edg).label;
+                if(nodes.get(idNodo).shape == "ellipse"){
+                    //console.log("entra en if");
+                    data.push({id:idNodo, label:nodes.get(idNodo).labelBackend, type:nodes.get(idNodo).dataAttribute.domain, size:nodes.get(idNodo).dataAttribute.size});
+                    //console.log("idNodo: "+data[0].label);
+                    //console.log("data: "+data);
+          }});
+	  }
 	  return data;
   }
 
@@ -1614,25 +1631,40 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 	    deleteSuperEntity(id);
 	}
 	else{
-	dat.forEach(function(id) {
-	    var nod = nodes.get(id);
-        actionHistory.push({ type: 'deleteNode', node: JSON.parse(JSON.stringify(nod)) });
-        console.log("[actionHistory] - deleteNode: " + nod.label);
+        actionHistory.push({ type: 'stopDelete', node: null});
+        console.log("[actionHistory] - stopDelete ");
 
-		var attr = allAttributeOfEntity(id);
-		//console.log("delete node selected id: " + id);
-		attr.forEach(function(elem) {
-            //console.log("Eliminamos id: " + elem);
-//		    if(elem.is_super_entity) idSuperEntityCount--;
-			attrsId.push(elem.id);
-		});
+        dat.forEach(function(id) {
+            var nod = nodes.get(id);
+            actionHistory.push({ type: 'deleteNode', node: JSON.parse(JSON.stringify(nod)) });
+            console.log("[actionHistory] - deleteNode: " + nod.label);
 
-		//console.log("Eliminamos id: " + id.id);
-		//if(id.is_super_entity) idSuperEntityCount--;
-        //else idCount--;
-        attrsId.push(id);
+            // Borramos los ATRIBUTOS conectados
 
-	});
+            var attr = allAttributeOfEntity(id);
+
+            attr.forEach(function(elem) {
+                actionHistory.push({ type: 'deleteNode', node: JSON.parse(JSON.stringify(nodes.get(elem.id))) });
+                console.log("[actionHistory] - deleteNode: " + nodes.get(elem.id).label);
+                attrsId.push(elem.id);
+            });
+
+            attrsId.push(id);
+
+            // Borramos los EDGES conectados
+
+            var connectedEdges = network.getConnectedEdges(id);
+
+            connectedEdges.forEach(function(edg) {
+                actionHistory.push({ type: 'deleteEdge', edge: JSON.parse(JSON.stringify(edges.get(edg.id))) });
+                console.log("[actionHistory] - deleteEdge: " + nodes.get(edg.from).label + " - " + nodes.get(edg.to).label);
+                edges.remove(edg.id);
+                connectedEdges.push(edg.id);
+            });
+
+            connectedEdges.push(id);
+
+        });
 	}
 	
 	network.selectNodes(attrsId);
@@ -1800,6 +1832,9 @@ function undoLastAction() {
             nodes_super.update(lastAction.node);
             setSuperEntityCoordinates(true, getSuperEntityNode());
         }
+        var nextAction = actionHistory[actionHistory.length - 1];
+        if(nextAction.type !== 'stopDelete') undoLastAction();
+        else actionHistory.pop();
         /*else if(lastAction.node.is_super_entity){
             deleteSuperEntity(lastAction.node.id);
         }*/
@@ -1894,8 +1929,8 @@ function undoLastAction() {
         if(getSuperEntityNode !=null && inSuperEntity(lastAction.edge.to) && inSuperEntity(lastAction.edge.from)){
             edges_super.update(lastAction.edge);
         }
+        if(actionHistory[actionHistory.length-1] === 'modifyOtherEntityToRelation') undoLastAction();
     }
-
     else if (lastAction.type === 'addNewEntityToRelation') {
         // Restaurar el nodo al estado anterior
         console.log(" addNewEntitytoRelation " + lastAction.edge.from + " - " + lastAction.edge.to);
@@ -1913,7 +1948,6 @@ function undoLastAction() {
             edges_super.remove(lastAction.edge);
         }
     }
-
     else if (lastAction.type === 'addEntityToRelation') {
         // Restaurar el nodo al estado anterior
         console.log(" addEntityToRelation " + lastAction.edge.from + " - " + lastAction.edge.to);
@@ -1922,14 +1956,39 @@ function undoLastAction() {
             edges_super.remove(lastAction.edge);
         }
     }
-
-    else if (lastAction.type === 'modifyEntityToRelation') {
+    else if (lastAction.type === 'modifyEntityToRelation' || lastAction.type === 'modifyOtherEntityToRelation') {
         // Restaurar el nodo al estado anterior
         console.log(" modifyEntitytoRelation " + lastAction.edge.from + " - " + lastAction.edge.to);
         edges.update(lastAction.edge);
         if(getSuperEntityNode !=null && inSuperEntity(lastAction.edge.to) && inSuperEntity(lastAction.edge.from)){
             edges_super.update(lastAction.edge);
         }
+    }
+
+    // ISA ACTIONS
+
+    else if (lastAction.type === 'deleteIsARelation') {
+        // Restaurar el nodo al estado anterior
+        console.log(" deleteIsARelation " + lastAction.edge.from + " - " + lastAction.edge.to);
+        edges.update(lastAction.edge);
+        if(getSuperEntityNode !=null && inSuperEntity(lastAction.edge.to) && inSuperEntity(lastAction.edge.from)){
+            edges_super.update(lastAction.edge);
+        }
+        if(actionHistory[actionHistory.length - 1].type === 'modifyNode') undoLastAction();
+
+    }
+
+    // EDGES ACTIONS
+
+    else if (lastAction.type === 'deleteEdge'){
+        edges.update(lastAction.edge);
+/*        if(lastAction.node.super_entity) {
+            nodes_super.update(lastAction.node);
+            setSuperEntityCoordinates(true, getSuperEntityNode());
+        }*/
+        var nextAction = actionHistory[actionHistory.length - 1];
+        if(nextAction.type !== 'stopDelete') undoLastAction();
+        else actionHistory.pop();
     }
 
     updateTableElements();
