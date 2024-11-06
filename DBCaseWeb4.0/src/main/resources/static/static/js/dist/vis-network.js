@@ -25936,11 +25936,11 @@
 		            //ctx.fillStyle ='#28a745';// '#268D3E';//agregado
 		            if (block.strokeWidth > 0) {
 		            	if(this.elementOptions.state == "left" || this.elementOptions.state == "right"){
-		            		if(this.elementOptions.state == "right"){
+		            		if(this.elementOptions.state == "left"){
 		            		//	ctx.fillStyle = 'yellow';//cambiado
 		            			ctx.strokeText(block.text, x + width+45, y + block.vadjust);
 		            		}
-		      	    	  	if(this.elementOptions.state == "left"){
+		      	    	  	if(this.elementOptions.state == "right"){
 		      	    	  	//CAMBIADO	ctx.fillStyle = 'yellow';//cambiado
 		      	    	  		ctx.strokeText(block.text, x + width-30, y + block.vadjust);
 		      	    	  	}
@@ -29285,7 +29285,6 @@
 	  }, {
 	    key: "draw",
 	    value: function draw(ctx) {
-	      //console.log("Executing draw node");
 	      var values = this.getFormattingValues();
 	      this.shape.draw(ctx, this.x, this.y, this.selected, this.hover, values, this.options.isWeak);
 	    }
@@ -31523,7 +31522,7 @@
 
 	  }, {
 	    key: "getArrowData",
-	    value: function getArrowData(ctx, position, viaNode, _selected, _hover, values) {       //todo: investigar si aplica
+	    value: function getArrowData(ctx, position, viaNode, _selected, _hover, values) {
 	      // set lets
 	      var angle;
 	      var arrowPoint;
@@ -31543,7 +31542,6 @@
 	      } else if (position === "to") {
 	        node1 = this.to;
 	        node2 = this.from;
-	        //console.log("node to - from:" + node1 +" - "+ node2);
 	        reversed = values.toArrowScale < 0;
 	        scaleFactor = Math.abs(values.toArrowScale);
 	        type = values.toArrowType;
@@ -31647,7 +31645,7 @@
 
 	  }, {
 	    key: "drawArrowHead",
-	    value: function drawArrowHead(ctx, values, _selected, _hover, arrowData) {//todo: investigar endpoints y dibujar a la izq o la derecha la flecha
+	    value: function drawArrowHead(ctx, values, _selected, _hover, arrowData) {
 	      // set style
 	      ctx.strokeStyle = this.getColor(ctx, values);
 	      ctx.fillStyle = ctx.strokeStyle;
@@ -33161,7 +33159,6 @@
 	  }, {
 	    key: "draw",
 	    value: function draw(ctx) {
-	      //console.log("Executing draw edge " + this.getFormattingValues().toArrow);
 	      var values = this.getFormattingValues();
 
 	      if (values.hidden) {
@@ -33171,15 +33168,10 @@
 
 	      var viaNode = this.edgeType.getViaNode();
 	      var arrowData = {}; // restore edge targets to defaults
-            /////console.log("this.edgeType.getViaNode(): " + this.edgeType.getViaNode());
+
 	      this.edgeType.fromPoint = this.edgeType.from;
 	      this.edgeType.toPoint = this.edgeType.to; // from and to arrows give a different end point for edges. we set them here
-           /* console.log("this.edgeType.id: " + this.edgeType.id);
-            console.log("this.edgeType.from: " + this.edgeType.from.id);
-            console.log("this.edgeType.to: " + this.edgeType.to.id);
-            console.log("this.edgeType.label: " + edges.get(this.edgeType.id).label);
-            console.log("this.edgeType.state: " + edges.get(this.edgeType.id).state);
-            console.log("this.edgeType.arrows.to.enabled: " + edges.get(this.edgeType.id).arrows.to.enabled);*/
+
 	      if (values.fromArrow) {
 	        arrowData.from = this.edgeType.getArrowData(ctx, "from", viaNode, this.selected, this.hover, values);
 	        if (values.arrowStrikethrough === false) this.edgeType.fromPoint = arrowData.from.core;
@@ -33203,7 +33195,6 @@
 
 	        if (values.toArrowSrc) {
 	          arrowData.to.image = this.imagelist.load(values.toArrowSrc);
-	          ///console.log("toArrowScr");
 	        }
 
 	        if (values.toArrowImageWidth) {
@@ -33213,7 +33204,6 @@
 	        if (values.toArrowImageHeight) {
 	          arrowData.to.imageHeight = values.toArrowImageHeight;
 	        }
-	        //console.log("arrowData.to: "+arrowData.to.id);
 	      } // the middle arrow depends on the line, which can depend on the to and from arrows so we do this one lastly.
 
 
@@ -33248,7 +33238,6 @@
 	  }, {
 	    key: "drawArrows",
 	    value: function drawArrows(ctx, arrowData, values) {
-	      ///console.log("drawArrows("+this.selected+", "+arrowData.to+", "+values);
 	      if (values.fromArrow) {
 	        this.edgeType.drawArrowHead(ctx, values, this.selected, this.hover, arrowData.from);
 	      }
@@ -33259,7 +33248,6 @@
 
 	      if (values.toArrow) {
 	        this.edgeType.drawArrowHead(ctx, values, this.selected, this.hover, arrowData.to);
-	        ///console.log("drawArrows("+ctx+", "+arrowData+", "+values);//
 	      }
 	    }
 	    /**
@@ -33269,9 +33257,8 @@
 	     */
 
 	  }, {
-	    key: "drawLabel",       //todo : investigar como arreglar la posicion del label
+	    key: "drawLabel",
 	    value: function drawLabel(ctx, viaNode) {
-	      ///console.log("drawLabel id: " + this.edgeType.id);
 	      if (this.options.label !== undefined) {
 	        // set style
 	        var node1 = this.from;
@@ -33284,10 +33271,6 @@
 	        if (node1.id != node2.id) {
 	          this.labelModule.pointToSelf = false;
 	          var point = this.edgeType.getPoint(0.5, viaNode);
-	          ///console.log("point x: "+point.x + " point y: "+point.y );
-	          var aux = nodes.get(node1).x;
-	          //if(aux > point.x && )
-	          ///console.log("point x: "+edges.get(this.edgeType.id).x + " point y: "+point.y + " state: "+edges.get(this.edgeType.id).state);
 	          ctx.save();
 
 	          var rotationPoint = this._getRotation(ctx);
@@ -38305,7 +38288,6 @@
 
 	        if (hidden === false) {
 	          if ((this.dragging === false || this.dragging === true && this.options.hideEdgesOnDrag === false) && (this.zooming === false || this.zooming === true && this.options.hideEdgesOnZoom === false)) {
-	            ///console.log("Calling drawEdges");
 	            this._drawEdges(ctx);
 	          }
 	        }
@@ -38430,7 +38412,6 @@
 	  }, {
 	    key: "_drawEdges",
 	    value: function _drawEdges(ctx) {
-	      ///console.log("Executing drawEdges");
 	      var edges = this.body.edges;
 	      var edgeIndices = this.body.edgeIndices;
 	      var edge;
@@ -38439,7 +38420,6 @@
 	        edge = edges[edgeIndices[i]];
 
 	        if (edge.connected === true) {
-	          ///console.log("Calling draw "+edge.id);
 	          edge.draw(ctx);
 	        }
 	      }

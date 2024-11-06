@@ -219,7 +219,7 @@
 					{{/each}}
 				</select>
 
-				<label for="element_role" id="element_role_label" class="col-form-label d-none" th:text="#{textosId.relation}"></label>
+				<label for="element_role" id="element_role_label" class="col-form-label d-none" th:text="#{textos.roleName}"></label>
             		<select id="element_role" class="form-control d-none">
             			{{each(i,v) temp_node_roles}}
 							<option value='${v.id}' >${v.label} - ${v.asoc} - ${v.role}</option>

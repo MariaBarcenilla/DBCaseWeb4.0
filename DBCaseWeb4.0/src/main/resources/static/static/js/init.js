@@ -634,7 +634,6 @@ $(document).ready(function () {
 	        		  var hayRol = false;
 					  var rol = "";
 	        		  if(nodoRoles.length >0){
-	        		  	console.log("hay roles");
 	        		  	if(nodoRoles[0].role.indexOf("(")!=-1){
 							min=nodoRoles[0].role.slice(2,nodoRoles[0].role.indexOf(",")).trim();
 							max=nodoRoles[0].role.slice(nodoRoles[0].role.indexOf(",") +1,nodoRoles[0].role.indexOf(")") -1).trim();
@@ -647,8 +646,7 @@ $(document).ready(function () {
 						}
 					  }
 
-	        		  if(rol.length>0 && rol != " " && action=='edit')hayRol=true;
-	        		  if(rol.length>0 && rol != " " && action=='edit')console.log("hayRol: "+hayRol);
+	        		  if(rol.length>0 && action=='edit')hayRol=true;
 
 	        		  if(action == 'edit' && nodoRoles.length ==0 ){
 						  esEditYRol = true;

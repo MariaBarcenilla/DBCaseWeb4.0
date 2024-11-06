@@ -6,11 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="1315e99e-3e67-4058-8134-b48eb3379318" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/static/js/dist/vis-network.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/static/js/dist/vis-network.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/static/js/events.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/static/js/events.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/static/js/init.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/static/js/init.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/language/messages.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/language/messages.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/language/messages_en.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/language/messages_en.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/static/static/js/vis-dates.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/static/js/vis-dates.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/templatesModal.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/templatesModal.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -676,10 +674,5 @@
         <watch expression="id" />
       </configuration>
     </watches-manager>
-  </component>
-  <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/DBCaseWeb4_0$GoogleserviceApplication.ic" NAME="GoogleserviceApplication Coverage Results" MODIFIED="1729201162299" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
-      <FILTER>com.tfg.ucm.DBCaseWeb.*</FILTER>
-    </SUITE>
   </component>
 </project>

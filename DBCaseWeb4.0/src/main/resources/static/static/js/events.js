@@ -79,13 +79,10 @@ function eventsEntityToRelation(){
 	$("#element,#element_role, #roleName, #max1,#parcial, #total, #maxN").change(function(){
 		var idF = $("#element").val();
 		var idT = $("#idSelected").val();
-		var idEdge = existEdge(idF, idT, null);
+		var idEdge = existEdge(idF, idT);
 		//console.log(idEdge);
-		if(idEdge){ // TODO: add logica para edit
-			var edgeLabel = edges.get(idEdge).label;
-            //console.log("$'#typeAction').val() "+ $("#typeAction").val() + "  label rol " + edgeLabel);
-			if($("#roleName").val() == "" && $("#typeAction").val()== 'create'&& edgeLabel.length <= 0 && existOtherEdge(idF, idT, null) !=null){
-				console.log("entra con create");
+		if(idEdge){
+			if($("#roleName").val() == "" && $("#typeAction").val()== 'create'){
 				$("#insertModal").prop("disabled", true);
 				if($("#textWarning").length == 0){
 
@@ -165,12 +162,10 @@ function eventsEntityToRelation(){
 	$('#modalAddItem').on('shown.bs.modal', function (e) {
 		var idF = $("#element").val();
 		var idT = $("#idSelected").val();
-		var idEdge = existEdge(idF, idT, null);
+		var idEdge = existEdge(idF, idT);
 		//console.log(idEdge);
 		if(idEdge) {
-		    var edgeLabel = edges.get(idEdge).label;
-		    console.log("label add rol " + edgeLabel);
-			if ($("#roleName").val() == "" && $("#typeAction").val()== 'create' && edgeLabel.length <= 0 && existOtherEdge(idF, idT, null) !=null) {
+			if ($("#roleName").val() == "" && $("#typeAction").val()== 'create') {
 				$("#roleName").val("ROL");
 			}
 		}else if ($("#typeAction").val()== 'create'){
