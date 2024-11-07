@@ -108,6 +108,10 @@ var network_super = new vis.Network(container_super, data_super, options);
     console.log("deleting superEntity");
 	  var idNode = parseInt(idNodo);
 	  var superNode = nodes.get(idNode);
+
+	  actionHistory.push({ type: 'startSuperEntityDelete', node: null});
+      console.log("[actionHistory] - startSuperEntityDelete ");
+
 	  nodes_super.forEach(function(nod) {
 		  //console.log("nodes_super id: " + nod.id);
 		  // Desmarcamos los elementos que forman parte de la entidad
@@ -120,6 +124,8 @@ var network_super = new vis.Network(container_super, data_super, options);
 	  //deleteSuperEntityAndEelements(idNodo);
 	  actionHistory.push({ type: 'deleteSuperEntity', node: JSON.parse(JSON.stringify(superNode)) });
 	  console.log("[actionHistory] - deleteSuperEntity: " + superNode.label);
+      actionHistory.push({ type: 'stopSuperEntityDelete', node: null});
+      console.log("[actionHistory] - stopSuperEntityDelete ");
 
 	  nodes.remove(idNode);
       nodes_super.clear();
@@ -132,6 +138,9 @@ var network_super = new vis.Network(container_super, data_super, options);
 	  var idNode = parseInt(idNodo);
 	  var superNode = nodes.get(idNode);
 	  console.log("deleteSuperEntityAndEelements: "+ idNode);
+	  actionHistory.push({ type: 'startSuperEntityDelete', node: null});
+      console.log("[actionHistory] - startSuperEntityDelete ");
+
 	  nodes_super.forEach(function(nod) {
           //nodes.update({id:nod.id, super_entity:false});
           // Eliminamos los nodos que forman parte de la agregación
@@ -143,6 +152,10 @@ var network_super = new vis.Network(container_super, data_super, options);
       // Eliminamos la agregación
       actionHistory.push({ type: 'deleteSuperEntity', node: JSON.parse(JSON.stringify(superNode)) });
       console.log("[actionHistory] - deleteSuperEntity: " + superNode.label);
+
+      actionHistory.push({ type: 'stopSuperEntityDelete', node: null});
+      console.log("[actionHistory] - stopSuperEntityDelete ");
+
 	  nodes.remove(idNode);
 	  //nodes_super.remove(idNode);
 	  nodes_super.clear();
@@ -1709,8 +1722,8 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 	    deleteSuperEntity(id);
 	}
 	else{
-        actionHistory.push({ type: 'stopDelete', node: null});
-        console.log("[actionHistory] - stopDelete ");
+        actionHistory.push({ type: 'startDelete', node: null});
+        console.log("[actionHistory] - startDelete ");
 
         dat.forEach(function(id) {
             var nod = nodes.get(id);
@@ -1757,8 +1770,8 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 
         });
 
-        actionHistory.push({ type: 'startDelete', node: null});
-        console.log("[actionHistory] - startDelete ");
+        actionHistory.push({ type: 'stopDelete', node: null});
+        console.log("[actionHistory] - stopDelete ");
 
 	}
 	
@@ -1930,7 +1943,7 @@ function undoLastAction() {
         nodes.update(lastAction.node);
 
         var nextAction = actionHistory[actionHistory.length - 1];
-        if(nextAction.type !== 'stopDelete'){
+        if(nextAction.type !== 'startDelete'){
             //if(undoneHistory[undoneHistory.length-1] !== null) undoneHistory.push(nextAction);
             undoLastAction();
         }
@@ -1971,7 +1984,7 @@ function undoLastAction() {
         undoneHistory[undoneHistory.length - 1].node = aux_node;
         //console.log("Metemos en Y: " + lastAction.node.label + " - " + nodes.get(lastAction.node.id).label);
     }
-    else if (lastAction.type === 'startDelete'){
+    else if (lastAction.type === 'stopDelete'){
         undoLastAction();
     }
 
@@ -1980,12 +1993,7 @@ function undoLastAction() {
     else if (lastAction.type === 'deleteSuperEntity') {
         // Restaurar el nodo al estado anterior
         console.log(" deleteSuperEntity " + lastAction.node.label);
-/*        nodes.update(lastAction.node);
-        if(lastAction.node.super_entity) {
-            nodes_super.update(lastAction.node);
-            setSuperEntityCoordinates(true, getSuperEntityNode());
-        }*/
-        var cont = actionHistory.length-1;
+       /* var cont = actionHistory.length-1;
         while(cont>=0 && (actionHistory[cont].type === 'deleteFromSuperEntity' || actionHistory[cont].type === 'deleteWithSuperEntity')){
             var nextAction = actionHistory.pop();
             nodes.update(nextAction.node);
@@ -1993,9 +2001,12 @@ function undoLastAction() {
             cont--;
 
             undoneHistory.push(nextAction);
-        }
+        }*/
         nodes.update(lastAction.node);
-        setSuperEntityCoordinates(true, getSuperEntityNode());
+
+        //setSuperEntityCoordinates(true, getSuperEntityNode());
+
+        undoLastAction();
 
     }
     else if (lastAction.type === 'addSuperEntity') {
@@ -2021,13 +2032,13 @@ function undoLastAction() {
         console.log(actionHistory);
 
     }
-    else if (lastAction.type === 'deleteFromSuperEntity') {
+    else if (lastAction.type === 'deleteFromSuperEntity' || lastAction.type === 'deleteWithSuperEntity') {
         // Restaurar el nodo al estado anterior
         console.log(" deleteFromSuperEntity " + lastAction.node.label);
         nodes.update(lastAction.node);
         nodes_super.update(lastAction.node);
         setSuperEntityCoordinates(true, getSuperEntityNode());
-
+        undoLastAction();
 
     }
     else if (lastAction.type === 'addToSuperEntity') {
@@ -2040,7 +2051,9 @@ function undoLastAction() {
         }
 
     }
-
+    else if (lastAction.type === "stopSuperEntityDelete"){
+        undoLastAction();
+    }
     //  RELATION ACTIONS
 
     else if (lastAction.type === 'deleteEntityToRelation') {
@@ -2173,7 +2186,7 @@ function redoLastAction() {    //TODO: update ctrl + z after executing ctrl + y
         nodes.remove(lastAction.node);
 
         var nextAction = undoneHistory[undoneHistory.length - 1];
-        if(nextAction.type !== 'startDelete'){
+        if(nextAction.type !== 'stopDelete'){
             redoLastAction();
         }
         else{
@@ -2216,7 +2229,7 @@ function redoLastAction() {    //TODO: update ctrl + z after executing ctrl + y
 
 
     }
-    else if(lastAction.type === 'stopDelete'){
+    else if(lastAction.type === 'startDelete'){
         redoLastAction();
     }
 
@@ -2260,25 +2273,24 @@ function redoLastAction() {    //TODO: update ctrl + z after executing ctrl + y
         // Restaurar el nodo al estado anterior
         console.log(" deleteFromSuperEntity " + lastAction.node.label);
 
-        var cont = undoneHistory.length-1;
-        while(cont>=0 && undoneHistory[cont].type === 'deleteFromSuperEntity'){
-            var nextAction = undoneHistory.pop();
-            nodes.update(nextAction.node);
-            nodes_super.update(nextAction.node);
-            cont--;
 
-            actionHistory.push(nextAction);
-        }
+        nodes.update(lastAction.node);
+        nodes_super.remove(lastAction.node);
+
+        redoLastAction();
+
+    }
+    else if (lastAction.type === 'deleteWithSuperEntity') {    //TODO: test
+        // Restaurar el nodo al estado anterior
+        console.log(" deleteFromSuperEntity " + lastAction.node.label);
 
         nodes.remove(lastAction.node);
         nodes_super.remove(lastAction.node);
 
-        setSuperEntityCoordinates(true, getSuperEntityNode());
-
-        if (cont>=0 && undoneHistory[cont].type === 'deleteSuperEntity') redoLastAction();
+        redoLastAction();
 
     }
-    else if (lastAction.type === 'deleteWithSuperEntity') {    //TODO: test
+    /*else if (lastAction.type === 'deleteWithSuperEntity') {    //TODO: test
         // Restaurar el nodo al estado anterior
         console.log("deleteWithSuperEntity " + lastAction.node.label);
 
@@ -2299,7 +2311,7 @@ function redoLastAction() {    //TODO: update ctrl + z after executing ctrl + y
 
         if (cont>=0 && undoneHistory[cont].type === 'deleteSuperEntity') redoLastAction();
 
-    }
+    }*/
     else if (lastAction.type === 'addToSuperEntity') {
         // Restaurar el nodo al estado anterior
         console.log(" addToSuperEntity " + lastAction.node.label);
@@ -2326,7 +2338,9 @@ function redoLastAction() {    //TODO: update ctrl + z after executing ctrl + y
         if (cont>=0 && undoneHistory[cont].type === 'addSuperEntity') redoLastAction();
 
     }
-
+    else if (lastAction.type === 'startSuperEntityDelete'){
+        redoLastAction();
+    }
     //  RELATION ACTIONS
 
     else if (lastAction.type === 'deleteEntityToRelation') {
