@@ -410,64 +410,68 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
     var width_super = 0;
     var height_super = 0;
 
-    var allNodes = nodes.get();
+    var allNodes;
+    console.log("nodesSuper length: " + nodes_super.length);
+    if(nodes_super.length == 0) nodes.remove(getSuperEntityNode());
+    else{
+        allNodes= nodes.get();
 
-    allNodes.forEach(function(nod){
-        // Guardamos las coordenadas que forman los extremos de los nodos de la agregación
-        if(nod.super_entity){
-            if(left ===null || left > nod.x){
-                left = nod.x;
+        allNodes.forEach(function(nod){
+            // Guardamos las coordenadas que forman los extremos de los nodos de la agregación
+            if(nod.super_entity){
+                if(left ===null || left > nod.x){
+                    left = nod.x;
+                }
+
+                if(right ===null || right < nod.x) {
+                    right = nod.x;
+                }
+
+                if(top == null || (top > nod.y)) {
+                    top = nod.y;
+                }
+
+                if(bottom ===null || (bottom < nod.y)) {
+                    bottom = nod.y;
+                }
+
+
+                /*console.log("[LEFT] - label: " + nod.label + ", min X: " + left);
+                console.log("[RIGHT] - label: " + nod.label + ", max X: " + right);
+                console.log("[TOP] - label: " + nod.label + ", min Y: " + bottom);
+                console.log("[BOTTOM] - label: " + nod.label + ", max Y: " + top);*/
+
             }
 
-            if(right ===null || right < nod.x) {
-                right = nod.x;
-            }
+        });
 
-            if(top == null || (top > nod.y)) {
-                top = nod.y;
-            }
+        node.x = (left + right)/2;
+        node.y = (top + bottom)/2;
 
-            if(bottom ===null || (bottom < nod.y)) {
-                bottom = nod.y;
-            }
+        node.widthConstraint.minimum = (Math.abs(right - left)) + 200;
+        node.heightConstraint.minimum = (Math.abs(top - bottom)) + 100;
+
+        node.font.vadjust = (node.heightConstraint.minimum/2) + 15;
 
 
-            /*console.log("[LEFT] - label: " + nod.label + ", min X: " + left);
-            console.log("[RIGHT] - label: " + nod.label + ", max X: " + right);
-            console.log("[TOP] - label: " + nod.label + ", min Y: " + bottom);
-            console.log("[BOTTOM] - label: " + nod.label + ", max Y: " + top);*/
-
+        if(!modifySuperEntity && node.is_super_entity){  // Añadimos agregación u otro elemento nuevo
+            actionHistory.push({ type: 'addSuperEntity', node: JSON.parse(JSON.stringify(node)) });
+            console.log("[actionHistory] - addSuperEntity: " + node.label);
+            nodes.add(node);
+            //nodes_super.add(node);
         }
+        else{       // Modificamos un nodo
+            //console.log("node being modify: "+ node.label);
+            //actionHistory.push({ type: 'modifyNode', node: JSON.parse(JSON.stringify(node)) });
+            /*actionHistory.push({ type: 'modifyNode', node: JSON.parse(JSON.stringify(node)) });
+            console.log("[actionHistory] - modify: " + node.label);*/
+            nodes.update(node);
 
-    });
-
-    node.x = (left + right)/2;
-    node.y = (top + bottom)/2;
-
-    node.widthConstraint.minimum = (Math.abs(right - left)) + 200;
-    node.heightConstraint.minimum = (Math.abs(top - bottom)) + 100;
-
-    node.font.vadjust = (node.heightConstraint.minimum/2) + 15;
-
-
-    if(!modifySuperEntity && node.is_super_entity){  // Añadimos agregación u otro elemento nuevo
-        actionHistory.push({ type: 'addSuperEntity', node: JSON.parse(JSON.stringify(node)) });
-        console.log("[actionHistory] - addSuperEntity: " + node.label);
-        nodes.add(node);
-        //nodes_super.add(node);
-    }
-    else{       // Modificamos un nodo
-        //console.log("node being modify: "+ node.label);
-        //actionHistory.push({ type: 'modifyNode', node: JSON.parse(JSON.stringify(node)) });
-        /*actionHistory.push({ type: 'modifyNode', node: JSON.parse(JSON.stringify(node)) });
-        console.log("[actionHistory] - modify: " + node.label);*/
-        nodes.update(node);
-
-        if(node.super_entity){
-            nodes_super.update(node);
+            if(node.super_entity){
+                nodes_super.update(node);
+            }
         }
     }
-
 }
 
   // Marcamos los nodos que pertenecen a la agregación
@@ -1716,6 +1720,7 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 	
 	var attr = allAttributeOfEntity(getNodeSelected());
 	var attrsId = [];
+	var inSuperEntity = false;
 
 	if(nodes.get(id).is_super_entity){
 	    //console.log("deleting super entity");
@@ -1729,7 +1734,10 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
             var nod = nodes.get(id);
             actionHistory.push({ type: 'deleteNode', node: JSON.parse(JSON.stringify(nod)) });
             console.log("[actionHistory] - deleteNode: " + nod.label);
-            if(nod.super_entity) nodes_super.remove(nod.id);
+            if(nod.super_entity) {
+                nodes_super.remove(nod.id);
+                inSuperEntity = true;
+            }
 
 
             // Borramos los ATRIBUTOS conectados
@@ -1777,6 +1785,7 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 	
 	network.selectNodes(attrsId);
 	network.deleteSelected();
+	if(inSuperEntity)setSuperEntityCoordinates(true, getSuperEntityNode());
 	updateTableElements();
   }
   
