@@ -107,11 +107,11 @@ var network_super = new vis.Network(container_super, data_super, options);
   function deleteSuperEntity(idNodo){
     console.log("deleting superEntity");
 	  var idNode = parseInt(idNodo);
-	  var superNode = nodes.get(idNode);
+	  var superNode = nodes.get(idNodo);
 
 	  actionHistory.push({ type: 'startSuperEntityDelete', node: null});
       console.log("[actionHistory] - startSuperEntityDelete ");
-
+      console.log("idNodo: "+ idNodo + " - idNode: "+idNode + " - superNode: " );
 	  nodes_super.forEach(function(nod) {
 		  //console.log("nodes_super id: " + nod.id);
 		  // Desmarcamos los elementos que forman parte de la entidad
@@ -315,17 +315,12 @@ var network_super = new vis.Network(container_super, data_super, options);
         var nods = nodes.getIds();
         var idCountAux = idCount;
         nods.forEach(function(node) {
-            console.log(node + " - " +idCount);
+            //console.log(node + " - " +idCount);
             if(node >= idCount){
                 idCount = node;
                 idCount++;
             }
-
-            //console.log(idCount);
-
         });
-        //idCount++;
-
     }
   
     function addSuperEntity(idElement, labelName, action){   //TODO: Mejorar implementacion + añadir comments
@@ -1585,7 +1580,6 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
   
   function getIsSubAttribute(idSelected){
 	  idSelected = parseInt(idSelected);
-	  console.log("Entra "+ nodes.get(idSelected).label + " type "+ nodes.get(idSelected).type);
 	  return (nodes.get(idSelected).type == "subAttribute")
   }
   
@@ -1654,7 +1648,7 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 	  if(onlyType != null){
 		  type = onlyType;
 	  }
-      console.log("diamond 3 ")
+
 	  nodos = network.getConnectedEdges(parseInt(nodo_select));
 	  nodos.forEach(function(edg) {
 		  	idNodo = edges.get(edg).to;
@@ -1662,16 +1656,14 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 		  	labelF = edges.get(edg).labelFrom;
 		  	labelT = edges.get(edg).labelTo;
 		  	if(nodes.get(idNodo).shape == type){
-		  		if(nodes.get(idNodo).shape == "box"){
-		  			//console.log("entidades conectadas a la relación: " + nodes.get(idNodo).label);
+		  		if(nodes.get(idNodo).shape == "box")
 		  			data.push({id:edg, label:nodes.get(idNodo).label, role:roleName, asoc:labelF+"-"+labelT});
-		  		}else
+		  		else
 		  			data.push({id:edg, label:nodes.get(idNodo).label, role:roleName});
 		  	}
-		  	if(nodes.get(idNodo).shape == "box"){
-		  		console.log("entidades conectadas a la relación: " + nodes.get(idNodo).label);
+		  	if(nodes.get(idNodo).shape == "box")
 		  		dataAll.push({id:edg, label:nodes.get(idNodo).label, role:roleName, asoc:labelF+"-"+labelT});
-	  		}else
+	  		else
 	  			dataAll.push({id:edg, label:nodes.get(idNodo).label, role:roleName});
 		  		
 	  });
@@ -1815,7 +1807,7 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 	var isInSuperEntity = false;
 
 	if(nodes.get(id).is_super_entity){
-	    //console.log("deleting super entity");
+	    console.log("deleting super entity");
 	    deleteSuperEntity(id);
 	}
 	else{
@@ -2013,7 +2005,7 @@ network.on('click', function(params) {
 // Definir la función de eliminación
 function eliminarNodoSeleccionado(event, param) {
     if (event.key === 'Delete' || event.key === 'Del') {
-
+    console.log("param; "+ param + " - "+ nodes.get(param).label);
         if(param !==null) deleteSuperEntity(param);
         // Remover el listener de teclado cuando se termine de usar
     }

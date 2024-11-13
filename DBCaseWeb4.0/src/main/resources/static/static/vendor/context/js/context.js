@@ -109,7 +109,10 @@ var context = context || (function () {
 					    if(!typeNodoSelected.is_super_entity){          //ENTITY
 						    $( ".dropdown-context li:nth-child(5)" ).show();
                             $( ".dropdown-context li:nth-child(6)" ).show();
-                            $( ".dropdown-context li:nth-child(7)" ).show();
+                            if(!typeNodoSelected.super_entity)
+                                $( ".dropdown-context li:nth-child(7)" ).show();
+                            else
+                                $( ".dropdown-context li:nth-child(7)" ).hide();
                             $( ".dropdown-context li:nth-child(8)" ).show();
                             $( ".dropdown-context li:nth-child(9)" ).show();
                             $( ".dropdown-context li:nth-child(10)" ).hide();
@@ -167,7 +170,10 @@ var context = context || (function () {
 						$( ".dropdown-context li:nth-child(12)" ).show();
 						$( ".dropdown-context li:nth-child(13)" ).show();
 						$( ".dropdown-context li:nth-child(14)" ).show();
-						$( ".dropdown-context li:nth-child(15)" ).show();
+                        if(!typeNodoSelected.super_entity)
+                            $( ".dropdown-context li:nth-child(15)" ).show();
+                        else
+                            $( ".dropdown-context li:nth-child(15)" ).hide();
 						$( ".dropdown-context li:nth-child(16)" ).show();
 						$( ".dropdown-context li:nth-child(17)" ).show();
 						$( ".dropdown-context li:nth-child(18)" ).hide();
