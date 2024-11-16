@@ -107,11 +107,11 @@ var network_super = new vis.Network(container_super, data_super, options);
   function deleteSuperEntity(idNodo){
     console.log("deleting superEntity");
 	  var idNode = parseInt(idNodo);
-	  var superNode = nodes.get(idNodo);
+	  var superNode = nodes.get(idNode);
 
 	  actionHistory.push({ type: 'startSuperEntityDelete', node: null});
       console.log("[actionHistory] - startSuperEntityDelete ");
-      console.log("idNodo: "+ idNodo + " - idNode: "+idNode + " - superNode: " );
+      console.log("idNodo: "+ idNodo + " - idNode: "+idNode + " - superNode: " + superNode.label);
 	  nodes_super.forEach(function(nod) {
 		  //console.log("nodes_super id: " + nod.id);
 		  // Desmarcamos los elementos que forman parte de la entidad
@@ -517,37 +517,38 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
                   var entitiesOfRelation = allEntityOfRelation(node.id);
                   entitiesOfRelation.forEach(function(eRelation){
                     //Actualizamos el campo si el nodo no está seleccionado
-                    if(!nodesIds.includes(eRelation.id)){
+                    if(!nodesIds.includes(eRelation.id) && !nodes.get(eRelation.id).super_entity){
                       actionHistory.push({ type: 'addToNewSuperEntity', node: JSON.parse(JSON.stringify(nodes.get(eRelation.id))) });
                       console.log("[actionHistory] - addToNewSuperEntity: " + eRelation.label);
                       nodes.update({id: eRelation.id, super_entity: true});
                       var auxE = nodes.get(eRelation.id);
                       nodes_super.add(auxE);
-                    }
-                    var relationAttr = allAttributeOfEntity(eRelation.id);
-                    relationAttr.forEach(function(attr){
-                        //Actualizamos el campo si el nodo no está seleccionado
-                        console.log("diamond");
-                        if(!nodesIds.includes(attr.id)){
-                            actionHistory.push({ type: 'addToNewSuperEntity', node: JSON.parse(JSON.stringify(nodes.get(attr.id))) });
-                            console.log("[actionHistory] - addToNewSuperEntity: " + attr.label);
-                            nodes.update({id: attr.id, super_entity: true});
-                            var aux = nodes.get(attr.id);
-                            nodes_super.add(aux);
-                        }
-                        var subAttr = allSubAttribute(attr.id);
-                        subAttr.forEach(function(sAttr){
-                            //Actualizamos el campo si el nodo no está seleccionado
-                            if(!nodesIds.includes(sAttr.id)){
-                               actionHistory.push({ type: 'addToNewSuperEntity', node: JSON.parse(JSON.stringify(nodes.get(sAttr.id))) });
-                               console.log("[actionHistory] - addToNewSuperEntity: " + sAttr.label);
-                               nodes.update({id: sAttr.id, super_entity: true});
-                               var auxS = nodes.get(sAttr.id);
-                               nodes_super.add(auxS);
-                            }
-                        });
 
-                    });
+                      var relationAttr = allAttributeOfEntity(eRelation.id);
+                      relationAttr.forEach(function(attr){
+                          //Actualizamos el campo si el nodo no está seleccionado
+                          console.log("diamond");
+                          if(!nodesIds.includes(attr.id)){
+                              actionHistory.push({ type: 'addToNewSuperEntity', node: JSON.parse(JSON.stringify(nodes.get(attr.id))) });
+                              console.log("[actionHistory] - addToNewSuperEntity: " + attr.label);
+                              nodes.update({id: attr.id, super_entity: true});
+                              var aux = nodes.get(attr.id);
+                              nodes_super.add(aux);
+                          }
+                          var subAttr = allSubAttribute(attr.id);
+                          subAttr.forEach(function(sAttr){
+                              //Actualizamos el campo si el nodo no está seleccionado
+                              if(!nodesIds.includes(sAttr.id)){
+                                 actionHistory.push({ type: 'addToNewSuperEntity', node: JSON.parse(JSON.stringify(nodes.get(sAttr.id))) });
+                                 console.log("[actionHistory] - addToNewSuperEntity: " + sAttr.label);
+                                 nodes.update({id: sAttr.id, super_entity: true});
+                                 var auxS = nodes.get(sAttr.id);
+                                 nodes_super.add(auxS);
+                              }
+                          });
+
+                        });
+                    }
                   });
                   var relationAttr = allAttributeOfEntity(node.id);
                   relationAttr.forEach(function(attr){
@@ -961,7 +962,7 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 			  data_element_update.state = "right";
 
 			  data_element1.state = "left";
-			  data_element1.color = '#848484';
+			  data_element1.color = {color:'#848484'};
 			  edges.update(data_element_update);
 			  console.log("[actionHistory] - addEntityToRelation: " + edges.get(idEdge).from + " - " + edges.get(idEdge).to + " - id: "+idEdge + " - state: "+ edges.get(idEdge).state + " name:" +edges.get(idEdge).name);
 
@@ -1798,6 +1799,7 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 
 	if(id==null){
 		var dat = network.getSelectedNodes();
+		console.log("dat: " + dat[0]);
 	}else{
 		var dat = [parseInt(id)];
 	}
@@ -1806,9 +1808,9 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 	var attrsId = [];
 	var isInSuperEntity = false;
 
-	if(nodes.get(id).is_super_entity){
+	if(nodes.get(dat[0]).is_super_entity){
 	    console.log("deleting super entity");
-	    deleteSuperEntity(id);
+	    deleteSuperEntity(dat);
 	}
 	else{
         actionHistory.push({ type: 'startDelete', node: null});
@@ -1980,38 +1982,38 @@ $(document).ready(function() {
 
 
 // Añadir el listener para la red de Vis.js
-network.on('click', function(params) {
-
-    var selectedNodes = network.getSelectedNodes();
-    var superNode = getSuperEntityNode();
-    var param = null;
-
-    if(superNode != null){
-        selectedNodes.forEach(function(nodeId) {
-            if(nodeId === superNode.id){
-                param = superNode.id;
-            }
-        });
-    }
-
-    if(param !=null){
-        document.addEventListener('keydown',function(event) {
-            eliminarNodoSeleccionado(event, param);  // Llama a la función con parámetros adicionales
-        });
-    }
-
-});
+//network.on('click', function(params) {
+//
+//    var selectedNodes = network.getSelectedNodes();
+//    var superNode = getSuperEntityNode();
+//    var param = null;
+//
+//    if(superNode != null){
+//        selectedNodes.forEach(function(nodeId) {
+//            if(nodeId === superNode.id){
+//                param = superNode.id;
+//            }
+//        });
+//    }
+//
+//    if(param !=null){
+//        document.addEventListener('keydown',function(event) {
+//            eliminarNodoSeleccionado(event, param);  // Llama a la función con parámetros adicionales
+//        });
+//    }
+//
+//});
 
 // Definir la función de eliminación
-function eliminarNodoSeleccionado(event, param) {
-    if (event.key === 'Delete' || event.key === 'Del') {
-    console.log("param; "+ param + " - "+ nodes.get(param).label);
-        if(param !==null) deleteSuperEntity(param);
-        // Remover el listener de teclado cuando se termine de usar
-    }
-    document.removeEventListener('keydown', eliminarNodoSeleccionado);
-
-}
+//function eliminarNodoSeleccionado(event, param) {
+//    if (event.key === 'Delete' || event.key === 'Del') {
+//    console.log("param; "+ param + " - ");//+ nodes.get(param).label);
+//        //if(param !==null) deleteSuperEntity(param);
+//        // Remover el listener de teclado cuando se termine de usar
+//    }
+//    document.removeEventListener('keydown', eliminarNodoSeleccionado);
+//
+//}
 
 function undoLastAction() {
     if (actionHistory.length === 0) {
