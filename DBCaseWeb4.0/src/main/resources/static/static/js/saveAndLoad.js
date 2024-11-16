@@ -28,6 +28,11 @@ function exportNetwork(type) {
 		saveAs(blob, document.getElementById("docs-title").value+""+ ".dbw");//var x = document.getElementById("myForm").elements.namedItem("docs-title").value obtener el valor del input
     }else{
     	sessionStorage.setItem('codeSave', exportValue);
+    	sessionStorage.setItem('actionHistorySave', JSON.stringify(actionHistory));
+    	sessionStorage.setItem('undoneHistorySave', JSON.stringify(undoneHistory));
+
+
+
     }
 }
 
@@ -42,6 +47,15 @@ function importNetwork(type, value=null) {
 	    var inputValue = value;
 	}else{
 	    var inputValue = sessionStorage.getItem('codeSave');
+	    var aHistory = sessionStorage.getItem('actionHistorySave');
+	    var uHistory = sessionStorage.getItem('undoneHistorySave');
+
+	    //historialGuardado = JSON.parse(sessionStorage.getItem('historial')) || [];
+	    actionHistory = JSON.parse(sessionStorage.getItem('actionHistorySave')) || [];
+	    console.log("actionHistorySave " + actionHistory + " - " + JSON.parse(sessionStorage.getItem('actionHistorySave')) || []);
+	    undoneHistory = JSON.parse(sessionStorage.getItem('undoneHistorySave')) || [];
+        console.log("undoneHistorySave " + actionHistory + " - " + JSON.parse(sessionStorage.getItem('undoneHistorySave')) || []);
+
 	}
     var inputData = JSON.parse(inputValue);
     for(var i = 0;i<inputData.nodesA.length;i++){
