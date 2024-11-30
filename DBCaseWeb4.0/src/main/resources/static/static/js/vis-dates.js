@@ -1318,23 +1318,27 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
    */
   function getParentId(idNodo){
 	  var idParent = -1;
-	  var dataFull = network.getConnectedEdges(parseInt(idNodo));
-	  
-	  dataFull.forEach(function(key){
-		  if(edges.get(key).type == "parent")
-			  idParent = edges.get(key).to;
-	  });
+	  var dataFull;
+	  if(idNodo != null){
+          dataFull = network.getConnectedEdges(parseInt(idNodo));
+          dataFull.forEach(function(key){
+              if(edges.get(key).type == "parent")
+                  idParent = edges.get(key).to;
+          });
+	  }
 	  return idParent;
   }
   
   function getChildData(idNodo){
-	  var dataFull = network.getConnectedEdges(parseInt(idNodo));
+	  var dataFull;
 	  var data = [];
-	  dataFull.forEach(function(key){
-		  if(edges.get(key).type == "child")
-			  data.push({id:key, labelChild: nodes.get(edges.get(key).to).label, idChild: nodes.get(edges.get(key).to).id});
-	  });
-	  
+	  if(idNodo != null){
+          dataFull = network.getConnectedEdges(parseInt(idNodo));
+          dataFull.forEach(function(key){
+              if(edges.get(key).type == "child")
+                  data.push({id:key, labelChild: nodes.get(edges.get(key).to).label, idChild: nodes.get(edges.get(key).to).id});
+          });
+	  }
 	  return data;
   }
   

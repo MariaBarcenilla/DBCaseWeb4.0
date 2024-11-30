@@ -655,12 +655,24 @@ $(document).ready(function () {
 	        		  	cardinalidad1 = true;
 					  }
 
+                      var idSuperEntity;
+                      var auxNodoLength = nodo.length;
+
+                      if(nodes.get(nodo_select).super_entity) {
+                        idSuperEntity = getSuperEntityNode().id;
+                        auxNodoLength = auxNodoLength-1;
+                      }
+
+                      console.log("idSuperEntity: " + idSuperEntity );
+
             		  var dataType = {
             		  		temp_nodeRoles_length: nodoRoles.length,
               				temp_node_length: nodo.length,
+              				temp_aux_node_length: auxNodoLength,
               				temp_nodes: nodo,
               				temp_node_roles: nodoRoles,
              				temp_node_select: nodo_select,
+             				temp_id_super_entity: idSuperEntity,
              				temp_option_selection: selection,
 						  	temp_min:min,
 						  	temp_max:max,

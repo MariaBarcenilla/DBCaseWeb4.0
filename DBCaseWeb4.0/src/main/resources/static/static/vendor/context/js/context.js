@@ -215,6 +215,9 @@ var context = context || (function () {
 						$( ".dropdown-context li:nth-child(25)" ).hide();
 						break;
 					case "triangleDown":
+					    var hasChild = (getChildData(typeNodoSelected.id).length ==0) ? false : true;
+					    var hasParent = (getParentId(typeNodoSelected.id)==-1) ? false : true;
+
 						$( ".dropdown-context li:nth-child(5)" ).hide();
 						$( ".dropdown-context li:nth-child(6)" ).hide();
 						$( ".dropdown-context li:nth-child(7)" ).hide();
@@ -230,10 +233,21 @@ var context = context || (function () {
 						$( ".dropdown-context li:nth-child(17)" ).hide();
 						$( ".dropdown-context li:nth-child(18)" ).hide();
 						$( ".dropdown-context li:nth-child(19)" ).hide();
-						$( ".dropdown-context li:nth-child(20)" ).show();
-						$( ".dropdown-context li:nth-child(21)" ).show();
+
+						if(hasParent){
+						    $( ".dropdown-context li:nth-child(20)" ).hide();
+						    $( ".dropdown-context li:nth-child(21)" ).show();
+                        }else{
+                            $( ".dropdown-context li:nth-child(20)" ).show();
+                            $( ".dropdown-context li:nth-child(21)" ).hide();
+                        }
+
 						$( ".dropdown-context li:nth-child(22)" ).show();
-						$( ".dropdown-context li:nth-child(23)" ).show();
+
+                        if(hasChild)
+                            $( ".dropdown-context li:nth-child(23)" ).show();
+                        else
+                            $( ".dropdown-context li:nth-child(23)" ).hide();
 						$( ".dropdown-context li:nth-child(24)" ).show();
 						$( ".dropdown-context li:nth-child(25)" ).hide();
 						$( ".dropdown-context li:nth-child(26)" ).hide();
