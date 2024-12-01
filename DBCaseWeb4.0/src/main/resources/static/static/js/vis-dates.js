@@ -46,7 +46,7 @@ var options = {
 		    }
 		  },
 		  nodes: {
-			  borderWidthSelected:0,
+              borderWidth: 1.8,
 			  font: '12px arial #000000',//cambiado
 			  color: {
 				 border: '#ffcc45',
@@ -323,19 +323,7 @@ var network_super = new vis.Network(container_super, data_super, options);
         });
     }
   
-    function addSuperEntity(idElement, labelName, action){   //TODO: Mejorar implementacion + añadir comments
-
-        var left = null;
-        var right = null;
-        var top = null;
-        var bottom = null;
-
-        var x_super = 0;
-        var y_super =0;
-        var width_super = 0;
-        var height_super = 0;
-
-        var num_elements_super_entity = 0;
+    function addSuperEntity(idElement, labelName, action){
 
         //console.log("[Super Entity] - idCount: " + idCount + ", label: " + labelName + ", idSuperEntityCount: " + idSuperEntityCount);
 
@@ -360,9 +348,8 @@ var network_super = new vis.Network(container_super, data_super, options);
                   background: 'transparent',
                   highlight: {
                       border: '#000000',
-                      background: 'transparent',
+                      background: 'transparent'
                       //background: isDarkTheme ? '#F8F9FA' : '#343A40',
-                      borderWidth: 4
                   }
               },
                borderWidth: 2, font: {
@@ -646,7 +633,6 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
     }
   
   function addEntity(nombre, weakEntity,action, idSelected, elementWithRelation, relationEntity){
-      updateIdCount();
 	  console.log("[Entity] - idCount: " + idCount + ", label: " + nombre + ", idSuperEntityCount: " + idSuperEntityCount + ", nodes size: " + nodes.length);
 	  var data_element = {id: idCount, widthConstraint:{minimum: 100, maximum: 200}, label: nombre, isWeak: weakEntity, shape: 'box', scale:10, heightConstraint:25,physics:true, is_super_entity:false, super_entity:false};//cambiado
 	  if(action == "edit"){
@@ -704,7 +690,6 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
   }
   
   function addRelation(nombre, action, idSelected, origin = "front"){
-      updateIdCount();
 
 	  var  tam = 30;
 	  if (nombre.length>5){
@@ -755,7 +740,6 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
   }
   
   function addIsA(){    //TODO: Añadir opcion de editar en todas las opciones del elemento
-        updateIdCount();
 
 	  var data_element = {id: idCount, label: 'IsA', shape: 'triangleDown',is_super_entity:false, super_entity:false,
           color: {
@@ -800,7 +784,6 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 		  }
 	  }
 	  var valueEntityWeak = nodes.get(parseInt(idEntity)).isWeak;
-      updateIdCount();
 
 	  console.log("[Attribute] - idCount: " + idCount + ", label: " + name + ", idSuperEntityCount: " + idSuperEntityCount);
 	  var data_element = {id: idCount, width: 3,widthConstraint:{ minimum: 50, maximum: 160},labelBackend:name, label: word_pk, dataAttribute:{entityWeak: valueEntityWeak, primaryKey: pk, composite: comp, notNull: notNll, unique: uniq, multivalued: multi, domain: dom, size: sz}, shape: 'ellipse', is_super_entity:false, super_entity:false,
@@ -1349,7 +1332,6 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 	  						}
 	  					};
 	  if(existEdge(idSelected, idTo, null) == null){
-	    console.log("wwww");
 		  edges.add(data_element);
           actionHistory.push({ type: 'addEntityToRelation', edge: JSON.parse(JSON.stringify(edges.get(data_element.id))) });
           console.log("[actionHistory] - addEntityToRelation: " + edges.get(data_element.id).from + " - " + edges.get(data_element.id).to);
@@ -1367,7 +1349,6 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 	  if(multi){
 		  word_multi = 3;
 	  } 
-      updateIdCount();
 	  var data_element = {id:idCount, labelBackend:name, type: 'subAttribute', borderWidth:word_multi,label: word_pk, dataAttribute:{composite: comp, notNull: notNll, unique: uniq, multivalued: multi, domain: dom, size: sz}, shape: 'ellipse', is_super_entity:false, super_entity:false, color:'#4de4fc', scale:20, widthConstraint:80, heightConstraint:25,physics:false};
 	  if(action == "edit"){
 		  data_element.id = parseInt(idSelected);

@@ -30,6 +30,7 @@ function exportNetwork(type) {
     	sessionStorage.setItem('codeSave', exportValue);
     	sessionStorage.setItem('actionHistorySave', JSON.stringify(actionHistory));
     	sessionStorage.setItem('undoneHistorySave', JSON.stringify(undoneHistory));
+    	sessionStorage.setItem('idCountSave', JSON.stringify(idCount));
 
 
 
@@ -47,14 +48,16 @@ function importNetwork(type, value=null) {
 	    var inputValue = value;
 	}else{
 	    var inputValue = sessionStorage.getItem('codeSave');
-	    var aHistory = sessionStorage.getItem('actionHistorySave');
+	    /*var aHistory = sessionStorage.getItem('actionHistorySave');
 	    var uHistory = sessionStorage.getItem('undoneHistorySave');
+	    var idCont = sessionStorage.getItem('idCountSave');*/
 
-	    //historialGuardado = JSON.parse(sessionStorage.getItem('historial')) || [];
 	    actionHistory = JSON.parse(sessionStorage.getItem('actionHistorySave')) || [];
 	    console.log("actionHistorySave " + actionHistory + " - " + JSON.parse(sessionStorage.getItem('actionHistorySave')) || []);
 	    undoneHistory = JSON.parse(sessionStorage.getItem('undoneHistorySave')) || [];
         console.log("undoneHistorySave " + actionHistory + " - " + JSON.parse(sessionStorage.getItem('undoneHistorySave')) || []);
+        idCount = JSON.parse(sessionStorage.getItem('idCountSave')) || 0;
+        console.log("idCountSave " + actionHistory + " - " + JSON.parse(sessionStorage.getItem('idCountSave')) || 0);
 
 	}
     var inputData = JSON.parse(inputValue);
