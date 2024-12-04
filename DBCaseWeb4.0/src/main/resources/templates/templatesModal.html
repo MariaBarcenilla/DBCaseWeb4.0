@@ -49,7 +49,9 @@
 		    	<label for="element" class="col-form-label" th:text="#{textosId.selectStrongEntity}"></label>
 				<select id="element" class="form-control">
 					{{each(i,v) temp_nodes}}
+						{{if temp_node_select!=v.id}}
 							<option value="${v.id}">${v.label}</option>
+						{{/if}}
 					{{/each}}
 	  			</select>
 	  			<label for="relation-entity" class="col-form-label" th:text="#{textosId.relation}"></label>
@@ -209,8 +211,8 @@
 				<select id="element" class="form-control">
 
 					{{each(i,v) temp_nodes}}
-						{{if temp_id_super_entity!=v.id}})
-							{{if temp_option_selection==v.id}})
+						{{if temp_id_super_entity!=v.id}}
+							{{if temp_option_selection==v.id}}
 						<option value='${v.id}'>${v.label}</option>
 
 							{{else}}

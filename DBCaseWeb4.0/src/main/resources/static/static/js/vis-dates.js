@@ -633,11 +633,25 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
     }
   
   function addEntity(nombre, weakEntity,action, idSelected, elementWithRelation, relationEntity){
+	  if (idCount < nodes.length) updateIdCount();
+
+      var isWeakEntity =false;
+
 	  console.log("[Entity] - idCount: " + idCount + ", label: " + nombre + ", idSuperEntityCount: " + idSuperEntityCount + ", nodes size: " + nodes.length);
 	  var data_element = {id: idCount, widthConstraint:{minimum: 100, maximum: 200}, label: nombre, isWeak: weakEntity, shape: 'box', scale:10, heightConstraint:25,physics:true, is_super_entity:false, super_entity:false};//cambiado
+
+      if(action == "edit") isWeakEntity = (weakEntity && !nodes.get(parseInt(idSelected)).isWeak);
+      else isWeakEntity = weakEntity;
+
+      if(isWeakEntity){
+        actionHistory.push({ type: 'startWeakEntity', node: null });
+        console.log("[actionHistory] - startWeakEntity: " + data_element.label);
+      }
+
 	  if(action == "edit"){
 		  data_element.id = parseInt(idSelected);
           data_element.super_entity=nodes.get(data_element.id).super_entity;
+
           actionHistory.push({ type: 'modifyNode', node: JSON.parse(JSON.stringify(nodes.get(data_element.id))) });
           console.log("[actionHistory] - modify: " + data_element.label);
 
@@ -664,10 +678,17 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 
 	  
 	  if(weakEntity && elementWithRelation != null){
+	  /*AQUI*/
 		  idRelation = addRelation(relationEntity, "create", null, "back");
 		  addEntitytoRelation(data_element.id, "", "1to1", "", "1", "1", "create", idRelation, true);
 		  addEntitytoRelation(parseInt(elementWithRelation), "", "1toN", "", "1", "N", "create", idRelation, false);
 	  }
+
+      if(isWeakEntity){
+        actionHistory.push({ type: 'stopWeakEntity', node: null });
+        console.log("[actionHistory] - stopWeakEntity: " + data_element.label);
+      }
+
 	  updateTableElements();
 	  //console.log("[Entity] - idCount: " + idCount + ", label: " + nombre + ", idSuperEntityCount: " + idSuperEntityCount);
   }
@@ -696,6 +717,7 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 		  tam = 30+(nombre.length-5);
 	  }
 	  console.log("[Relation] - idCount: " + idCount + ", label: " + nombre + ", idSuperEntityCount: " + idSuperEntityCount);
+	  if (idCount < nodes.length) updateIdCount();
 	  var data_element = {id: idCount, size:tam,label: nombre, shape: 'diamond', is_super_entity:false, super_entity:false,
 		  color: {
 				 border: '#FF3F20',
@@ -740,7 +762,7 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
   }
   
   function addIsA(){    //TODO: Añadir opcion de editar en todas las opciones del elemento
-
+      if (idCount < nodes.length) updateIdCount();
 	  var data_element = {id: idCount, label: 'IsA', shape: 'triangleDown',is_super_entity:false, super_entity:false,
           color: {
                  border: '#FF952A',
@@ -784,7 +806,7 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 		  }
 	  }
 	  var valueEntityWeak = nodes.get(parseInt(idEntity)).isWeak;
-
+      if (idCount < nodes.length) updateIdCount();
 	  console.log("[Attribute] - idCount: " + idCount + ", label: " + name + ", idSuperEntityCount: " + idSuperEntityCount);
 	  var data_element = {id: idCount, width: 3,widthConstraint:{ minimum: 50, maximum: 160},labelBackend:name, label: word_pk, dataAttribute:{entityWeak: valueEntityWeak, primaryKey: pk, composite: comp, notNull: notNll, unique: uniq, multivalued: multi, domain: dom, size: sz}, shape: 'ellipse', is_super_entity:false, super_entity:false,
 		  //color :"#22bdb1",/*'#4de4fc' cambiado*/
@@ -1348,7 +1370,8 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 	  } 
 	  if(multi){
 		  word_multi = 3;
-	  } 
+	  }
+	  if (idCount < nodes.length) updateIdCount();
 	  var data_element = {id:idCount, labelBackend:name, type: 'subAttribute', borderWidth:word_multi,label: word_pk, dataAttribute:{composite: comp, notNull: notNll, unique: uniq, multivalued: multi, domain: dom, size: sz}, shape: 'ellipse', is_super_entity:false, super_entity:false, color:'#4de4fc', scale:20, widthConstraint:80, heightConstraint:25,physics:false};
 	  if(action == "edit"){
 		  data_element.id = parseInt(idSelected);
@@ -2068,6 +2091,20 @@ function undoLastAction() {
         undoLastAction();
     }
 
+    //  ENTITY ACTIONS
+
+    else if(lastAction.type === 'stopWeakEntity'){
+        console.log(" stopWeakEntity ");
+        var nextAction = actionHistory[actionHistory.length - 1];
+        while(nextAction.type !== 'startWeakEntity' && actionHistory.length > 0){
+            //if(undoneHistory[undoneHistory.length-1] !== null) undoneHistory.push(nextAction);
+            undoLastAction();
+            nextAction = actionHistory[actionHistory.length - 1];
+        }
+        undoLastAction();
+
+    }
+
     //  SUPER ENTITY ACTIONS
 
     else if (lastAction.type === 'deleteSuperEntity') {
@@ -2346,6 +2383,20 @@ function redoLastAction() {    //TODO: update ctrl + z after executing ctrl + y
     }
     else if(lastAction.type === 'startDelete'){
         redoLastAction();
+    }
+
+    //  ENTITY ACTIONS
+
+    else if(lastAction.type === 'startWeakEntity'){
+        console.log(" startWeakEntity ");
+        var nextAction = undoneHistory[undoneHistory.length - 1];
+        while(nextAction.type !== 'stopWeakEntity' && undoneHistory.length > 0){
+            //if(undoneHistory[undoneHistory.length-1] !== null) undoneHistory.push(nextAction);
+            redoLastAction();
+            nextAction = undoneHistory[undoneHistory.length - 1];
+        }
+        redoLastAction();
+
     }
 
     //  SUPER ENTITY ACTIONS
