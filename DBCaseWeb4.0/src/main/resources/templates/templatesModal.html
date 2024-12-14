@@ -196,7 +196,7 @@
 	  		</div>
 		</form>
 	</div>
-	
+
 	<div class="d-none" id="templateAddEntitytoRelation" type="text/x-jquery-tmpl">
 		{{if temp_node_length==0 || temp_aux_node_length==0}}
 	        <p class="text-center" th:text="#{textos.notEntitys}"></p>
@@ -211,15 +211,12 @@
 				<select id="element" class="form-control">
 
 					{{each(i,v) temp_nodes}}
-						{{if temp_id_super_entity!=v.id}}
+						{{if temp_id_superEntity!=v.id}}
 							{{if temp_option_selection==v.id}}
-						<option value='${v.id}'>${v.label}</option>
-
+								<option value='${v.id}'>${v.label}</option>
 							{{else}}
-						 <option value='${v.id}' selected>${v.label}</option>
-
+								<option value='${v.id}' selected>${v.label}</option>
 							{{/if}}
-
 						{{/if}}
 					{{/each}}
 				</select>

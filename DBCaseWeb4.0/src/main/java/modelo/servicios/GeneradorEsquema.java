@@ -83,50 +83,53 @@ public class GeneradorEsquema {
 		for (int i=0;i<entidades.size();i++){
 			Vector<TransferAtributo>multivalorados=new Vector<TransferAtributo>();
 			TransferEntidad te=entidades.elementAt(i);
-			Tabla tabla = new Tabla(te.getNombre(),te.getListaRestricciones(), controlador);
-			Vector<TransferAtributo> atribs=this.dameAtributosEnTransfer(te.getListaAtributos());
-			for(String rest : (Vector<String>)te.getListaRestricciones())
-				restriccionesPerdidas.add(new restriccionPerdida(te.getNombre(), rest, restriccionPerdida.TABLA));
-			//recorremos los atributos aniadiendolos a la tabla
-			for (int j=0;j<atribs.size();j++){
-				TransferAtributo ta=atribs.elementAt(j);
-				if(ta.getUnique()) 
-					restriccionesPerdidas.add(new restriccionPerdida(te.getNombre(), ta+" "+this.msgSrc.getMessage("textosId.isUnique", null, this.loc), restriccionPerdida.TABLA));
-				if (ta.getCompuesto()) 
-					tabla.aniadeListaAtributos(this.atributoCompuesto(ta, te.getNombre(),""),te.getListaRestricciones(),tiposEnumerados);
-				else if (ta.isMultivalorado()) multivalorados.add(ta);
-				else{ 
-					tabla.aniadeAtributo(ta.getNombre(), ta.getDominio(),te.getNombre(), tiposEnumerados,ta.getListaRestricciones(), ta.getUnique(), ta.getNotnull());
-					for(String rest : (Vector<String>)ta.getListaRestricciones())
-						restriccionesPerdidas.add(new restriccionPerdida(te.getNombre(), rest, restriccionPerdida.TABLA));
-				}
-			}
-			// Anadimos las claves a la relacion
-			
-			//aniadimos las claves primarias o logeneraTablasEntidades discriminantes si la entidad es debil.
-			Vector<TransferAtributo> claves=this.dameAtributosEnTransfer(te.getListaClavesPrimarias());
-			for (int c=0;c<claves.size();c++){
-				TransferAtributo ta=claves.elementAt(c);
-				if (ta.isMultivalorado()) multivalorados.add(ta);
-				else
+			// No se añaden a la tabla las agregaciones
+			if(te.getIdEntidad() >=1000){
+				Tabla tabla = new Tabla(te.getNombre(),te.getListaRestricciones(), controlador);
+				Vector<TransferAtributo> atribs=this.dameAtributosEnTransfer(te.getListaAtributos());
+				for(String rest : (Vector<String>)te.getListaRestricciones())
+					restriccionesPerdidas.add(new restriccionPerdida(te.getNombre(), rest, restriccionPerdida.TABLA));
+				//recorremos los atributos aniadiendolos a la tabla
+				for (int j=0;j<atribs.size();j++){
+					TransferAtributo ta=atribs.elementAt(j);
+					if(ta.getUnique())
+						restriccionesPerdidas.add(new restriccionPerdida(te.getNombre(), ta+" "+this.msgSrc.getMessage("textosId.isUnique", null, this.loc), restriccionPerdida.TABLA));
 					if (ta.getCompuesto())
-						tabla.aniadeListaClavesPrimarias(this.atributoCompuesto(ta,te.getNombre(),""));
+						tabla.aniadeListaAtributos(this.atributoCompuesto(ta, te.getNombre(),""),te.getListaRestricciones(),tiposEnumerados);
+					else if (ta.isMultivalorado()) multivalorados.add(ta);
+					else{
+						tabla.aniadeAtributo(ta.getNombre(), ta.getDominio(),te.getNombre(), tiposEnumerados,ta.getListaRestricciones(), ta.getUnique(), ta.getNotnull());
+						for(String rest : (Vector<String>)ta.getListaRestricciones())
+							restriccionesPerdidas.add(new restriccionPerdida(te.getNombre(), rest, restriccionPerdida.TABLA));
+					}
+				}
+				// Anadimos las claves a la relacion
 
-					else //si es normal, lo aniadimos como clave primaria.
-						tabla.aniadeClavePrimaria(ta.getNombre(),ta.getDominio(),te.getNombre(),ta.getEntidad_origenName());
+				//aniadimos las claves primarias o logeneraTablasEntidades discriminantes si la entidad es debil.
+				Vector<TransferAtributo> claves=this.dameAtributosEnTransfer(te.getListaClavesPrimarias());
+				for (int c=0;c<claves.size();c++){
+					TransferAtributo ta=claves.elementAt(c);
+					if (ta.isMultivalorado()) multivalorados.add(ta);
+					else
+						if (ta.getCompuesto())
+							tabla.aniadeListaClavesPrimarias(this.atributoCompuesto(ta,te.getNombre(),""));
+
+						else //si es normal, lo aniadimos como clave primaria.
+							tabla.aniadeClavePrimaria(ta.getNombre(),ta.getDominio(),te.getNombre(),ta.getEntidad_origenName());
+				}
+
+				//aniadimos a las tablas del sistema.
+				tablasEntidades.put(te.getIdEntidad(),tabla);
+				//tratamos los multivalorados que hayan surgido en el proceso.
+				for(int mul=0;mul<multivalorados.size();mul++){
+					TransferAtributo multi=multivalorados.elementAt(mul);
+					this.atributoMultivalorado(multi, te.getIdEntidad());
+				}
+
+				// Establecimiento de uniques
+				Vector<String> listaUniques = te.getListaUniques();
+				for (int m = 0; m < listaUniques.size(); m++) tabla.getUniques().add(listaUniques.get(m));
 			}
-			
-			//aniadimos a las tablas del sistema.
-			tablasEntidades.put(te.getIdEntidad(),tabla);
-			//tratamos los multivalorados que hayan surgido en el proceso.
-			for(int mul=0;mul<multivalorados.size();mul++){
-				TransferAtributo multi=multivalorados.elementAt(mul);
-				this.atributoMultivalorado(multi, te.getIdEntidad());
-			}
-			
-			// Establecimiento de uniques
-			Vector<String> listaUniques = te.getListaUniques();
-			for (int m = 0; m < listaUniques.size(); m++) tabla.getUniques().add(listaUniques.get(m));
 		}
 	}
 	

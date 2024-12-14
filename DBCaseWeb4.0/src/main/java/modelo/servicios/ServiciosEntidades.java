@@ -57,10 +57,11 @@ public class ServiciosEntidades {
 		//Aquí se añade la entidad
 		int id = daoEntidades.anadirEntidad(te);
 		if (id==-1)	controlador.mensajeDesde_SE(TC.SE_InsertarEntidad_ERROR_DAO,null);
-		else{
-			te.setIdEntidad(id);
-//			controlador.mensajeDesde_SE(TC.SE_InsertarEntidad_HECHO, daoEntidades.consultarEntidad(te));
-		}
+//		else{
+//
+//			te.setIdEntidad(id);
+////			controlador.mensajeDesde_SE(TC.SE_InsertarEntidad_HECHO, daoEntidades.consultarEntidad(te));
+//		}
 	}
 	
 	/* Se puede Anadir Entidad

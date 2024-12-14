@@ -158,29 +158,31 @@ $(document).ready(function () {
 				var myObj = {}; 
 				 
 				var auxNodesTotal = nodes.get();
-				var nodesSuper = nodes_super.get();
+				console.log("auxNodesTotal: " + auxNodesTotal.length)
+				//var nodesSuper = nodes_super.get();
 				var resultNodes =[];
 				var agregation = "";
 				auxNodesTotal.forEach(function(item, index) {
-				//console.log("item: " + item.is_super_entity);
 					var auxItem= item;
-
+                    console.log("aux item 1: "+auxItem.label + " - " + auxItem.superEntity + " - " + auxItem.IsSuperEntity);
 					if(item.isWeak || item.isWeak == "active")
 						auxItem.isWeak = true;
 					else
 						auxItem.isWeak = false;
-					if(item.is_super_entity){
+					if(item.IsSuperEntity){
 						agregation = item.label;
 						auxItem = {
 							heightConstraint: 25,
 							id: item.id,
 							isWeak: false,
 							//label: (item.label).replace(/ /g,'_'),
-							label: 'agregacion',
+							//label: 'agregacion',
+							label: item.label,
 							physics: false,
 							scale: 10,
 							shape: "box",
-							super_entity: false,
+							superEntity: -1,
+							isSuperEntity:true,
 							widthConstraint:'',
 							maximum: 200,
 							minimum: 100,
@@ -188,9 +190,12 @@ $(document).ready(function () {
 							y: item.y,
 						};
 						resultNodes.push(auxItem);
+						console.log("resultNodes: " + resultNodes[resultNodes.length-1].label + " - " + resultNodes[resultNodes.length-1].superEntity + " - " + resultNodes[resultNodes.length-1].IsSuperEntity);
+
 					}
-					else if(!item.super_entity){
+					else if(item.superEntity<0){
 					    resultNodes.push(auxItem);
+					    console.log("resultNodes: " + resultNodes[resultNodes.length-1].label + " - " + resultNodes[resultNodes.length-1].superEntity + " - " + resultNodes[resultNodes.length-1].IsSuperEntity);
 					}
 
 					switch(item.shape){
@@ -260,6 +265,8 @@ $(document).ready(function () {
                         nodesSuper[i].color = '#22bdb1';
                         break;
                     }
+                    console.log("aux item 2: "+ nodesSuper[i].label + " - " +  nodesSuper[i].superEntity + " - " +  nodesSuper[i].IsSuperEntity);
+
 				}
 				
 				var edgesSuperData = edges_super.get();
@@ -285,6 +292,8 @@ $(document).ready(function () {
 					var nameName = edgesSuperData[i].name;
 					traduct[nameName] = tempName;
 				}
+				console.log("resultNodes: " + resultNodes.length);
+				console.log("edgesData: " + edgesData.length);
 				myObj["data1"] = JSON.stringify(resultNodes); 
 				myObj["data2"] = JSON.stringify(edgesData); 
 
@@ -340,18 +349,19 @@ $(document).ready(function () {
 						auxItem.isWeak = true;
 					else
 						auxItem.isWeak = false;
-					if(item.is_super_entity){
+					if(item.IsSuperEntity){
 						agregation = item.label;
 						auxItem = {
 							heightConstraint: 25,
 							id: item.id,
 							isWeak: false,
 							//label: (item.label).replace(/ /g,'_'),
-							label: 'agregacion',
+							//label: 'agregacion',
+							label: item.label,
 							physics: false,
 							scale: 10,
 							shape: "box",
-							super_entity: false,
+							superEntity: -1,
 							widthConstraint:'',
 							maximum: 200,
 							minimum: 100,
@@ -361,7 +371,7 @@ $(document).ready(function () {
 
 						resultNodes.push(auxItem);
 					}
-                    else if(!item.super_entity){
+                    else if(item.superEntity<0){
                         resultNodes.push(auxItem);
                     }
 
@@ -610,7 +620,11 @@ $(document).ready(function () {
             		  eventSubAttribute();
               	    break;
             	  case "addEntitytoRelation":
+                      var nodeAux = nodes.get(nodo_select);
+            		  if(nodeAux.superEntity <0)
             		  nodo = getAllNodes(["box", "image"]);
+            		  else nodo = getEntitiesNotInSuperEntity(nodeAux.superEntity);
+
             		  nodoRoles = allEntitysToRelation2(nodo_select, "box");
             		  var childs = allEntityOfRelation(nodo_select);
 	        		  var selection = -1;
@@ -655,13 +669,14 @@ $(document).ready(function () {
 	        		  	cardinalidad1 = true;
 					  }
 
-                      var idSuperEntity;
+                      var idSuperEntity = nodes.get(nodo_select).superEntity;
                       var auxNodoLength = nodo.length;
 
-                      if(nodes.get(nodo_select).super_entity) {
-                        idSuperEntity = getSuperEntityNode().id;
-                        auxNodoLength = auxNodoLength-1;
+                      if(idSuperEntity >= 0) {
+                        //idSuperEntity = getSuperEntityNode().id;
+                        //auxNodoLength = auxNodoLength-1;
                       }
+                      console.log(" length is: " + auxNodoLength);
 
                       console.log("idSuperEntity: " + idSuperEntity );
 
@@ -672,7 +687,7 @@ $(document).ready(function () {
               				temp_nodes: nodo,
               				temp_node_roles: nodoRoles,
              				temp_node_select: nodo_select,
-             				temp_id_super_entity: idSuperEntity,
+             				temp_id_superEntity: idSuperEntity,
              				temp_option_selection: selection,
 						  	temp_min:min,
 						  	temp_max:max,

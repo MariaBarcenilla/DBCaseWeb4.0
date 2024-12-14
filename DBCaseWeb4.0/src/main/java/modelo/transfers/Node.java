@@ -12,14 +12,16 @@ public class Node {
 	int id;
 	DataAttribute dataAttribute;
 	int id_origin;
-	boolean isWeak; 
+	boolean isWeak;
+
+	int superEntity;
 
 	public Node() {
 		this.id_origin = -1;
 	}
 	
 	public Node(String label, boolean strong, String shape, String color, int scale, int widthConstraints,
-			int heightConstraints, boolean physics, int id, DataAttribute dataAttribute) { 
+			int heightConstraints, boolean physics, int id, DataAttribute dataAttribute, int superEntity) {
 		this.label = label;
 		this.strong = strong;
 		this.shape = shape;
@@ -32,6 +34,7 @@ public class Node {
 		this.dataAttribute = dataAttribute;
 		this.id_origin = -1;
 		this.isWeak = false;
+		this.superEntity = superEntity;
 	}
 
 	public String getLabel() {
@@ -104,6 +107,14 @@ public class Node {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public int getSuperEntity() {
+		return superEntity;
+	}
+
+	public void setSuperEntity(int superEntity) {
+		this.superEntity = superEntity;
 	}
 
 	public DataAttribute getDataAttribute() {

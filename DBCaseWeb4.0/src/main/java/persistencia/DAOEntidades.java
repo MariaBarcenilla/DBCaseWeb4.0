@@ -41,18 +41,19 @@ public class DAOEntidades {
 	public int anadirEntidad(TransferEntidad tc) {
 		// Resultado que se devolvera
 		int resultado = 0;
+		resultado = tc.getIdEntidad();
 		//sacamos la <ListaEntidades>
 		NodeList LC = doc.getElementsByTagName("EntityList");
 		// Sacamos el nodo
 		Node listado = LC.item(0);
 		//nuevo id.
-		int proximoID =dameIdEntidad(listado); 
+		//int proximoID =dameIdEntidad(listado);
 			//this.dameEntidad(doc);
-		listado.getAttributes().item(0).setNodeValue(Integer.toString(proximoID+1));
+		//listado.getAttributes().item(0).setNodeValue(Integer.toString(proximoID+1));
 		Node ListaEntidades = LC.item(0);
 		// Ya estamos situados
 		Element raiz = doc.createElement("Entity");
-		raiz.setAttribute("EntityId",Integer.toString(proximoID));
+		raiz.setAttribute("EntityId",Integer.toString(resultado));
 		// Nombre
 		Element elem = doc.createElement("Name");
 		elem.appendChild(doc.createTextNode(tc.getNombre()));
@@ -105,7 +106,7 @@ public class DAOEntidades {
 		// Lo añadimos a la lista de Entidades
 		ListaEntidades.appendChild(raiz);
 		// Actualizamos el resultado
-		resultado = proximoID;
+		//resultado = proximoID;
 		// Guardamos los cambios en el fichero xml y controlamos la excepcion
 		this.guardaDoc();
 		

@@ -106,10 +106,10 @@ var context = context || (function () {
 				typeNodoSelected = nodes.get(nodo_select);
 				switch(typeNodoSelected.shape){
 					case "box":
-					    if(!typeNodoSelected.is_super_entity){          //ENTITY
+					    if(!typeNodoSelected.IsSuperEntity){          //ENTITY
 						    $( ".dropdown-context li:nth-child(5)" ).show();
                             $( ".dropdown-context li:nth-child(6)" ).show();
-                            if(!typeNodoSelected.super_entity)
+                            if(typeNodoSelected.superEntity < 0)
                                 $( ".dropdown-context li:nth-child(7)" ).show();
                             else
                                 $( ".dropdown-context li:nth-child(7)" ).hide();
@@ -133,7 +133,7 @@ var context = context || (function () {
                             $( ".dropdown-context li:nth-child(25)" ).hide();
                             $( ".dropdown-context li:nth-child(26)" ).hide();
                         }
-						else if(typeNodoSelected.is_super_entity){
+						else if(typeNodoSelected.IsSuperEntity){
 						    $( ".dropdown-context li:nth-child(5)" ).show();
                             $( ".dropdown-context li:nth-child(6)" ).hide();
                             $( ".dropdown-context li:nth-child(7)" ).hide();
@@ -170,7 +170,7 @@ var context = context || (function () {
 						$( ".dropdown-context li:nth-child(12)" ).show();
 						$( ".dropdown-context li:nth-child(13)" ).show();
 						$( ".dropdown-context li:nth-child(14)" ).show();
-                        if(!typeNodoSelected.super_entity)
+                        if(typeNodoSelected.superEntity < 0)
                             $( ".dropdown-context li:nth-child(15)" ).show();
                         else
                             $( ".dropdown-context li:nth-child(15)" ).hide();

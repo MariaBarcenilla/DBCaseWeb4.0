@@ -100,7 +100,8 @@ public class ValidadorBD extends GeneradorEsquema{
 		while (i<entidades.size() && valido){
 			t=entidades.elementAt(i);
 			// No validamos las claves si se trata de una agregacion
-			if(!t.getNombre().equals("agregacion")) {
+			//if(!t.getNombre().equals("agregacion")) {
+			if(t.getIdEntidad() >= 1000) {
 				//por ahora validamos las claves y avisamos de si es padre de varias isA
 				valido &= validaKey(t); //&& this.validaNombresAtributosEntidad(t);
 				validaFidelidadEntidadEnIsA(t);
@@ -261,6 +262,9 @@ public class ValidadorBD extends GeneradorEsquema{
 		else{
 			Vector<EntidadYAridad> veya =tr.getListaEntidadesYAridades();
 			int tam =veya.size();
+//			for(int i =0; i< veya.size();i++){
+//				if(veya.get(i).getEntidad() <1000) tam=-1;
+//			}
 			switch (tam){
 			case 0: error(tr,this.getTraduction("textosId.noEntRelation"));
 					valida = false;
