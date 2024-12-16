@@ -632,6 +632,7 @@ $(document).ready(function () {
 	        			  if(!inArray1(nodo[i].id, childs)){
 	        				  selection = nodo[i].id;
 	        			  }
+
 	        		  }
 
 	        		  var min="", max="",asoc="", cardinalidad="";

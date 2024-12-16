@@ -46,10 +46,10 @@ var options = {
 		    }
 		  },
 		  nodes: {
-              borderWidth: 1.8,
+              borderWidth: 1.2,
 			  font: '12px arial #000000',//cambiado
 			  color: {
-				 border: '#ffcc45',
+				 border: '#bf9523',
 				 background:'#ffcc45', 
 				 highlight: {
 				        border: '#000000',
@@ -666,15 +666,15 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 
       var isWeakEntity =false;
 
-	  console.log("[Entity] - idCount: " + idCount + ", label: " + nombre + ", idSuperEntityCount: " + idSuperEntityCount + ", nodes size: " + nodes.length);
-	  var data_element = {id: idCount, widthConstraint:{minimum: 100, maximum: 200}, label: nombre, isWeak: weakEntity, shape: 'box', scale:10, heightConstraint:25,physics:true, IsSuperEntity:false, superEntity:-1};//cambiado
-
       if(action == "edit") isWeakEntity = (weakEntity && !nodes.get(parseInt(idSelected)).isWeak);
       else isWeakEntity = weakEntity;
 
+	  console.log("[Entity] - idCount: " + idCount + ", label: " + nombre + ", idSuperEntityCount: " + idSuperEntityCount + ", nodes size: " + nodes.length);
+	  var data_element = {id: idCount, widthConstraint:{minimum: 100, maximum: 200}, label: nombre, isWeak: weakEntity, shape: 'box', scale:10, heightConstraint:25,physics:true, IsSuperEntity:false, superEntity:-1};//cambiado
+
       if(isWeakEntity){
-        actionHistory.push({ type: 'startWeakEntity', node: null });
-        console.log("[actionHistory] - startWeakEntity: " + data_element.label);
+          actionHistory.push({ type: 'startWeakEntity', node: null });
+          console.log("[actionHistory] - startWeakEntity: " + data_element.label);
       }
 
 	  if(action == "edit"){
@@ -707,7 +707,6 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 
 	  
 	  if(weakEntity && elementWithRelation != null){
-	  /*AQUI*/
 		  idRelation = addRelation(relationEntity, "create", null, "back");
 		  addEntitytoRelation(data_element.id, "", "1to1", "", "1", "1", "create", idRelation, true);
 		  addEntitytoRelation(parseInt(elementWithRelation), "", "1toN", "", "1", "N", "create", idRelation, false);
@@ -749,7 +748,7 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 	  updateIdCount();
 	  var data_element = {id: idCount, size:tam,label: nombre, shape: 'diamond', IsSuperEntity:false, superEntity:-1,
 		  color: {
-				 border: '#FF3F20',
+				 border: '#c9280e',
 				 background:'#FF3F20',
 				 highlight: {
 				        border: '#000000',
@@ -972,7 +971,8 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
           console.log(" data_element.label " + data_element.label + " - labelText: "+labelText);
           //data_element.label = edges.get(idEdge).label;
           data_element.name = edges.get(idEdge).name;
-          //data_element.color = edges.get(idEdge).color;
+
+          if(nodes.get(data_element.to).IsSuperEntity) data_element.color = '#7e7978';
 
           //data_element3.label = edges.get(idEdge).label;
           console.log(data_element);
@@ -998,6 +998,8 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 
 			  data_element1.state = "left";
 			  //data_element1.color = {color:'#848484'};
+              if(nodes.get(data_element1.to).IsSuperEntity) data_element1.color = '#7e7978';
+
 			  edges.update(data_element_update);
 			  console.log("[actionHistory] - addEntityToRelation: " + edges.get(idEdge).from + " - " + edges.get(idEdge).to + " - id: "+idEdge + " - state: "+ edges.get(idEdge).state + " name:" +edges.get(idEdge).name);
 
@@ -1013,6 +1015,8 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 
 		  }else{
 		      //console.log("new relation edge");
+              if(nodes.get(data_element.to).IsSuperEntity) data_element.color = '#7e7978';
+
 			  edges.add(data_element);
 
               actionHistory.push({ type: 'addNewEntityToRelation', edge: JSON.parse(JSON.stringify(edges.get(data_element.id))) });
