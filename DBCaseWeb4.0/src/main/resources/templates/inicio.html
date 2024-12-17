@@ -13,7 +13,7 @@ h2{
         <!-- Sidebar  -->
         <!-- Page Content  -->
         <div id="wrapper" style="width: 100%;position: absolute;height: 100%;">
-	    	<div class="pos-f-t" style="z-index: 1;position: relative;">
+	    	<div class="pos-f-t" style="z-index: 1021;position: relative;">
 	    		<nav class="navbar navbar-expand-lg navbar-light" th:classappend="${theme=='dark'} ? 'bg-dark' : 'bg-light'">
 			        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample10" aria-controls="navbarsExample10" aria-expanded="false" aria-label="Toggle navigation" style="z-index:1;">
 			          <span class="navbar-toggler-icon"></span>
@@ -25,7 +25,7 @@ h2{
 			            </li>
 			            <li class="nav-item dropdown">
 			              <a class="nav-link dropdown-toggle" href="#" id="general-file" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" th:text="#{general.file}" th:classappend="${theme=='dark'} ? text-light : text-dark"></a>
-			              <div class="dropdown-menu" aria-labelledby="general-file" th:classappend="${theme=='dark'} ? 'bg-dark' : 'bg-light'">
+			              <div class="dropdown-menu" aria-labelledby="general-file" th:classappend="${theme=='dark'} ? 'bg-dark' : 'bg-light'" style="z-index: 1021;">
 			                <a class="dropdown-item" id="general-new" href="#" th:text="#{general.new}" th:classappend="${theme=='dark'} ? 'when-dark' : 'when-white'"></a>
 			                <a class="dropdown-item" id="loadFile" href="#" th:text="#{general.open}" th:classappend="${theme=='dark'} ? 'when-dark' : 'when-white'"></a>
 			                <a class="dropdown-item" id="saveAs" href="#" th:text="#{general.export}" th:classappend="${theme=='dark'} ? 'when-dark' : 'when-white'"></a>
@@ -81,8 +81,13 @@ h2{
           	<div style="height: 100%;position: absolute;width: 100%;top: 0px;padding-top: 80px;">
           		<div class="row w-100 h-100 mr-0 ml-0">
           			<div class="changeSizeWidth col-md-6 pr-0 pl-0 h-100 border-top" id="frame1" th:classappend="${theme=='dark'} ? border-light : border-dark">
-          				<div class="row pl-2 pt-2" th:classappend="${theme=='dark'} ? bg-dark : bg-light">
+          				<div class="row pl-2 pt-2 " th:classappend="${theme=='dark'} ? bg-dark : bg-light">
 							  <div class="col-6 col-md-6"><p class="h5 mt-2" th:classappend="${theme=='dark'} ? 'text-white' : 'text-dark'" th:text="#{textos.conceptualSchema}"></p></div>
+						</div>
+
+						<div class="col-6 col-md-6 sticky-top" >
+							<button type="button" id="undoLastAction" class="btn ml-2" th:classappend="${theme=='dark'} ? border-light : border-dark"><i class="bi bi-arrow-90deg-left arrowIcon text-success"></i></button>
+							<button type="button" id="redoLastAction" class="btn ml-2" th:classappend="${theme=='dark'} ? border-light : border-dark"><i class="bi bi-arrow-90deg-right arrowIcon text-success"></i></button>
 						</div>
 						<div id="diagram_super" style="top: 0px;position: absolute;visibility: hidden;" class="w-100 h-100">
 						</div>
@@ -126,6 +131,7 @@ h2{
           					<div id="sticky-top" class="row pt-0 sticky-top" th:classappend="${theme=='dark'} ? bg-dark : bg-light">
 							  <div class="col-6 col-md-6"><p class="h5 mt-2" th:classappend="${theme=='dark'} ? 'text-white' : 'text-dark'" th:text="#{textos.logicalSchema}"></p></div>
 							  <div class="col-6 col-md-6"><button type="button" class="btn float-right ml-2" id="down_schema_logic" th:classappend="${theme=='dark'} ? btn-dark : btn-light" th:text="#{button.saveAs}"></button><button type="button" id="btnTest" class="btn float-right" th:classappend="${theme=='dark'} ? btn-dark : btn-light" th:text="#{button.generate}"></button></div>
+
 							</div>
 							<div class="w-100" id="testResult" style="position: absolute;">
 							</div>

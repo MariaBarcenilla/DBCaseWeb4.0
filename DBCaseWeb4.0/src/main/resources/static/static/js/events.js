@@ -236,7 +236,7 @@ function eventAddEntity(){
 			}
 		}else{
 			$("#tempWeakEntity").slideUp("slow");
-			$("#relation-entity").unbind("blur keyup");//terminar el select
+			$("#relationEntity").unbind("blur keyup");//terminar el select
 			console.log("add entity  -  events");
 		}
 	});
@@ -276,6 +276,18 @@ function eventAddEventRecipient(){
 			  $( "#recipient-name" ).addClass("is-invalid");
 		  }
 	});
+
+		$( "#relationEntity" ).on( "blur keyup", function(){
+    		  var nameValue = $( "#relationEntity" ).val();
+    		  var tipoAdd = $( "#tipoAdd" ).val();
+    		  if(!existElementName(nameValue, tipoAdd)){
+    		  $('#insertModal').prop('disabled', false);
+    		  $( "#relationEntity" ).removeClass("is-invalid");
+    		  }else{
+    			  $('#insertModal').prop('disabled', true);
+    			  $( "#relationEntity" ).addClass("is-invalid");
+    		  }
+    	});
 }
 
 function updateTableElementsSuperEntity(){
@@ -573,6 +585,7 @@ function updateTableElements(){
 		var event = new PointerEvent('pointerdown') ;
 		document.getElementsByClassName("vis-zoomExtendsScreen")[1].dispatchEvent(event);
 	}
+
 	$("#general-print").on('click',function(){
 		$.when(simuleClick()).then(function(){
 			var c = document.getElementsByTagName("canvas")[1];

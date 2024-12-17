@@ -54,9 +54,10 @@
 						{{/if}}
 					{{/each}}
 	  			</select>
-	  			<label for="relation-entity" class="col-form-label" th:text="#{textosId.relation}"></label>
+	  			<label for="relationEntity" class="col-form-label" th:text="#{textosId.relation}"></label>
 	  			<input type="text" class="form-control" id="relationEntity">
-		    </div>
+				<div class="invalid-feedback" th:text="#{textos.errorNameExist}"></div>
+			</div>
 		</form>
 	</div>
 	

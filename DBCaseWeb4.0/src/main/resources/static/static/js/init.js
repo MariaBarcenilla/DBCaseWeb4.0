@@ -824,4 +824,15 @@ $(document).ready(function () {
             	}
             	setNodeSelected(null);
             });
+
+            $('#undoLastAction').on('click', function () {
+
+                console.log("/btnUndo");
+                undoLastAction();
+            });
+
+            $(document).on('click', '#redoLastAction', function () {
+                console.log("/btnRedo");
+                redoLastAction();
+            });
         });
