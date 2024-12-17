@@ -2048,39 +2048,7 @@ $(document).ready(function() {
 });
 
 
-// Añadir el listener para la red de Vis.js
-//network.on('click', function(params) {
-//
-//    var selectedNodes = network.getSelectedNodes();
-//    var superNode = getSuperEntityNode();
-//    var param = null;
-//
-//    if(superNode != null){
-//        selectedNodes.forEach(function(nodeId) {
-//            if(nodeId === superNode.id){
-//                param = superNode.id;
-//            }
-//        });
-//    }
-//
-//    if(param !=null){
-//        document.addEventListener('keydown',function(event) {
-//            eliminarNodoSeleccionado(event, param);  // Llama a la función con parámetros adicionales
-//        });
-//    }
-//
-//});
 
-// Definir la función de eliminación
-//function eliminarNodoSeleccionado(event, param) {
-//    if (event.key === 'Delete' || event.key === 'Del') {
-//    console.log("param; "+ param + " - ");//+ nodes.get(param).label);
-//        //if(param !==null) deleteSuperEntity(param);
-//        // Remover el listener de teclado cuando se termine de usar
-//    }
-//    document.removeEventListener('keydown', eliminarNodoSeleccionado);
-//
-//}
 
 function undoLastAction() {
     if (actionHistory.length === 0) {
@@ -2706,6 +2674,13 @@ function clearUndoneHistory(){
     undoneHistory.splice(0, undoneHistory.length);
     console.log("Tras borrado de UndoneHistory: "+ undoneHistory.length);
 }
+
+/*//document.getElementById('undo').addEventListener('click', undoLastAction);
+    document.getElementById('undo').addEventListener('click', function() {
+        console.log("Undo button clicked");
+        undoLastAction();
+    });
+document.getElementById('redo').addEventListener('click', redoLastAction);*/
 
 document.addEventListener('keydown',function(event) {
     if(event.ctrlKey && event.key.toLowerCase() === 'z'){ // ctrl + z
