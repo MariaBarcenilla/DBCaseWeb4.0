@@ -199,3 +199,7 @@ a.article:hover {
 .select2-results__option{
 	color: black !important;
 }
+
+.arrowIcon{
+  border-color:green  ;
+}
