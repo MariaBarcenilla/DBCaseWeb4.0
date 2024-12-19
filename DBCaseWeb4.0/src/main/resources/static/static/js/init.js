@@ -826,12 +826,10 @@ $(document).ready(function () {
             });
 
             $('#undoLastAction').on('click', function () {
-                alert($('#textNoUndoActions').text());
                 undoLastAction();
             });
 
             $(document).on('click', '#redoLastAction', function () {
-                alert($('#textNoRedoActions').text());
                 redoLastAction();
             });
         });

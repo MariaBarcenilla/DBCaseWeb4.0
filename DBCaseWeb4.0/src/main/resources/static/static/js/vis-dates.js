@@ -128,6 +128,7 @@ var network_super = new vis.Network(container_super, data_super, options);
 	  console.log("[actionHistory] - deleteSuperEntity: " + superNode.label);
       actionHistory.push({ type: 'stopSuperEntityDelete', node: null});
       console.log("[actionHistory] - stopSuperEntityDelete ");
+      clearUndoneHistory();
 
 	  nodes.remove(idNode);
       //nodes_super.clear();
@@ -159,6 +160,7 @@ var network_super = new vis.Network(container_super, data_super, options);
 
       actionHistory.push({ type: 'stopSuperEntityDelete', node: null});
       console.log("[actionHistory] - stopSuperEntityDelete ");
+      clearUndoneHistory();
 
 	  nodes.remove(idNode);
 	  //nodes_super.remove(idNode);
@@ -347,9 +349,10 @@ var network_super = new vis.Network(container_super, data_super, options);
         updateidSuperEntityCount()
 
         if(action == "edit"){
+            actionHistory.push({ type: 'modifyNode', node: JSON.parse(JSON.stringify(nodes.get(idElement))) });
+            console.log("[actionHistory] - modify: " + labelName);
             nodes.update({id:idElement, label:labelName});
-            actionHistory.push({ type: 'modifyNode', node: JSON.parse(JSON.stringify(nodes.get(data_element.id))) });
-            console.log("[actionHistory] - modify: " + data_element.label);
+
         }
         else if(getSuperEntityNode() ==null){   // No hay una agregación ya creada
 
@@ -2035,7 +2038,6 @@ $(document).ready(function() {
     $(".changeOptions").on("click", function(event) {
 
         var theme = $(this).attr('href').split('=')[1];
-        console.log("entraaaaa");
         //Actualizamos el color de fuente de la agregación
         var superNode = getAllSuperEntityNodes();
         console.log("superNodes: " + superNode.length);
@@ -2054,6 +2056,7 @@ function undoLastAction() {
     if (actionHistory.length === 0) {
         console.log("No hay acciones para deshacer.");
         console.log(nodes.length);
+        alert($('#textNoUndoActions').text());
         return;
     }
 
@@ -2362,6 +2365,7 @@ function redoLastAction() {
     if (undoneHistory.length === 0) {
         console.log("No hay acciones para rehacer.");
         console.log(nodes.length);
+        alert($('#textNoRedoActions').text());
         return;
     }
 
