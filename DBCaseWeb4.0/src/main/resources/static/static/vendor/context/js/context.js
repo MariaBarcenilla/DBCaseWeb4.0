@@ -134,7 +134,7 @@ var context = context || (function () {
                             $( ".dropdown-context li:nth-child(26)" ).hide();
                         }
 						else if(typeNodoSelected.IsSuperEntity){
-						    $( ".dropdown-context li:nth-child(5)" ).show();
+						    $( ".dropdown-context li:nth-child(5)" ).hide();
                             $( ".dropdown-context li:nth-child(6)" ).hide();
                             $( ".dropdown-context li:nth-child(7)" ).hide();
                             $( ".dropdown-context li:nth-child(8)" ).show();

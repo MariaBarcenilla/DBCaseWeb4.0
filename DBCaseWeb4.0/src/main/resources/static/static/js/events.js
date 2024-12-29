@@ -58,7 +58,7 @@ function editList(){
 				temp_value: ""
 			};
   		$("#totalInputs").val(nextValue);
-		$("#inputList").append($('#templateSelectAddConstrainst').tmpl(dataType));
+		$("#inputList").append($('#templateSelectAddConstraints').tmpl(dataType));
 	});
 }
 
@@ -188,7 +188,7 @@ function eventsRemoveEntityToRelation(){
 /*
 Verifica que el campo de restriccion no este vacio
 */
-function eventsAddConstrainst(){
+function eventsAddConstraints(){
 	$( "#list0" ).on( "blur keyup", function(){
 		var nameValue = $( "#list0" ).val();
 		if(nameValue == ""){

@@ -30,7 +30,7 @@ $(document).ready(function(){
 			$( "[functioninsert='addTextAgregation']").click();
 		}},
 		{text: $("#constraints").text(), href: '#', action: function(e){
-			$( "[functioninsert='addConstrainst']").click();
+			$( "[functioninsert='addConstraints']").click();
 			idSele = $("#idSelected").val();
 			if(!existConstraints(idSele)){
 				fillEditConstraints(idSele);
@@ -99,7 +99,7 @@ $(document).ready(function(){
 			$( "[functioninsert='addTextAgregation']").click();
 		}},
 		{text: $("#constraints").text(), href: '#', action: function(e){
-			$( "[functioninsert='addConstrainst']").click();
+			$( "[functioninsert='addConstraints']").click();
 			idSele = $("#idSelected").val();
 			if(!existConstraints(idSele)){
 				fillEditConstraints(idSele);

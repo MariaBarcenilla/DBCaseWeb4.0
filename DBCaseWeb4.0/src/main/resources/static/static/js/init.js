@@ -34,7 +34,7 @@ $(document).ready(function () {
 					case "addSuperEntity":
 						$("#recipient-name").focus();
 					break;
-					case "addConstrainst":
+					case "addConstraints":
 						$("#list0").focus();
 					break;
 				}
@@ -50,7 +50,7 @@ $(document).ready(function () {
 					case "addAttribute":
 						$("#recipient-name").unbind("focus");
 					break;
-					case "addConstrainst":
+					case "addConstraints":
 						$("#list0").unbind("focus");
 					break;
 				}
@@ -496,8 +496,8 @@ $(document).ready(function () {
        	  $('#insertModal').on('click', function() {
        	  //console.log("insertar modal");
            	switch($('#tipoAdd').val()) {
-               	case "addConstrainst":
-               		addConstrainst($('input[name=listText\\[\\]]').serializeArray(),$('#idSelected').val(), $('#typeAction').val());
+               	case "addConstraints":
+               		addConstraints($('input[name=listText\\[\\]]').serializeArray(),$('#idSelected').val(), $('#typeAction').val());
       	          	    break;
       	          	case "addEntity":
                         //console.log("add entity modal");
@@ -548,13 +548,13 @@ $(document).ready(function () {
             	var insert = ""
             	var nodo_select = getNodeSelected();
             	switch($(this).attr("functionInsert")) {
-            	  case "addConstrainst":
+            	  case "addConstraints":
             		  var dataType = {
             			  temp_node_select: nodo_select
             			};
-            		  $('#formModal').html($('#templateAddConstrainst').tmpl(dataType));
+            		  $('#formModal').html($('#templateAddConstraints').tmpl(dataType));
             		  editList();
-            		  eventsAddConstrainst();
+            		  eventsAddConstraints();
             	    break;
             	  case "addEntity":
             	    //console.log("addEntuty switch");
@@ -621,8 +621,9 @@ $(document).ready(function () {
               	    break;
             	  case "addEntitytoRelation":
                       var nodeAux = nodes.get(nodo_select);
+                      console.log("sss: " + nodo_select);
             		  if(nodeAux.superEntity <0)
-            		  nodo = getAllNodes(["box", "image"]);
+            		  nodo = getAllNodes(["box"]);
             		  else nodo = getEntitiesNotInSuperEntity(nodeAux.superEntity);
 
             		  nodoRoles = allEntitysToRelation2(nodo_select, "box");
@@ -703,6 +704,15 @@ $(document).ready(function () {
 
               		  $('#formModal').html($('#templateAddEntitytoRelation').tmpl(dataType));
               		  eventsEntityToRelation();
+                      $(document).on('change', '#element', function () {
+                          var entityId = $(this).val();
+                          ///resetRoleText(entityId, nodo_select);
+                          //var nodoRoles = allEntitysToRelation2(nodo_select, "box");
+                          var idOther = existOtherEdge(nodo_select, entityId, element_role);
+                          var rol="";
+                          if(idOther !=null) rol = "ROL";
+                          document.getElementById('roleName').value = rol;
+                      });
               	    break;
             	  case "addEntityParent":
             		  nodo = getAllNodes(["box"]);
@@ -832,4 +842,5 @@ $(document).ready(function () {
             $(document).on('click', '#redoLastAction', function () {
                 redoLastAction();
             });
+
         });

@@ -345,7 +345,7 @@ var network_super = new vis.Network(container_super, data_super, options);
   
     function addSuperEntity(idElement, labelName, action){
 
-        //console.log("[Super Entity] - idCount: " + idCount + ", label: " + labelName + ", idSuperEntityCount: " + idSuperEntityCount);
+        console.log("[Super Entity] - idCount: " + idCount + ", label: " + labelName + ", idSuperEntityCount: " + idSuperEntityCount + " - idSelected: " + idElement);
         updateidSuperEntityCount()
 
         if(action == "edit"){
@@ -355,6 +355,12 @@ var network_super = new vis.Network(container_super, data_super, options);
 
         }
         else if(getSuperEntityNode() ==null){   // No hay una agregación ya creada
+
+            var selectedNodes = network.getSelectedNodes();
+            if (!selectedNodes.includes(idElement)){
+                selectedNodes.push(idElement);
+                network.selectNodes(selectedNodes);
+            }
 
             getNodesElementsWithSuperEntity(network.getSelectedNodes(), idSuperEntityCount);    //get nodes connected to super entity
             updateSuperEntityEdges();
@@ -724,7 +730,7 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 	  //console.log("[Entity] - idCount: " + idCount + ", label: " + nombre + ", idSuperEntityCount: " + idSuperEntityCount);
   }
 
-  function addConstrainst(values, idSelected, action){
+  function addConstraints(values, idSelected, action){
 	  var valuesFilter = [];
 	  for(var i=0;i<values.length;i++){
 		 if(values[i].value!="" && values[i].value!="${temp_value}")
@@ -1296,7 +1302,7 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 						temp_value: valuesConstraints[i]
 					};
 		  		$("#totalInputs").val(nextValue);
-				$("#inputList").append($('#templateSelectAddConstrainst').tmpl(dataType));
+				$("#inputList").append($('#templateSelectAddConstraints').tmpl(dataType));
 				$('#insertModal').prop('disabled', false);
 		  }else{
 			  $("#list0").val(valuesConstraints[i]);
@@ -2699,3 +2705,6 @@ document.addEventListener('keydown',function(event) {
     }
 
 });
+
+
+
