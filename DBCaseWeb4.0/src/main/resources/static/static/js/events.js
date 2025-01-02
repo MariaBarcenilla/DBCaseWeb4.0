@@ -272,7 +272,7 @@ function eventAddEventRecipient(){
 		  $('#insertModal').prop('disabled', false);
 		  $( "#recipient-name" ).removeClass("is-invalid");
 		  }else{
-			  $('#insertModal').prop('disabled', true);
+			  //$('#insertModal').prop('disabled', true);
 			  $( "#recipient-name" ).addClass("is-invalid");
 		  }
 	});
@@ -284,7 +284,7 @@ function eventAddEventRecipient(){
     		  $('#insertModal').prop('disabled', false);
     		  $( "#relationEntity" ).removeClass("is-invalid");
     		  }else{
-    			  $('#insertModal').prop('disabled', true);
+    			  //$('#insertModal').prop('disabled', true);
     			  $( "#relationEntity" ).addClass("is-invalid");
     		  }
     	});
@@ -399,17 +399,20 @@ function updateTableElements(){
 	
 	$(document).keydown(function(e) {
 		if(e.which == 46){
-			if(getNodesSelectedCount()!=0 && getNodesSelectedCount()>1){
-					deleteNodeSelected();
-			}else{
-				if(getNodesSelectedCount()==1){
-					deleteNodeSelected();
-				}
+			if($('#insertModal').prop('disabled')){
+                if(getNodesSelectedCount()!=0 && getNodesSelectedCount()>1){
+                        deleteNodeSelected();
+                }else{
+                    if(getNodesSelectedCount()==1){
+                        deleteNodeSelected();
+                    }
+                }
 			}
 		}
 		if(e.which == 13){
 			e.preventDefault();
 			if(!$('#insertModal').prop('disabled')){
+				console.log("entra");
 				$("#insertModal").click();
 			}
 		}

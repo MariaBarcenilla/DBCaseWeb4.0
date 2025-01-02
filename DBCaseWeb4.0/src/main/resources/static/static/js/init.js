@@ -495,6 +495,7 @@ $(document).ready(function () {
        	 	 
        	  $('#insertModal').on('click', function() {
        	  //console.log("insertar modal");
+
            	switch($('#tipoAdd').val()) {
                	case "addConstraints":
                		addConstraints($('input[name=listText\\[\\]]').serializeArray(),$('#idSelected').val(), $('#typeAction').val());

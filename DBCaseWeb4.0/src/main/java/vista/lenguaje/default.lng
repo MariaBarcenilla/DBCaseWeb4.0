@@ -403,7 +403,7 @@ deleteRel=Remove relation
 renameRelation=Rename relation
 addEnt=Add entity
 removeEntity=Remove entity
-editCardRol=Edit entity cardinality or role
+editCardRol=Modify
 
 #GUIPrincipal + utilidades.AccionMenu 
 domMenuRename=Rename

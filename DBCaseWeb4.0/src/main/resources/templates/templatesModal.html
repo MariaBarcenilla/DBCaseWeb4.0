@@ -225,7 +225,11 @@
 				<label for="element_role" id="element_role_label" class="col-form-label d-none" th:text="#{item.relation}"></label>
             		<select id="element_role" class="form-control d-none">
             			{{each(i,v) temp_node_roles}}
-							<option value='${v.id}' >${v.label} - ${v.asoc} - ${v.role}</option>
+							{{if temp_option_selection==v.id}}
+								<option value='${v.id}'>${v.label} - ${v.asoc} - ${v.role}</option>
+							{{else}}
+								<option value='${v.id}' selected>${v.label} - ${v.asoc} - ${v.role}</option>
+							{{/if}}
 						{{/each}}
   					</select>
 				<label for="recipient-" class="col-form-label" th:text="#{textos.cardinality}"></label>

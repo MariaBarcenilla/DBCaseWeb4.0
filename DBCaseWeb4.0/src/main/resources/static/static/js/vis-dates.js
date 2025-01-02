@@ -74,7 +74,7 @@ var options = {
 		    keyboard: {
 		      enabled: true,
 		      speed: {x: 10, y: 10, zoom: 0.02},
-		      bindToWindow: true
+		      bindToWindow: false
 		    },
 		    multiselect: true,
 		    navigationButtons: true,
@@ -355,11 +355,14 @@ var network_super = new vis.Network(container_super, data_super, options);
 
         }
         else{   // No hay una agregación ya creada
-
+            console.log("idSelected: " + idElement);
             var selectedNodes = network.getSelectedNodes();
             if (!selectedNodes.includes(idElement)){
+                console.log("idSelected: " + selectedNodes.length);
                 selectedNodes.push(idElement);
+                console.log("idSelected: " + selectedNodes.length);
                 network.selectNodes(selectedNodes);
+                console.log("idSelected: " + network.getSelectedNodes().length);
             }
 
 
@@ -490,177 +493,187 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
   function getNodesElementsWithSuperEntity(nodesIds, superEntityId){
 
       var valid = true;
+      var relationCont = 0;
       if(nodesIds.length > 0){
-      actionHistory.push({ type: 'startAddToNewSuperEntity', node: null });
-      console.log("[actionHistory] - startAddToNewSuperEntity");
+          actionHistory.push({ type: 'startAddToNewSuperEntity', node: null });
+          console.log("[actionHistory] - startAddToNewSuperEntity");
 
-	  nodesIds.every(function(nod) {
-	  //Actualizamos el campo si el nodo no es la agregación
-		  var node = nodes.get(nod);
-		  console.log("le toca a "+node.label);
-		  if(!node.IsSuperEntity && node.superEntity < 0){
-              node.superEntity = superEntityId;
-			  actionHistory.push({ type: 'addToNewSuperEntity', node: JSON.parse(JSON.stringify(node)) });
-			  console.log("[actionHistory] - addToNewSuperEntity: " + node.label);
-			  nodes.update(node);
-			  nodes_super.update(node);
+          //nodesIds.forEach(function(nod) {
+          for(var i = 0; i < nodesIds.length; i++) {
+          //Actualizamos el campo si el nodo no es la agregación
+              var nod = nodesIds[i];
+              var node = nodes.get(nod);
+              console.log("le toca a "+node.label);
+              if(!node.IsSuperEntity && node.superEntity < 0){
+                  node.superEntity = superEntityId;
+                  actionHistory.push({ type: 'addToNewSuperEntity', node: JSON.parse(JSON.stringify(node)) });
+                  console.log("[actionHistory] - addToNewSuperEntity: " + node.label);
+                  nodes.update(node);
+                  nodes_super.update(node);
 
-              console.log("el nodo es: " + node.shape);
-			  // Buscamos los atributos de las entidades y relaciones que forman parte de la agregación
-			  switch(node.shape){
-			  case 'box':
-                  var entityAttr = allAttributeOfEntity(node.id);
-                  entityAttr.every(function(attr){
-                    //Actualizamos el campo si el nodo no está seleccionado
-                    if(!nodesIds.includes(attr.id) && attr.superEntity < 0){
-                        attr.superEntity = superEntityId;
-                        actionHistory.push({ type: 'addToNewSuperEntity', node: JSON.parse(JSON.stringify(nodes.get(attr.id))) });
-                        console.log("[actionHistory] - addToNewSuperEntity: " + attr.label);
-                        nodes.update(attr);
-                        var aux = nodes.get(attr.id);
-                        nodes_super.add(aux);
-                    }
-                    else if(attr.superEntity >= 0){
-                        actionHistory.push({ type: 'stopAddToNewSuperEntity', node: null });
-                        console.log("[actionHistory] - stopAddToNewSuperEntity");
-                        undoLastAction();
-                        //alert("Has seleccionado un elemento que ya forma parte de una agregación");
-                        valid = false;
-                        return valid;
-                    }
-                    //Recorremos y actualizamos los subatributos si los hay
-                    var subAttr = allSubAttribute(attr.id);
-                    subAttr.forEach(function(sAttr){
-                         //Actualizamos el campo si el nodo no está seleccionado
-                         if(!nodesIds.includes(sAttr.id)){
-                            sAttr.superEntity = superEntityId;
-                            actionHistory.push({ type: 'addToNewSuperEntity', node: JSON.parse(JSON.stringify(nodes.get(sAttr.id))) });
-                            console.log("[actionHistory] - addToNewSuperEntity: " + sAttr.label);
-                            nodes.update(sAttr);
-                            var auxS = nodes.get(sAttr.id);
-                            nodes_super.add(auxS);
-                         }
-                     });
-                  });
-			  break;
-			  case 'diamond':
-
-                  //Recorremos y actualizamos las entidades conectadas a la relación, si el nodo no está seleccionado
-                  var entitiesOfRelation = allEntityOfRelation(node.id);
-                  entitiesOfRelation.forEach(function(eRelation){
-                    //Actualizamos el campo si el nodo no está seleccionado
-                    if(!nodes.get(eRelation.id).IsSuperEntity){
-                        if(!nodesIds.includes(eRelation.id) && nodes.get(eRelation.id).superEntity < 0){
-                          //nodes.get(eRelation).super_entity = superEntityId;
-                          eRelation.superEntity = superEntityId;
-                          nodes.update(eRelation);
-                          actionHistory.push({ type: 'addToNewSuperEntity', node: JSON.parse(JSON.stringify(nodes.get(eRelation.id))) });
-                          console.log("[actionHistory] - addToNewSuperEntity: " + eRelation.label + " - " + nodes.get(eRelation.id).superEntity);
-
-                          var auxE = nodes.get(eRelation.id);
-                          nodes_super.add(auxE);
-
-                          var relationAttr = allAttributeOfEntity(eRelation.id);
-                          relationAttr.forEach(function(attr){
-                              //Actualizamos el campo si el nodo no está seleccionado
-                              console.log("diamond");
-                              if(!nodesIds.includes(attr.id)){
-                                  attr.superEntity = superEntityId;
-                                  nodes.update(attr);
-                                  actionHistory.push({ type: 'addToNewSuperEntity', node: JSON.parse(JSON.stringify(nodes.get(attr.id))) });
-                                  console.log("[actionHistory] - addToNewSuperEntity: " + attr.label);
-                                  var aux = nodes.get(attr.id);
-                                  nodes_super.add(aux);
-                              }
-                              var subAttr = allSubAttribute(attr.id);
-                              subAttr.forEach(function(sAttr){
-                                  //Actualizamos el campo si el nodo no está seleccionado
-                                  if(!nodesIds.includes(sAttr.id)){
-                                     sAttr.superEntity = superEntityId;
-                                     nodes.update(sAttr);
-                                     actionHistory.push({ type: 'addToNewSuperEntity', node: JSON.parse(JSON.stringify(nodes.get(sAttr.id))) });
-                                     console.log("[actionHistory] - addToNewSuperEntity: " + sAttr.label);
-
-                                     var auxS = nodes.get(sAttr.id);
-                                     nodes_super.add(auxS);
-                                  }
-                              });
-
-                            });
-                        }
-                    }
-                    else if(node.superEntity >= 0){
-                      actionHistory.push({ type: 'stopAddToNewSuperEntity', node: null });
-                      console.log("[actionHistory] - stopAddToNewSuperEntity");
-                      undoLastAction();
-                      //alert("Esta relación no puede formar una agregación estando relacionada con otra");
-                      alert($('#textErrorRelationAggr').text());
-                      valid = false;
-                      return valid;
-                    }
-                  });
-                  var relationAttr = allAttributeOfEntity(node.id);
-                  relationAttr.forEach(function(attr){
-                    //Actualizamos el campo si el nodo no está seleccionado
-                    console.log("diamond");
-                    if(!nodesIds.includes(attr.id)){
-                        attr.superEntity = superEntityId;
-                        nodes.update({id: attr.id, superEntity: superEntityId});
-                        actionHistory.push({ type: 'addToNewSuperEntity', node: JSON.parse(JSON.stringify(nodes.get(attr.id))) });
-                        console.log("[actionHistory] - addToNewSuperEntity: " + attr.label);
-
-                        var aux = nodes.get(attr.id);
-                        nodes_super.add(aux);
-                    }
-
-                    //Recorremos y actualizamos los subatributos si los hay
-                    var subAttr = allSubAttribute(attr.id);
-                    subAttr.forEach(function(sAttr){
-                         //Actualizamos el campo si el nodo no está seleccionado
-                         if(!nodesIds.includes(sAttr.id)){
-                            sAttr.superEntity = superEntityId;
-                            nodes.update({id: sAttr.id, superEntity: superEntityId});
-                            actionHistory.push({ type: 'addToNewSuperEntity', node: JSON.parse(JSON.stringify(nodes.get(sAttr.id))) });
+                  console.log("el nodo es: " + node.shape);
+                  // Buscamos los atributos de las entidades y relaciones que forman parte de la agregación
+                  switch(node.shape){
+                  case 'box':
+                      var entityAttr = allAttributeOfEntity(node.id);
+                      for(var j=0; j< entityAttr.length;j++){
+                        //Actualizamos el campo si el nodo no está seleccionado
+                        var attr = entityAttr[j];
+                        if(!nodesIds.includes(attr.id) && attr.superEntity < 0){
+                            attr.superEntity = superEntityId;
+                            actionHistory.push({ type: 'addToNewSuperEntity', node: JSON.parse(JSON.stringify(nodes.get(attr.id))) });
                             console.log("[actionHistory] - addToNewSuperEntity: " + attr.label);
+                            nodes.update(attr);
+                            var aux = nodes.get(attr.id);
+                            nodes_super.add(aux);
+                        }
+                        else if(attr.superEntity >= 0){
+                            actionHistory.push({ type: 'stopAddToNewSuperEntity', node: null });
+                            console.log("[actionHistory] - stopAddToNewSuperEntity");
+                            undoLastAction();
+                            //alert("Has seleccionado un elemento que ya forma parte de una agregación");
+                            valid = false;
+                            return valid;
+                        }
+                        //Recorremos y actualizamos los subatributos si los hay
+                        var subAttr = allSubAttribute(attr.id);
+                        subAttr.forEach(function(sAttr){
+                             //Actualizamos el campo si el nodo no está seleccionado
+                             if(!nodesIds.includes(sAttr.id)){
+                                sAttr.superEntity = superEntityId;
+                                actionHistory.push({ type: 'addToNewSuperEntity', node: JSON.parse(JSON.stringify(nodes.get(sAttr.id))) });
+                                console.log("[actionHistory] - addToNewSuperEntity: " + sAttr.label);
+                                nodes.update(sAttr);
+                                var auxS = nodes.get(sAttr.id);
+                                nodes_super.add(auxS);
+                             }
+                         });
+                      }
+                  break;
+                  case 'diamond':
+                      relationCont++;
+                      if(relationCont < 2){
+                          //Recorremos y actualizamos las entidades conectadas a la relación, si el nodo no está seleccionado
+                          var entitiesOfRelation = allEntityOfRelation(node.id);
+                          entitiesOfRelation.forEach(function(eRelation){
+                            //Actualizamos el campo si el nodo no está seleccionado
+                            if(!nodes.get(eRelation.id).IsSuperEntity){
+                                if(!nodesIds.includes(eRelation.id) && nodes.get(eRelation.id).superEntity < 0){
+                                  //nodes.get(eRelation).super_entity = superEntityId;
+                                  eRelation.superEntity = superEntityId;
+                                  nodes.update(eRelation);
+                                  actionHistory.push({ type: 'addToNewSuperEntity', node: JSON.parse(JSON.stringify(nodes.get(eRelation.id))) });
+                                  console.log("[actionHistory] - addToNewSuperEntity: " + eRelation.label + " - " + nodes.get(eRelation.id).superEntity);
 
-                            var auxS = nodes.get(sAttr.id);
-                            nodes_super.add(auxS);
-                         }
-                     });
+                                  var auxE = nodes.get(eRelation.id);
+                                  nodes_super.add(auxE);
 
-                  });
-              break;
-              default:
-                console.log("Node no es una entidad ni una relacion: " + node.shape + " - " + node.label);
-              break;
-			  }
-		  }
-          else if(node.superEntity >= 0){
-              actionHistory.push({ type: 'stopAddToNewSuperEntity', node: null });
-              console.log("[actionHistory] - stopAddToNewSuperEntity");
-              undoLastAction();
-              //alert("Has seleccionado un elemento que ya forma parte de una agregación");
-              alert($('#textErrorCreatingAggr').text());
+                                  var relationAttr = allAttributeOfEntity(eRelation.id);
+                                  relationAttr.forEach(function(attr){
+                                      //Actualizamos el campo si el nodo no está seleccionado
+                                      console.log("diamond");
+                                      if(!nodesIds.includes(attr.id)){
+                                          attr.superEntity = superEntityId;
+                                          nodes.update(attr);
+                                          actionHistory.push({ type: 'addToNewSuperEntity', node: JSON.parse(JSON.stringify(nodes.get(attr.id))) });
+                                          console.log("[actionHistory] - addToNewSuperEntity: " + attr.label);
+                                          var aux = nodes.get(attr.id);
+                                          nodes_super.add(aux);
+                                      }
+                                      var subAttr = allSubAttribute(attr.id);
+                                      subAttr.forEach(function(sAttr){
+                                          //Actualizamos el campo si el nodo no está seleccionado
+                                          if(!nodesIds.includes(sAttr.id)){
+                                             sAttr.superEntity = superEntityId;
+                                             nodes.update(sAttr);
+                                             actionHistory.push({ type: 'addToNewSuperEntity', node: JSON.parse(JSON.stringify(nodes.get(sAttr.id))) });
+                                             console.log("[actionHistory] - addToNewSuperEntity: " + sAttr.label);
 
-              valid = false;
-              return valid;
+                                             var auxS = nodes.get(sAttr.id);
+                                             nodes_super.add(auxS);
+                                          }
+                                      });
+
+                                    });
+                                }
+                            }
+                            else if(node.superEntity >= 0){
+                              actionHistory.push({ type: 'stopAddToNewSuperEntity', node: null });
+                              console.log("[actionHistory] - stopAddToNewSuperEntity");
+                              undoLastAction();
+                              //alert("Esta relación no puede formar una agregación estando relacionada con otra");
+                              alert($('#textErrorRelationAggr').text());
+                              valid = false;
+                              return valid;
+                            }
+                          });
+                          var relationAttr = allAttributeOfEntity(node.id);
+                          relationAttr.forEach(function(attr){
+                            //Actualizamos el campo si el nodo no está seleccionado
+                            console.log("diamond");
+                            if(!nodesIds.includes(attr.id)){
+                                attr.superEntity = superEntityId;
+                                nodes.update({id: attr.id, superEntity: superEntityId});
+                                actionHistory.push({ type: 'addToNewSuperEntity', node: JSON.parse(JSON.stringify(nodes.get(attr.id))) });
+                                console.log("[actionHistory] - addToNewSuperEntity: " + attr.label);
+
+                                var aux = nodes.get(attr.id);
+                                nodes_super.add(aux);
+                            }
+
+                            //Recorremos y actualizamos los subatributos si los hay
+                            var subAttr = allSubAttribute(attr.id);
+                            subAttr.forEach(function(sAttr){
+                                 //Actualizamos el campo si el nodo no está seleccionado
+                                 if(!nodesIds.includes(sAttr.id)){
+                                    sAttr.superEntity = superEntityId;
+                                    nodes.update({id: sAttr.id, superEntity: superEntityId});
+                                    actionHistory.push({ type: 'addToNewSuperEntity', node: JSON.parse(JSON.stringify(nodes.get(sAttr.id))) });
+                                    console.log("[actionHistory] - addToNewSuperEntity: " + attr.label);
+
+                                    var auxS = nodes.get(sAttr.id);
+                                    nodes_super.add(auxS);
+                                 }
+                             });
+
+                          });
+                      }
+                      else{
+                          actionHistory.push({ type: 'stopAddToNewSuperEntity', node: null });
+                          console.log("[actionHistory] - stopAddToNewSuperEntity");
+                          undoLastAction();
+                          alert($('#textErrorNumberRelations').text());
+                      }
+                  break;
+                  default:
+                    console.log("Node no es una entidad ni una relacion: " + node.shape + " - " + node.label);
+                  break;
+                  }
+              }
+              else if(node.superEntity >= 0){
+                  actionHistory.push({ type: 'stopAddToNewSuperEntity', node: null });
+                  console.log("[actionHistory] - stopAddToNewSuperEntity");
+                  undoLastAction();
+                  //alert("Has seleccionado un elemento que ya forma parte de una agregación");
+                  alert($('#textErrorCreatingAggr').text());
+
+                  return false;
+              }
+
+              else if(node.IsSuperEntity){
+                  actionHistory.push({ type: 'stopAddToNewSuperEntity', node: null });
+                  console.log("[actionHistory] - stopAddToNewSuperEntity");
+                  undoLastAction();
+                  //alert("Una agregación no puede formar parte de otra");
+                  alert($('#textErrorAggrInsideAggr').text());
+                  //return false;
+              }
           }
 
-          else if(node.IsSuperEntity){
-              actionHistory.push({ type: 'stopAddToNewSuperEntity', node: null });
-              console.log("[actionHistory] - stopAddToNewSuperEntity");
-              undoLastAction();
-              //alert("Una agregación no puede formar parte de otra");
-              alert($('#textErrorAggrInsideAggr').text());
-              //return false;
-          }
-	  });
-
-	  return valid;
+          return valid;
 	  }
 	  else{
-        valid = false;
-        return valid;
+        return false;
 	  }
   }
 
@@ -2262,10 +2275,10 @@ function undoLastAction() {
     else if (lastAction.type === 'addToNewSuperEntity') {
         // Restaurar el nodo al estado anterior
         console.log(" addToNewSuperEntity " + lastAction.node.label + " " + lastAction.node.superEntity);
-        nodes.update(lastAction.node);
+        nodes.update({id: lastAction.node.id, superEntity: -1});
         if(lastAction.node.superEntity >= 0) {
             nodes_super.remove(lastAction.node);
-            setSuperEntityCoordinates(true,nodes.get(lastAction.node.superEntity));
+            //setSuperEntityCoordinates(true,nodes.get(lastAction.node.superEntity));
         }
 
     }
@@ -2580,7 +2593,7 @@ function redoLastAction() {
             actionHistory.push(nextAction);
         }*/
 
-        //lastAction.node.super_entity = true;
+        //lastAction.node.superEntity = -1;
         nodes.update(lastAction.node);
         if(lastAction.node.superEntity >= 0) {
             nodes_super.update(lastAction.node);
