@@ -214,9 +214,9 @@
 					{{each(i,v) temp_nodes}}
 						{{if temp_id_superEntity!=v.id}}
 							{{if temp_option_selection==v.id}}
-								<option value='${v.id}'>${v.label}</option>
-							{{else}}
 								<option value='${v.id}' selected>${v.label}</option>
+							{{else}}
+								<option value='${v.id}'>${v.label}</option>
 							{{/if}}
 						{{/if}}
 					{{/each}}
@@ -225,10 +225,10 @@
 				<label for="element_role" id="element_role_label" class="col-form-label d-none" th:text="#{item.relation}"></label>
             		<select id="element_role" class="form-control d-none">
             			{{each(i,v) temp_node_roles}}
-							{{if temp_option_selection==v.id}}
-								<option value='${v.id}'>${v.label} - ${v.asoc} - ${v.role}</option>
-							{{else}}
+							{{if temp_option_selection_roles==v.id}}
 								<option value='${v.id}' selected>${v.label} - ${v.asoc} - ${v.role}</option>
+							{{else}}
+								<option value='${v.id}'>${v.label} - ${v.asoc} - ${v.role}</option>
 							{{/if}}
 						{{/each}}
   					</select>

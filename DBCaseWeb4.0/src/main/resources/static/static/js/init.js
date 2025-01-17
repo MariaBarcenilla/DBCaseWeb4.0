@@ -34,6 +34,8 @@ $(document).ready(function () {
 					case "addSuperEntity":
 						$("#recipient-name").focus();
 					break;
+					case "addEntitytoRelation":
+					    $("#roleName").focus();
 					case "addConstraints":
 						$("#list0").focus();
 					break;
@@ -50,6 +52,8 @@ $(document).ready(function () {
 					case "addAttribute":
 						$("#recipient-name").unbind("focus");
 					break;
+					case "addEntitytoRelation":
+					    $("#roleName").unbind("focus");
 					case "addConstraints":
 						$("#list0").unbind("focus");
 					break;
@@ -621,21 +625,36 @@ $(document).ready(function () {
             		  eventSubAttribute();
               	    break;
             	  case "addEntitytoRelation":
+                      var nodoRoles;
+                      var action = $('#typeAction').val();
                       var nodeAux = nodes.get(nodo_select);
-                      console.log("sss: " + nodo_select);
-            		  if(nodeAux.superEntity <0)
-            		  nodo = getAllNodes(["box"]);
-            		  else nodo = getEntitiesNotInSuperEntity(nodeAux.superEntity);
 
-            		  nodoRoles = allEntitysToRelation2(nodo_select, "box");
-            		  var childs = allEntityOfRelation(nodo_select);
+            		  var childs = allUniqueEntityOfRelation(nodeAux.id);
+
+            		  if(action == "create"){
+                          if(nodeAux.superEntity <0)
+                             nodo = getAllNodes(["box"]);
+                          else nodo = getEntitiesNotInSuperEntity(nodeAux.superEntity, null);
+            		  } else{
+            		     if(nodeAux.superEntity <0)
+            		        nodo = childs;
+                         else nodo = getEntitiesNotInSuperEntity(nodeAux.superEntity, nodeAux.id);
+                      }
 	        		  var selection = -1;
+	        		  var selectionRoles = -1;
 	        		  for(var i=0;i<nodo.length;i++){
 	        			  if(!inArray1(nodo[i].id, childs)){
 	        				  selection = nodo[i].id;
 	        			  }
 
 	        		  }
+	        		  if(nodo.length >0){
+	        		  selection = nodo[0].id;
+            		    nodoRoles = allEntitysToRelation2(nodo_select,"box", nodo[0].id);
+            		    if(nodoRoles.length >0)
+            		        selectionRoles = nodoRoles[0].id;
+            		    console.log("selection: " + selection + " - nodeAux: " + nodeAux.id);
+                      }
 
 	        		  var min="", max="",asoc="", cardinalidad="";
 
@@ -644,7 +663,7 @@ $(document).ready(function () {
 							  asoc= nodoRoles[0].asoc.charAt(0),
 							  cardinalidad = nodoRoles[0].asoc.charAt(2)
 					  }
-	        		  var action = $('#typeAction').val();
+
 	        		  var esEditYRol = false;
 	        		  var cardinalidad1 = false;
 	        		  var minmax = false;
@@ -663,7 +682,7 @@ $(document).ready(function () {
 						}
 					  }
 
-	        		  if(rol.length>0 && action=='edit')hayRol=true;
+	        		  if(rol.length>0 && action == 'edit')hayRol=true
 
 	        		  if(action == 'edit' && nodoRoles.length ==0 ){
 						  esEditYRol = true;
@@ -675,13 +694,6 @@ $(document).ready(function () {
                       var idSuperEntity = nodes.get(nodo_select).superEntity;
                       var auxNodoLength = nodo.length;
 
-                      if(idSuperEntity >= 0) {
-                        //idSuperEntity = getSuperEntityNode().id;
-                        //auxNodoLength = auxNodoLength-1;
-                      }
-                      console.log(" length is: " + auxNodoLength);
-
-                      console.log("idSuperEntity: " + idSuperEntity );
 
             		  var dataType = {
             		  		temp_nodeRoles_length: nodoRoles.length,
@@ -692,6 +704,7 @@ $(document).ready(function () {
              				temp_node_select: nodo_select,
              				temp_id_superEntity: idSuperEntity,
              				temp_option_selection: selection,
+             				temp_option_selection_roles: selectionRoles,
 						  	temp_min:min,
 						  	temp_max:max,
 						  	temp_asoc: asoc,
@@ -703,16 +716,66 @@ $(document).ready(function () {
 						  	temp_hayRol : hayRol
              			  };
 
+              		  console.log("rol: "+rol + " - temp_hayRol: " + hayRol);
+
               		  $('#formModal').html($('#templateAddEntitytoRelation').tmpl(dataType));
               		  eventsEntityToRelation();
+
                       $(document).on('change', '#element', function () {
                           var entityId = $(this).val();
-                          ///resetRoleText(entityId, nodo_select);
-                          //var nodoRoles = allEntitysToRelation2(nodo_select, "box");
-                          var idOther = existOtherEdge(nodo_select, entityId, element_role);
-                          var rol="";
-                          if(idOther !=null) rol = "ROL";
-                          document.getElementById('roleName').value = rol;
+                          /*if($('#typeAction').val() == 'create'){
+
+                              console.log("entityId:" + entityId);
+                              var idOther = existOtherEdge(nodo_select, entityId, element_role);
+                              var rol="";
+                              if(idOther !=null) rol = "ROL";
+                              document.getElementById('roleName').value = rol;
+                              if($("#textWarning").length == 0){
+
+                                $("#roleName").after("<span id='textWarning' class='text-warning'>"+$("#textNecesaryRol").text()+"</span>")
+                              }
+                          }*/
+                          var nodoRolesAux = allEntitysToRelation2(nodo_select, "box", entityId);
+                          var elem_role = document.getElementById('element_role');
+                          elem_role.innerHTML = '';
+                          console.log("NODOS ROLES CONNECTED: " + nodoRolesAux.length);
+                          nodoRolesAux.forEach(function(item){
+                              //asoc= nodoRoles[0].asoc.charAt(0);
+                              cardinalidad = nodoRolesAux[0].asoc.charAt(2);
+                              var max1 = document.getElementById('max1');
+                              var maxN = document.getElementById('maxN');
+                              if(cardinalidad == 'N'){
+                                max1.checked = false;
+                                maxN.checked = true;
+                              }
+                              else{
+                                max1.checked = true;
+                                maxN.checked = false;
+                              }
+                              var min=nodoRolesAux[0].asoc.charAt(0);
+
+                              var parcial = document.getElementById('parcial');
+                              var total = document.getElementById('total');
+                              if(min == '0'){
+                                parcial.checked = false;
+                                total.checked = true;
+                              }
+                              else{
+                                parcial.checked = true;
+                                total.checked = false;
+                              }
+
+                              console.log("asoc: " + item.asoc);
+                              //elem_role.append( `<option value="${item.id}">${item.label} - ${item.asoc} - ${item.role}</option>`);
+                              var op= document.createElement('option');
+                              op.value = item.id;
+                              op.textContent = item.label + " - " + item.asoc + " - " + item.role;
+                              elem_role.appendChild(op);
+
+
+                          });
+
+
                       });
               	    break;
             	  case "addEntityParent":
@@ -763,7 +826,7 @@ $(document).ready(function () {
               		  $('#formModal').html($('#templateAddEntityChild').tmpl(dataType));
               	    break;
             	  case "removeEntitytoRelation":
-            		  nodo = allEntitysToRelation2(nodo_select, "box");
+            		  nodo = allEntitysToRelation2(nodo_select, "box", null);
             		  var dataType = {
                 				temp_node_length: nodo.length,
                 				temp_nodes: nodo,

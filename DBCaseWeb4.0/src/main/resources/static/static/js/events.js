@@ -76,24 +76,36 @@ function eventAddSuperEntity(){
 
 function eventsEntityToRelation(){
 
-	$("#element,#element_role, #roleName, #max1,#parcial, #total, #maxN").change(function(){
+	$("#element,#element_role, #max1,#parcial, #total, #maxN").change(function(){
 		var idF = $("#element").val();
 		var idT = $("#idSelected").val();
-		var idEdge = existEdge(idF, idT);
-		//console.log(idEdge);
-		if(idEdge){
-			if($("#roleName").val() == "" && $("#typeAction").val()== 'create'){
-				$("#insertModal").prop("disabled", true);
-				if($("#textWarning").length == 0){
+		//console.log("roleName: " + $("#roleName").val());
 
-					$("#roleName").after("<span id='textWarning' class='text-warning'>"+$("#textNecesaryRol").text()+"</span>")
-				}
-			}else{
+		var idEdge = existEdge(idF, idT);
+		var roleName = $("#roleName").val();
+		console.log("edges.get(idEdge).label:" + edges.get(idEdge).label);
+		if(idEdge /* && edges.get(idEdge).label== ''*/){
+			if($("#roleName").val() == "" && $("#typeAction").val()== 'create'){
+				/*$("#insertModal").prop("disabled", false);
+				$("#roleName").val("ROL");*/
+				$("#insertModal").prop("disabled", true);
+				if($("#textWarning").length == 0){}
+
+			}else/* if($("#roleName").val() != "")*/{
+                 /*if($("#textWarning").length > 0)
+                     $('#textWarning').remove();*/
+
 				$("#insertModal").prop("disabled", false);
 
 			}
-		}else{
-			$("#insertModal").prop("disabled", false);
+		}else {
+			if(edges.get(idEdge).label!= '') $("#insertModal").prop("disabled", false);
+			else $("#insertModal").prop("disabled", true);
+			$('#roleName').val('');
+			if($("#textWarning").length > 0){
+			    $('#textWarning').remove();
+			}
+
 		}
 	});
 	$("#maxCardinality").blur(function(){
@@ -150,7 +162,7 @@ function eventsEntityToRelation(){
 		try {
 			var k;
 			document.all ? k = e.keyCode : k = e.which;
-			return ((k > 64 && k < 91) || (k > 96 && k < 123) || k == 8 || k == 32 || (k >= 48 && k <= 57));
+			return ((k > 64 && k < 91) || (k > 96 && k < 123) || k == 8 || k == 32 || (k >= 48 && k <= 57) || k == 46|| k == 37 || k == 39);
 
 		}
 		catch (Exception)
@@ -158,7 +170,35 @@ function eventsEntityToRelation(){
 			return false;
 		}
 	});
+    $("#roleName").on('input', function(){
+        var idF = $("#element").val();
+        var idT = $("#idSelected").val();
+        console.log("roleName: " + $("#roleName").val());
+        console.log("entityId:" + idF);
+        var idEdge = existEdge(idF, idT);
+        var roleName = $("#roleName").val();
+        if(idEdge && edges.get(idEdge).label== ''){
+            if($("#roleName").val() == "" && $("#typeAction").val()== 'create'){
+                $("#insertModal").prop("disabled", true);
+                if($("#textWarning").length == 0){
 
+                    $("#roleName").after("<span id='textWarning' class='text-warning'>"+$("#textNecesaryRol").text()+"</span>")
+                }
+            }else if($("#roleName").val() != ""){
+                 if($("#textWarning").length > 0)
+                     $('#textWarning').remove();
+
+                $("#insertModal").prop("disabled", false);
+
+            }
+        }else if(edges.get(idEdge).label== ''){
+            //$('#roleName').val('');
+            if($("#textWarning").length > 0){
+                $('#textWarning').remove();
+            }
+            $("#insertModal").prop("disabled", false);
+        }
+    });
 	$('#modalAddItem').on('shown.bs.modal', function (e) {
 		var idF = $("#element").val();
 		var idT = $("#idSelected").val();
@@ -179,7 +219,7 @@ function eventsEntityToRelation(){
 }
 
 function eventsRemoveEntityToRelation(){
-	
+
 	$('#modalAddItem').on('hidden.bs.modal', function () {
 		$( "#modalAddItem" ).unbind( "shown.bs.modal");
 	});
@@ -201,17 +241,17 @@ function eventsAddConstraints(){
 
 function eventEventPrimaryKeyAttribute(){
 	$("#primaryKey, #composite").change(function() {
-		if(($("#primaryKey").prop('checked') && $("#composite").prop('checked')) || 
+		if(($("#primaryKey").prop('checked') && $("#composite").prop('checked')) ||
 		   ($("#primaryKey").prop('checked') && !$("#composite").prop('checked'))){
-			$("[for='notNull'],[for='unique'],[for='multivalued']").toggle(false);            			
+			$("[for='notNull'],[for='unique'],[for='multivalued']").toggle(false);
 		}
 		if(!$("#primaryKey").prop('checked') && $("#composite").prop('checked')){
 			$("[for='notNull'],[for='unique']").toggle(false);
 			$("[for='multivalued']").toggle(true);
 		}
 		if(!$("#primaryKey").prop('checked') && !$("#composite").prop('checked')){
-			$("[for='notNull'],[for='unique'],[for='multivalued']").toggle(true);  
-		}						            		
+			$("[for='notNull'],[for='unique'],[for='multivalued']").toggle(true);
+		}
 	});
 }
 
@@ -232,7 +272,7 @@ function eventAddEntity(){
 					else
 						$('#insertModal').prop('disabled', true);
 				});
-				
+
 			}
 		}else{
 			$("#tempWeakEntity").slideUp("slow");
@@ -247,8 +287,8 @@ function eventSubAttribute(){
 		if($("#composite").prop('checked')){
 			$("[for='notNull'],[for='unique']").toggle(false);
 		}else{
-			$("[for='notNull'],[for='unique']").toggle(true);  
-		}					            		
+			$("[for='notNull'],[for='unique']").toggle(true);
+		}
 	});
 }
 
@@ -290,6 +330,7 @@ function eventAddEventRecipient(){
     	});
 }
 
+
 function updateTableElementsSuperEntity(){
 	var text = "";
 	var nodo = getAllNodesSuper(["box"]);
@@ -302,7 +343,7 @@ function updateTableElementsSuperEntity(){
 		}
 	}
 	text += '<p class="h6 mt-2 text-'+$("#textTheme").text()+'">Relaciones</p>';
-	
+
 	var nodo = getAllNodesSuper(["diamond", "triangleDown"]);
 	for(var i=0;i<nodo.length;i++){
 		text+='<p class="card-link small ml-0" href="#" aria-expanded="true"><img src="static/images/diamond-small.png" style="width: 25px;" class="rounded"><span class="pl-1 text-'+$("#textTheme").text()+'">'+nodo[i].label+'</span></p>';
@@ -345,7 +386,7 @@ function updateTableElements(){
 			idE: nodo[i].id
 		};
 		$('#accordion').append($('#templateElementEntity').tmpl(dataType));
-		
+
 		if(nodo[i].shape == "image"){
 			var htmlSuperEntity = updateTableElementsSuperEntity();
 			$('#childs-attribute'+nodo[i].id).append(htmlSuperEntity);
@@ -357,9 +398,9 @@ function updateTableElements(){
 				$('#childs-attribute'+nodo[i].id).append('<p class="card-link small ml-0" href="#" aria-expanded="true"><img src="static/images/attribute-small.png" class="rounded"><span class="pl-1 text-'+$("#textTheme").text()+'">'+listAtributes[e].label+' : '+listAtributes[e].type+'('+listAtributes[e].size+')</span></p>');
 			}
 		}
-		
+
 	}
-	
+
 	$('#accordion2').html("");
 	var nodo = getAllNodes(["diamond", "triangleDown"]);
 	for(var i=0;i<nodo.length;i++){
@@ -377,7 +418,7 @@ function updateTableElements(){
 				asoc = ": "+listAtributes[e].asoc;
 			$('#childs-attribute'+nodo[i].id).append('<p class="card-link small ml-0" href="#" aria-expanded="true"><img src="static/images/entidad-small.png" class="rounded"><span class="pl-1 text-'+$("#textTheme").text()+'">'+listAtributes[e].label+''+asoc+'</span></p>');
 		}
-		
+
 		var listAtributes = allAttributeOfEntity(nodo[i].id);
 		for(var e=0;e<listAtributes.length;e++){
 			$('#childs-attribute'+nodo[i].id).append('<p class="card-link small ml-0" href="#" aria-expanded="true"><img src="static/images/attribute-small.png" class="rounded"><span class="pl-1 text-'+$("#textTheme").text()+'">'+listAtributes[e].label+' : '+listAtributes[e].type+'('+listAtributes[e].size+')</span></p>');
@@ -391,12 +432,12 @@ function updateTableElements(){
 	$('#sidebarCollapse').on('click', function () {
         $('#sidebar').toggleClass('active');
     });
-	
+
 	$("#general-about").click(function() {
 		$( "[functioninsert='addTextAbout']").click();
 		$("#formModalButton").hide();
 	});
-	
+
 	$(document).keydown(function(e) {
 		if(e.which == 46){
 			if($('#insertModal').prop('disabled')){
@@ -427,15 +468,15 @@ function updateTableElements(){
     $('#addIsA').on('click', function() {
     	addIsA();
     });
-    
+
 	// cambiar tamaño de diagramas
-	$('.vis-zoomExtends').on('click', function () {		
+	$('.vis-zoomExtends').on('click', function () {
 		$('.changeSizeWidth').toggleClass('col-md-6');
         $('.changeSizeWidth').toggleClass('col-md-10');
         $('.changeSizeWidthData').toggleClass('col-md-12');
         $('.changeSizeWidthData').toggleClass('col-md-4');
     });
-	
+
 	// cambiar distribución de la vista
 	$('.change-aparience').on('click', function () {
 		restartPanel();
@@ -444,7 +485,7 @@ function updateTableElements(){
 
 		$('.change-aparience').removeClass("active");
 		$(this).addClass("active");
-		
+
 		if($("#frame4").hasClass("float-left")){
 			$("#frame1").show();
 			$("#frame2").addClass("col-md-2");
@@ -466,7 +507,7 @@ function updateTableElements(){
 			$("#frame5").addClass("h-50");
 			$("#frame5").removeClass("pl-2");
 		}
-		
+
 		if($("#frame1").hasClass("col-md-8")){
 			$("#frame2").show();
 			$("#frame1").removeClass("col-md-8");
@@ -544,14 +585,14 @@ function updateTableElements(){
 				break;
 		}
     });
-	
+
 	// abrir modal add Domain
 	$('#openCreateDomain').on('click', function () {
 		$( "[functioninsert='createDomain']").click();
     });
-	
+
 	$('.insertarDatos').on('click', function() {
-		// Limpiar el modal cuando se cierra, se deshabilita el boton 
+		// Limpiar el modal cuando se cierra, se deshabilita el boton
 		$('#modalAddItem').on('hidden.bs.modal', function (event) {
 			$('#insertModal').show();
 			$('#insertModal').text($('#textInsert').text());
@@ -562,7 +603,7 @@ function updateTableElements(){
 			$("[for='notNull'],[for='unique'],[for='multivalued'],[for='composite']").show();
 		});
 	});
-	
+
 	$('.dropdown').on('show.bs.dropdown', function () {
 		$("#sticky-top").removeClass("sticky-top");
 	});
@@ -570,7 +611,7 @@ function updateTableElements(){
 	$('.dropdown').on('hidden.bs.dropdown', function () {
 		$("#sticky-top").addClass("sticky-top");
 	});
-	
+
 	$("#general-new").on('click',function(){
 		if(nodes.get().length>0 || nodes_super.get().length>0){
 			var salir = confirm($("#textCerrarArchivo").text());
@@ -583,11 +624,18 @@ function updateTableElements(){
 			location.reload();
 		}
 	});
-	
+
 	function simuleClick(){
 		var event = new PointerEvent('pointerdown') ;
 		document.getElementsByClassName("vis-zoomExtendsScreen")[1].dispatchEvent(event);
 	}
+
+	$('#roleName').on('keydown', function (event) {
+        if (event.key === 'Delete') {
+            // Permite la tecla Delete
+            console.log('Delete key pressed');
+        }
+    });
 
 	$("#general-print").on('click',function(){
 		$.when(simuleClick()).then(function(){
