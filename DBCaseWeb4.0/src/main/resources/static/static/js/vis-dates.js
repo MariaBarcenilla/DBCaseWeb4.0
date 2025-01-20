@@ -1029,9 +1029,6 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 		  labelText = center;
 	  }
 
-
-
-
 	  var data_element = {width: 3,from: parseInt(idSelected), to: parseInt(idTo), label: labelText, labelFrom:right, labelTo:left, name:center, participation:partActive ,participationFrom: minCardinality, participationTo: maxCardinality, state: "false", smooth:false,arrows:{to: { enabled: direct1 }}};
 	  var data_element1 = {width: 3,from: parseInt(idSelected), to: parseInt(idTo), label: labelText, labelFrom:right, labelTo:left, name:center, participation:partActive ,participationFrom: minCardinality, participationTo: maxCardinality, state: "false", smooth:false ,arrows:{to: { enabled: direct1 }}};
 	  var data_element_update = {};
@@ -1044,7 +1041,7 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 		  //data_element3 = {id: idEdge, width: 3, from: parseInt(idSelected), to: parseInt(idTo), labelFrom:right, labelTo:left, name:center, participation:partActive ,participationFrom: minCardinality, participationTo: maxCardinality, smooth:false, arrows:{to: { enabled: direct1 }}};
           data_element.id = idEdge;
           data_element.state = edges.get(idEdge).state;
-          console.log(" data_element.label " + data_element.label + " - data_element.state: "+data_element.state);
+          console.log(" data_element.label " + data_element.label + " - data_element.label: "+data_element.label + " - edges.get(idEdge):" + edges.get(idEdge).label);
           //data_element.label = edges.get(idEdge).label;
           data_element.name = edges.get(idEdge).name;
 
@@ -2080,12 +2077,12 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
     var selectedNodes = network.getSelectedNodes();
     var nodesToSelect= selectedNodes;
     var superEntitySelected = [];
-
     selectedNodes.forEach(function(nodeId) {
         var nod = nodes.get(nodeId);
         if(nod.IsSuperEntity){ superEntitySelected.push(nod);
 
         }
+
         //console.log("# superEntity selected " + superEntitySelected.length);
     });
 
@@ -2099,7 +2096,6 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
             }
         });
     });
-
     network.selectNodes(nodesToSelect);
 });
 
@@ -2107,6 +2103,8 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
         var i=0;
         var superEntityId = [];
         if (params.nodes.length > 0) {
+            actionHistory.push({ type: 'startMovingNode', node: null });
+
             while(i < params.nodes.length){
                 // Obtenemos el nodo movido
                 var nodeId = params.nodes[i];
@@ -2116,6 +2114,9 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
 
                 // Actualizamos el nodo con la nueva posición
                 nodes.update({id: movedNode.id, x: movedNodePos.x, y: movedNodePos.y});
+                console.log("moveNode1: " + movedNode.id + " move to: " + movedNodePos.x);
+                actionHistory.push({ type: 'moveNode', node: JSON.parse(JSON.stringify(movedNode)) });
+
                 if(movedNode.superEntity >=0){
                    //console.log("drag end2 " + movedNode.label + " - " + movedNode.id + " - " + movedNode.super_entity);
                     superEntityId.push(movedNode.superEntity);
@@ -2132,6 +2133,7 @@ function setSuperEntityCoordinates(modifySuperEntity, node){
                     setSuperEntityCoordinates(true, superNode);
                 }
             });
+                actionHistory.push({ type: 'stopMovingNode', node: null });
         }
     });
 
@@ -2223,6 +2225,26 @@ function undoLastAction() {
     }
     else if (lastAction.type === 'stopDelete'){
         undoLastAction();
+    }
+    else if(lastAction.type === 'stopMovingNode'){
+        var nextAction = actionHistory[actionHistory.length - 1];
+        while(nextAction.type !== 'startMovingNode' && actionHistory.length > 0){
+            //if(undoneHistory[undoneHistory.length-1] !== null) undoneHistory.push(nextAction);
+            undoLastAction();
+            nextAction = actionHistory[actionHistory.length - 1];
+        }
+        undoLastAction();
+    }
+    else if(lastAction.type === 'moveNode'){
+        console.log("move node from x: " +nodes.get(lastAction.node.id).x + " - to: " + lastAction.node.x);
+        var x = nodes.get(lastAction.node.id).x;
+        var y = nodes.get(lastAction.node.id).y;
+        nodes.update(lastAction.node);
+        undoneHistory[undoneHistory.length-1].node.x = x;
+        undoneHistory[undoneHistory.length-1].node.y = y;
+
+        if(lastAction.node.superEntity >= 0)
+            nodes_super.update(lastAction.node);
     }
 
     //  ENTITY ACTIONS
@@ -2540,6 +2562,26 @@ function redoLastAction() {
     }
     else if(lastAction.type === 'startDelete'){
         redoLastAction();
+    }
+    else if(lastAction.type === 'startMovingNode'){
+        var nextAction = undoneHistory[undoneHistory.length - 1];
+        while(nextAction.type !== 'stopMovingNode' && undoneHistory.length > 0){
+            //if(undoneHistory[undoneHistory.length-1] !== null) undoneHistory.push(nextAction);
+            redoLastAction();
+            nextAction = undoneHistory[undoneHistory.length - 1];
+        }
+        redoLastAction();
+    }
+    else if(lastAction.type === 'moveNode'){
+        console.log("Y: move node from x: " +nodes.get(lastAction.node.id).x + " - to: " + lastAction.node.x);
+        var x = nodes.get(lastAction.node.id).x;
+        var y = nodes.get(lastAction.node.id).y;
+        nodes.update(lastAction.node);
+        actionHistory[actionHistory.length-1].node.x = x;
+        actionHistory[actionHistory.length-1].node.y = y;
+        if(lastAction.node.superEntity >= 0)
+            nodes_super.update(lastAction.node);
+
     }
 
     //  ENTITY ACTIONS
