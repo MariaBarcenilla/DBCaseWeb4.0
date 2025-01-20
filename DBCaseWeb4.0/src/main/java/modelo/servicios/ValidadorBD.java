@@ -100,7 +100,6 @@ public class ValidadorBD extends GeneradorEsquema{
 		while (i<entidades.size() && valido){
 			t=entidades.elementAt(i);
 			// No validamos las claves si se trata de una agregacion
-			//if(!t.getNombre().equals("agregacion")) {
 			if(t.getIdEntidad() >= 1000) {
 				//por ahora validamos las claves y avisamos de si es padre de varias isA
 				valido &= validaKey(t); //&& this.validaNombresAtributosEntidad(t);

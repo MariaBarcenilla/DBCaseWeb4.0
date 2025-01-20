@@ -45,7 +45,7 @@ $(document).ready(function () {
 			// Al esconder el modal
 			$('#modalAddItem').on('hide.bs.modal', function () {
 				switch($("#tipoAdd").val()){
-					case "addEntity": //console.log("TIPO ADD");
+					case "addEntity":
 					break;
 					case "addRelation":
 					case "addDomain":
@@ -103,9 +103,7 @@ $(document).ready(function () {
 						}
 					},
 					error: function (xhr, ajaxOptions, thrownError) {
-					//	console.log(xhr.status);
-					//	console.log(xhr.responseText);
-					//	console.log(thrownError);
+
 					}
 
 				});
@@ -162,13 +160,11 @@ $(document).ready(function () {
 				var myObj = {}; 
 				 
 				var auxNodesTotal = nodes.get();
-				console.log("auxNodesTotal: " + auxNodesTotal.length)
 				//var nodesSuper = nodes_super.get();
 				var resultNodes =[];
 				var agregation = "";
 				auxNodesTotal.forEach(function(item, index) {
 					var auxItem= item;
-                    console.log("aux item 1: "+auxItem.label + " - " + auxItem.superEntity + " - " + auxItem.IsSuperEntity);
 					if(item.isWeak || item.isWeak == "active")
 						auxItem.isWeak = true;
 					else
@@ -179,8 +175,6 @@ $(document).ready(function () {
 							heightConstraint: 25,
 							id: item.id,
 							isWeak: false,
-							//label: (item.label).replace(/ /g,'_'),
-							//label: 'agregacion',
 							label: item.label,
 							physics: false,
 							scale: 10,
@@ -194,12 +188,10 @@ $(document).ready(function () {
 							y: item.y,
 						};
 						resultNodes.push(auxItem);
-						console.log("resultNodes: " + resultNodes[resultNodes.length-1].label + " - " + resultNodes[resultNodes.length-1].superEntity + " - " + resultNodes[resultNodes.length-1].IsSuperEntity);
 
 					}
 					else if(item.superEntity<0){
 					    resultNodes.push(auxItem);
-					    console.log("resultNodes: " + resultNodes[resultNodes.length-1].label + " - " + resultNodes[resultNodes.length-1].superEntity + " - " + resultNodes[resultNodes.length-1].IsSuperEntity);
 					}
 
 					switch(item.shape){
@@ -214,8 +206,6 @@ $(document).ready(function () {
                         break;
 					}
 
-
-					//resultNodes.push(auxItem);
 				});
 
 				// tomamos la informacion de las entidades externas a la agregación
@@ -231,9 +221,7 @@ $(document).ready(function () {
 			
 				for(var i = 0;i<edgesData.length;i++){
 					if(edgesData[i].participation){
-					//	console.log(edgesData[3]);
-					//	edgesData[i].labelFrom = edgesData[3].participationFrom;
-					//	edgesData[i].labelTo = edgesData[3].participationTo;
+
 					}
 						
 					var tempLabel = edgesData[i].label;
@@ -243,8 +231,7 @@ $(document).ready(function () {
 					}  
 					var nameLabel = edgesData[i].label;
 					traduct[nameLabel] = tempLabel;
-					//console.log(nameLabel);
-					
+
 					var tempName = edgesData[i].name;
 					if(edgesData[i].name){
 						edgesData[i].name = normalize(edgesData[i].name);
@@ -269,7 +256,6 @@ $(document).ready(function () {
                         nodesSuper[i].color = '#22bdb1';
                         break;
                     }
-                    console.log("aux item 2: "+ nodesSuper[i].label + " - " +  nodesSuper[i].superEntity + " - " +  nodesSuper[i].IsSuperEntity);
 
 				}
 				
@@ -278,9 +264,7 @@ $(document).ready(function () {
 				for(var i = 0;i<edgesSuperData.length;i++){
 				    console.log("edgesSuperData entra");
 					if(edgesSuperData[i].participation){
-						//cambiado
-					//	edgesSuperData[i].labelFrom = edgesSuperData[3].participationFrom;
-					//	edgesSuperData[i].labelTo = edgesSuperData[3].participationTo;
+
 					}
 					var tempLabel = edgesSuperData[i].label;
 					if(edgesSuperData[i].label){
@@ -330,9 +314,6 @@ $(document).ready(function () {
 					},
 					error: function (xhr, ajaxOptions, thrownError) {
 						console.log("error generate data:"+edgesData);
-						//console.log(xhr.status);
-						//console.log(xhr.responseText);
-						//console.log(thrownError);
 					}
 
 				});
@@ -359,8 +340,6 @@ $(document).ready(function () {
 							heightConstraint: 25,
 							id: item.id,
 							isWeak: false,
-							//label: (item.label).replace(/ /g,'_'),
-							//label: 'agregacion',
 							label: item.label,
 							physics: false,
 							scale: 10,
@@ -498,14 +477,12 @@ $(document).ready(function () {
 		   });
        	 	 
        	  $('#insertModal').on('click', function() {
-       	  //console.log("insertar modal");
 
            	switch($('#tipoAdd').val()) {
                	case "addConstraints":
                		addConstraints($('input[name=listText\\[\\]]').serializeArray(),$('#idSelected').val(), $('#typeAction').val());
       	          	    break;
       	          	case "addEntity":
-                        //console.log("add entity modal");
       	          		addEntity($('#recipient-name').val(), $('#weak-entity').prop('checked'),$('#typeAction').val(),$('#idSelected').val(), $("#element").val(), $("#relationEntity").val());
       	          	    break;
       	          	case "addRelation":
@@ -539,7 +516,6 @@ $(document).ready(function () {
 	      	        	addSubAttribute($('#recipient-name').val(),$('#typeAction').val(),$('#idSelected').val(), $('#element').val(), $('#composite').prop('checked'), $('#notNull').prop('checked'), $('#unique').prop('checked'), $('#multivalued').prop('checked'), $('#domain').val(), $('#size').val());
 		            	break;
 	      	        case "addSuperEntity":
-	      	            //console.log("add super entity modal");
 	      	        	addSuperEntity(parseInt($('#idSelected').val()), $('#recipient-name').val(), $('#typeAction').val());
 	      	        	break;
       	          	case "addIsA":
@@ -549,7 +525,6 @@ $(document).ready(function () {
            });
    
             $('.insertarDatos').on('click', function() {
-            	//console.log("insertar Datos modal");
             	var insert = ""
             	var nodo_select = getNodeSelected();
             	switch($(this).attr("functionInsert")) {
@@ -562,9 +537,7 @@ $(document).ready(function () {
             		  eventsAddConstraints();
             	    break;
             	  case "addEntity":
-            	    //console.log("addEntuty switch");
             		  nodo = getAllNodes(["box"]);
-            		  //console.log("añadimos entidad");
             		  var dataType = {
             				temp_node_select: nodo_select,
             				temp_ent_length: nodo.length,
@@ -653,7 +626,6 @@ $(document).ready(function () {
             		    nodoRoles = allEntitysToRelation2(nodo_select,"box", nodo[0].id);
             		    if(nodoRoles.length >0)
             		        selectionRoles = nodoRoles[0].id;
-            		    console.log("selection: " + selection + " - nodeAux: " + nodeAux.id);
                       }
 
 	        		  var min="", max="",asoc="", cardinalidad="";
@@ -716,31 +688,17 @@ $(document).ready(function () {
 						  	temp_hayRol : hayRol
              			  };
 
-              		  console.log("rol: "+rol + " - temp_hayRol: " + hayRol);
-
               		  $('#formModal').html($('#templateAddEntitytoRelation').tmpl(dataType));
               		  eventsEntityToRelation();
 
                       $(document).on('change', '#element', function () {
                           var entityId = $(this).val();
-                          /*if($('#typeAction').val() == 'create'){
 
-                              console.log("entityId:" + entityId);
-                              var idOther = existOtherEdge(nodo_select, entityId, element_role);
-                              var rol="";
-                              if(idOther !=null) rol = "ROL";
-                              document.getElementById('roleName').value = rol;
-                              if($("#textWarning").length == 0){
-
-                                $("#roleName").after("<span id='textWarning' class='text-warning'>"+$("#textNecesaryRol").text()+"</span>")
-                              }
-                          }*/
                           var nodoRolesAux = allEntitysToRelation2(nodo_select, "box", entityId);
                           var elem_role = document.getElementById('element_role');
                           elem_role.innerHTML = '';
-                          console.log("NODOS ROLES CONNECTED: " + nodoRolesAux.length);
                           nodoRolesAux.forEach(function(item){
-                              //asoc= nodoRoles[0].asoc.charAt(0);
+
                               cardinalidad = nodoRolesAux[0].asoc.charAt(2);
                               var max1 = document.getElementById('max1');
                               var maxN = document.getElementById('maxN');
@@ -765,16 +723,12 @@ $(document).ready(function () {
                                 total.checked = false;
                               }
 
-                              console.log("asoc: " + item.asoc);
-                              //elem_role.append( `<option value="${item.id}">${item.label} - ${item.asoc} - ${item.role}</option>`);
                               var op= document.createElement('option');
                               op.value = item.id;
                               op.textContent = item.label + " - " + item.asoc + " - " + item.role;
                               elem_role.appendChild(op);
 
-
                           });
-
 
                       });
               	    break;
@@ -875,7 +829,6 @@ $(document).ready(function () {
           		  	  $('#formModal').html($('#templateAbout').tmpl(dataType));
       	    		break;
             	  	case "deleteSuperEntity":
-                        //console.log("delete super entity modal");
             	  		var dataType = {
           					temp_node_select: nodo_select
           			  };
@@ -883,7 +836,6 @@ $(document).ready(function () {
           		  	  eventAddSuperEntity();
       	    		break;
             	  	case "addTextAgregation":
-            	  		//console.log("add text aggr modal");
             	  		var dataType = {
           					temp_node_select: nodo_select
           			  };

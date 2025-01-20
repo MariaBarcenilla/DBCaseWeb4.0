@@ -63,7 +63,6 @@ function editList(){
 }
 
 function eventAddSuperEntity(){
-    console.log("EVENT ADD SUPER ENTITY")
 	$("#deleteSuper1").click(function(){
 		deleteSuperEntity($("#idSelected").val());
 		$('#modalAddItem').modal('hide');
@@ -79,24 +78,17 @@ function eventsEntityToRelation(){
 	$("#element,#element_role, #max1,#parcial, #total, #maxN").change(function(){
 		var idF = $("#element").val();
 		var idT = $("#idSelected").val();
-		//console.log("roleName: " + $("#roleName").val());
 
 		var idEdge = existEdge(idF, idT);
 		var roleName = $("#roleName").val();
-		console.log("edges.get(idEdge).label:" + edges.get(idEdge).label);
-		if(idEdge /* && edges.get(idEdge).label== ''*/){
+		if(idEdge ){
 			if($("#roleName").val() == "" && $("#typeAction").val()== 'create'){
-				/*$("#insertModal").prop("disabled", false);
-				$("#roleName").val("ROL");*/
+
 				$("#insertModal").prop("disabled", true);
 				if($("#textWarning").length == 0){}
 
-			}else/* if($("#roleName").val() != "")*/{
-                 /*if($("#textWarning").length > 0)
-                     $('#textWarning').remove();*/
-
+			}else{
 				$("#insertModal").prop("disabled", false);
-
 			}
 		}else {
 			if(edges.get(idEdge).label!= '') $("#insertModal").prop("disabled", false);
@@ -173,8 +165,6 @@ function eventsEntityToRelation(){
     $("#roleName").on('input', function(){
         var idF = $("#element").val();
         var idT = $("#idSelected").val();
-        console.log("roleName: " + $("#roleName").val());
-        console.log("entityId:" + idF);
         var idEdge = existEdge(idF, idT);
         var roleName = $("#roleName").val();
         if(idEdge && edges.get(idEdge).label== ''){
@@ -203,7 +193,6 @@ function eventsEntityToRelation(){
 		var idF = $("#element").val();
 		var idT = $("#idSelected").val();
 		var idEdge = existEdge(idF, idT);
-		//console.log(idEdge);
 		if(idEdge) {
 			if ($("#roleName").val() == "" && $("#typeAction").val()== 'create') {
 				$("#roleName").val("ROL");
@@ -256,7 +245,7 @@ function eventEventPrimaryKeyAttribute(){
 }
 
 function eventAddEntity(){
-    //console.log("EVENT ADD ENTITY");
+
 	$("#weak-entity").change(function() {
 		if( $('#weak-entity').prop('checked') ){
 			if($('#ent_length').val() == 0 || ($('#ent_length').val() == 1 && $('#typeAction').val() == "edit")){
@@ -277,7 +266,6 @@ function eventAddEntity(){
 		}else{
 			$("#tempWeakEntity").slideUp("slow");
 			$("#relationEntity").unbind("blur keyup");//terminar el select
-			console.log("add entity  -  events");
 		}
 	});
 }
@@ -453,7 +441,6 @@ function updateTableElements(){
 		if(e.which == 13){
 			e.preventDefault();
 			if(!$('#insertModal').prop('disabled')){
-				console.log("entra");
 				$("#insertModal").click();
 			}
 		}

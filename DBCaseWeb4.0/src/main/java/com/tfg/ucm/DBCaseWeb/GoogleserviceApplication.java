@@ -588,7 +588,6 @@ public class GoogleserviceApplication {
 			GeneradorEsquema testGen = new GeneradorEsquema(messageSource);
 			testGen.setControlador(c);
 			respuesta = testGen.generaModeloRelacional_v3("default",false);
-			//System.err.println(respuesta);
 		}
 		return respuesta;
 	}
